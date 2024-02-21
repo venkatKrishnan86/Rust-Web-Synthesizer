@@ -44,7 +44,6 @@ fn main() {
         source_maps.insert(key, *midi);
     }
     let mut flag_octave_change = false;
-    let mut flag_key_pressed = false;
 
     loop{
         let keys: Vec<Keycode> = device_state.get_keys();
@@ -97,7 +96,6 @@ fn main() {
                 }
             }
             for sink in sinks.iter() { sink.play() }
-            flag_key_pressed = true;
             // }
         } else {
             for sink in sinks.iter() {
@@ -105,7 +103,6 @@ fn main() {
                 sink.pause();
             }
             flag_octave_change = false;
-            flag_key_pressed = false;
         }
     }
 }
