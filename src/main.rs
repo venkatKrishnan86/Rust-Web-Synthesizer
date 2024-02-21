@@ -52,15 +52,14 @@ fn main() {
         if num_keys_pressed != prev_keys_pressed {
             for sink in sinks.iter() {
                 sink.clear();
-                sink.pause();
             }
             prev_keys_pressed = num_keys_pressed;
         }
         if num_keys_pressed > 0{
-            // if !flag_key_pressed{
             for (index, key) in keys.iter().enumerate() {
                 if keycodes.contains(key) {
-                    let source = SineWave::new(midi_to_hz(keycode_maps[key]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                    let freq = midi_to_hz(keycode_maps[key]).unwrap_or(1.0);
+                    let source = SineWave::new(freq).take_duration(Duration::from_secs_f32(1.0/freq * 1000.0)).amplify(0.20).repeat_infinite();
                     sinks[index].append(source);
                 }
                 match key {
@@ -96,11 +95,10 @@ fn main() {
                 }
             }
             for sink in sinks.iter() { sink.play() }
-            // }
         } else {
             for sink in sinks.iter() {
                 sink.stop();
-                sink.pause();
+                sink.clear();
             }
             flag_octave_change = false;
         }
