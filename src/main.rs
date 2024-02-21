@@ -1,27 +1,26 @@
-// use std::fs::File;
-// use std::io::BufReader;
 use std::time::Duration;
-use rodio::{Decoder, OutputStream, Sink};
+use rodio::{OutputStream, Sink};
 use rodio::source::{SineWave, Source};
-use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
+use device_query::{DeviceQuery, DeviceState, Keycode};
 
 fn main() {
-    // let args: Vec<String> = std::env::args().collect();
-    // if args.len() != 2 {
-    //     eprintln!("Usage: {} <input wave filename>", args[0]);
-    //     return
-    // }
-
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let sink = Sink::try_new(&stream_handle).unwrap();
     let device_state = DeviceState::new();
     sink.pause();
 
     let note_a = 440.0;
+    let mut prev_keys_pressed: usize = 0;
 
     loop{
         let keys: Vec<Keycode> = device_state.get_keys();
-        if keys.len() > 0 {
+        let num_keys_pressed = keys.len();
+        if num_keys_pressed != prev_keys_pressed {
+            sink.stop();
+            sink.pause();
+            prev_keys_pressed = num_keys_pressed;
+        }
+        if num_keys_pressed > 0 {
             for key in keys.iter() {
                 match key {
                     &Keycode::A =>  {
