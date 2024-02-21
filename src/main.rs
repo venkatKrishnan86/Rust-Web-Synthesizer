@@ -16,29 +16,7 @@ fn main() {
 
     let mut prev_keys_pressed: usize = 0;
     let mut midi_map: [u8; 17] = [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76];
-    let mut sources = &midi_map.map(|midi| SineWave::new(midi_to_hz(midi).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite());
     let mut flag_octave_change = false;
-    let keycodes: [Keycode; 17] = [
-        Keycode::A, 
-        Keycode::W,
-        Keycode::S,
-        Keycode::E,
-        Keycode::D,
-        Keycode::F,
-        Keycode::T,
-        Keycode::G,
-        Keycode::Y,
-        Keycode::H,
-        Keycode::U,
-        Keycode::J,
-        Keycode::K,
-        Keycode::O,
-        Keycode::L,
-        Keycode::P,
-        Keycode::Semicolon
-    ];
-    let mut flag_keys_pressed = [false; 17];
-    let mut flag_some_key_pressed = false;
 
     loop{
         let keys: Vec<Keycode> = device_state.get_keys();
@@ -50,65 +28,75 @@ fn main() {
         }
         if num_keys_pressed > 0 {
             for key in keys.iter() {
-                for (index, key_code) in keycodes.iter().enumerate() {
-                    if key_code == key {
-                        flag_keys_pressed[index] = true;
-
-                    }
-                }
-                
                 match key {
-                    // &Keycode::A =>  {
-                    //     sink.append(sources[0].clone());
-                    // },
-                    // &Keycode::W =>  {
-                    //     sink.append(sources[1].clone());
-                    // },
-                    // &Keycode::S =>  {
-                    //     sink.append(sources[2].clone());
-                    // },
-                    // &Keycode::E =>  {
-                    //     sink.append(sources[3].clone());
-                    // },
-                    // &Keycode::D =>  {
-                    //     sink.append(sources[4].clone());
-                    // },
-                    // &Keycode::F =>  {
-                    //     sink.append(sources[5].clone());
-                    // },
-                    // &Keycode::T =>  {
-                    //     sink.append(sources[6].clone());
-                    // },
-                    // &Keycode::G =>  {
-                    //     sink.append(sources[7].clone());
-                    // },
-                    // &Keycode::Y =>  {
-                    //     sink.append(sources[8].clone());
-                    // },
-                    // &Keycode::H =>  {
-                    //     sink.append(sources[9].clone());
-                    // },
-                    // &Keycode::U =>  {
-                    //     sink.append(sources[10].clone());
-                    // },
-                    // &Keycode::J =>  {
-                    //     sink.append(sources[11].clone());
-                    // },
-                    // &Keycode::K =>  {
-                    //     sink.append(sources[12].clone());
-                    // },
-                    // &Keycode::O =>  {
-                    //     sink.append(sources[13].clone());
-                    // },
-                    // &Keycode::L =>  {
-                    //     sink.append(sources[14].clone());
-                    // },
-                    // &Keycode::P =>  {
-                    //     sink.append(sources[15].clone());
-                    // },
-                    // &Keycode::Semicolon =>  {
-                    //     sink.append(sources[16].clone());
-                    // },
+                    &Keycode::A =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[0]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::W =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[1]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::S =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[2]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::E =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[3]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::D =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[4]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::F =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[5]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::T =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[6]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::G =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[7]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::Y =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[8]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::H =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[9]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::U =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[10]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::J =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[11]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::K =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[12]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::O =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[13]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::L =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[14]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::P =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[15]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
+                    &Keycode::Semicolon =>  {
+                        let source = SineWave::new(midi_to_hz(midi_map[16]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                        sink.append(source);
+                    },
                     &Keycode::Z =>  {
                         if !flag_octave_change {
                             sink.stop();
@@ -130,17 +118,11 @@ fn main() {
                     _ => ()
                 }
             }
-            let active_sources = sources.clone().into_iter().zip(flag_keys_pressed.iter()).filter(|(a,b)| **b);
-            for source in active_sources.into_iter() {
-                println!("{}",num_keys_pressed);
-                sink.append(source.0);
-            }
             sink.play();
         } else {
             sink.stop();
             sink.pause();
             flag_octave_change = false;
-            flag_keys_pressed = [false; 17];
         }
     }
 }
