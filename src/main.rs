@@ -20,7 +20,7 @@ fn main() {
 
     let mut prev_keys_pressed: usize = 0;
     let mut midi_map: [u8; 17] = [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76];
-    let mut source_maps = HashMap::new();
+    let mut keycode_maps = HashMap::new();
     let keycodes: [Keycode; 17] = [
         Keycode::A,
         Keycode::W,
@@ -41,7 +41,7 @@ fn main() {
         Keycode::Semicolon
     ];
     for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-        source_maps.insert(key, *midi);
+        keycode_maps.insert(key, *midi);
     }
     let mut flag_octave_change = false;
 
@@ -60,7 +60,7 @@ fn main() {
             // if !flag_key_pressed{
             for (index, key) in keys.iter().enumerate() {
                 if keycodes.contains(key) {
-                    let source = SineWave::new(midi_to_hz(source_maps[key]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                    let source = SineWave::new(midi_to_hz(keycode_maps[key]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
                     sinks[index].append(source);
                 }
                 match key {
@@ -73,7 +73,7 @@ fn main() {
                             midi_map = midi_map.map(|value| value-12);
                             println!("{:?}", midi_map);
                             for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-                                source_maps.insert(key, *midi);
+                                keycode_maps.insert(key, *midi);
                             }
                             flag_octave_change = true;
                         }
@@ -86,7 +86,7 @@ fn main() {
                             }
                             midi_map = midi_map.map(|value| value+12);
                             for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-                                source_maps.insert(key, *midi);
+                                keycode_maps.insert(key, *midi);
                             }
                             println!("{:?}", midi_map);
                             flag_octave_change = true;

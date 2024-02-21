@@ -1,5 +1,3 @@
-use rand::random;
-
 pub fn midi_to_hz(midi: u8) -> Result<f32, String> {
     if midi>=128 {
         return Err("MIDI must range between 0-128".to_owned());
