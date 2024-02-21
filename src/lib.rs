@@ -1,10 +1,21 @@
-mod utils;
+//! # Polyphonic MIDI map
+//! 
+//! I aim to create a polyphonic sine MIDI map.
+//! ## Key takeaways
+//! - `Source`: Any struct containing the audio array information, and must implement the `Source` trait
+//! - `Sink`: One track, which feeds to the output. The appending happens in the time domain. Each source appended plays one after the other
+//!     - One track
+//!     - Feeds directly to the output stream_handle
+//!     - The appending happens in the time domain
+//!     - Each source appended plays one after the other
+//!     - For multiple sounds to play together, one must use multiple sinks
 
-use rand::random;
-use utils::{midi_cents_to_hz, midi_to_hz, is_close_f32};
+mod utils;
 
 #[cfg(test)]
 mod tests {
+    use rand::random;
+    use utils::{midi_cents_to_hz, midi_to_hz, is_close_f32};
     use super::*;
     mod midi_to_hz_tests {
         use super::*;
