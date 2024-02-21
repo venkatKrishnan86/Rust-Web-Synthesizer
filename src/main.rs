@@ -1,7 +1,7 @@
 use std::time::Duration;
 use std::collections::HashMap;
 use rodio::{OutputStream, Sink};
-use rodio::source::{SineWave, Source, Repeat};
+use rodio::source::{SineWave, Source};
 use device_query::{DeviceQuery, DeviceState, Keycode};
 
 mod utils;
@@ -11,7 +11,7 @@ use utils::midi_to_hz;
 fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let poly = 16;
-    let mut sinks = Vec::new();
+    let mut sinks: Vec<Sink> = Vec::new();
     for i in 0..poly {
         sinks.push(Sink::try_new(&stream_handle).unwrap());
         sinks[i].pause();
@@ -41,7 +41,7 @@ fn main() {
         Keycode::Semicolon
     ];
     for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-        source_maps.insert(key, SineWave::new(midi_to_hz(*midi).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite());
+        source_maps.insert(key, *midi);
     }
     let mut flag_octave_change = false;
     let mut flag_key_pressed = false;
@@ -58,47 +58,47 @@ fn main() {
             prev_keys_pressed = num_keys_pressed;
         }
         if num_keys_pressed > 0{
-            if !flag_key_pressed{
-                for (index, key) in keys.iter().enumerate() {
-                    if keycodes.contains(key) {
-                        let source = source_maps[key].clone();
-                        sinks[index].append(source);
-                    }
-                    match key {
-                        &Keycode::Z =>  {
-                            if !flag_octave_change {
-                                for sink in sinks.iter() {
-                                    sink.stop();
-                                    sink.pause();
-                                }
-                                midi_map = midi_map.map(|value| value-12);
-                                println!("{:?}", midi_map);
-                                for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-                                    source_maps.insert(key, SineWave::new(midi_to_hz(*midi).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite());
-                                }
-                                flag_octave_change = true;
-                            }
-                        },
-                        &Keycode::X =>  {
-                            if !flag_octave_change {
-                                for sink in sinks.iter() {
-                                    sink.stop();
-                                    sink.pause();
-                                }
-                                midi_map = midi_map.map(|value| value+12);
-                                for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-                                    source_maps.insert(key, SineWave::new(midi_to_hz(*midi).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite());
-                                }
-                                println!("{:?}", midi_map);
-                                flag_octave_change = true;
-                            }
-                        },
-                        _ => ()
-                    }
+            // if !flag_key_pressed{
+            for (index, key) in keys.iter().enumerate() {
+                if keycodes.contains(key) {
+                    let source = SineWave::new(midi_to_hz(source_maps[key]).unwrap_or_default()).take_duration(Duration::from_secs(1)).amplify(0.20).repeat_infinite();
+                    sinks[index].append(source);
                 }
-                for sink in sinks.iter() { sink.play() }
-                flag_key_pressed = true;
+                match key {
+                    &Keycode::Z =>  {
+                        if !flag_octave_change {
+                            for sink in sinks.iter() {
+                                sink.stop();
+                                sink.pause();
+                            }
+                            midi_map = midi_map.map(|value| value-12);
+                            println!("{:?}", midi_map);
+                            for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
+                                source_maps.insert(key, *midi);
+                            }
+                            flag_octave_change = true;
+                        }
+                    },
+                    &Keycode::X =>  {
+                        if !flag_octave_change {
+                            for sink in sinks.iter() {
+                                sink.stop();
+                                sink.pause();
+                            }
+                            midi_map = midi_map.map(|value| value+12);
+                            for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
+                                source_maps.insert(key, *midi);
+                            }
+                            println!("{:?}", midi_map);
+                            flag_octave_change = true;
+                        }
+                    },
+                    _ => ()
+                }
             }
+            for sink in sinks.iter() { sink.play() }
+            flag_key_pressed = true;
+            // }
         } else {
             for sink in sinks.iter() {
                 sink.stop();
