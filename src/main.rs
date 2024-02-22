@@ -62,28 +62,26 @@ fn main() {
                     let source = SineWave::new(freq).take_duration(Duration::from_secs_f32(1.0/freq * 1000.0)).amplify(0.20).repeat_infinite();
                     sinks[index].append(source);
                 }
-                match key {
-                    &Keycode::Z =>  {
-                        if !flag_octave_change {
+                if !flag_octave_change {
+                    match key {
+                        &Keycode::Z =>  {
                             for sink in sinks.iter() {
                                 sink.stop();
                                 sink.pause();
                             }
                             decrease_octave(&mut keycode_maps);
                             flag_octave_change = true;
-                        }
-                    },
-                    &Keycode::X =>  {
-                        if !flag_octave_change {
+                        },
+                        &Keycode::X =>  {
                             for sink in sinks.iter() {
                                 sink.stop();
                                 sink.pause();
                             }
                             increase_octave(&mut keycode_maps);
                             flag_octave_change = true;
-                        }
-                    },
-                    _ => ()
+                        },
+                        _ => ()
+                    }
                 }
             }
             for sink in sinks.iter() { sink.play() }
