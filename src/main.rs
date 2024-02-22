@@ -8,6 +8,18 @@ mod utils;
 
 use utils::midi_to_hz;
 
+fn increase_octave(midi_map: &mut HashMap<&Keycode, &mut u8>) {
+    for (_, midi) in midi_map {
+        **midi+=12;
+    }
+}
+
+fn decrease_octave(midi_map: &mut HashMap<&Keycode, &mut u8>) {
+    for (_, midi) in midi_map {
+        **midi-=12;
+    }
+}
+
 fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let poly = 16;
@@ -40,8 +52,8 @@ fn main() {
         Keycode::P,
         Keycode::Semicolon
     ];
-    for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-        keycode_maps.insert(key, *midi);
+    for (key, midi) in keycodes.iter().zip(midi_map.as_mut()) {
+        keycode_maps.insert(key, midi);
     }
     let mut flag_octave_change = false;
 
@@ -58,7 +70,7 @@ fn main() {
         if num_keys_pressed > 0{
             for (index, key) in keys.iter().enumerate() {
                 if keycodes.contains(key) {
-                    let freq = midi_to_hz(keycode_maps[key]).unwrap_or(1.0);
+                    let freq = midi_to_hz(*keycode_maps[key]).unwrap_or(1.0);
                     let source = SineWave::new(freq).take_duration(Duration::from_secs_f32(1.0/freq * 1000.0)).amplify(0.20).repeat_infinite();
                     sinks[index].append(source);
                 }
@@ -69,11 +81,7 @@ fn main() {
                                 sink.stop();
                                 sink.pause();
                             }
-                            midi_map = midi_map.map(|value| value-12);
-                            println!("{:?}", midi_map);
-                            for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-                                keycode_maps.insert(key, *midi);
-                            }
+                            decrease_octave(&mut keycode_maps);
                             flag_octave_change = true;
                         }
                     },
@@ -83,11 +91,7 @@ fn main() {
                                 sink.stop();
                                 sink.pause();
                             }
-                            midi_map = midi_map.map(|value| value+12);
-                            for (key, midi) in keycodes.iter().zip(midi_map.iter()) {
-                                keycode_maps.insert(key, *midi);
-                            }
-                            println!("{:?}", midi_map);
+                            increase_octave(&mut keycode_maps);
                             flag_octave_change = true;
                         }
                     },
