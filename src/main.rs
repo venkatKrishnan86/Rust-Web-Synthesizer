@@ -6,19 +6,7 @@ use device_query::{DeviceQuery, DeviceState, Keycode};
 
 mod utils;
 
-use utils::midi_to_hz;
-
-fn increase_octave(midi_map: &mut HashMap<&Keycode, &mut u8>) {
-    for (_, midi) in midi_map {
-        **midi+=12;
-    }
-}
-
-fn decrease_octave(midi_map: &mut HashMap<&Keycode, &mut u8>) {
-    for (_, midi) in midi_map {
-        **midi-=12;
-    }
-}
+use utils::{midi_to_hz, increase_octave, decrease_octave};
 
 fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
@@ -52,7 +40,7 @@ fn main() {
         Keycode::P,
         Keycode::Semicolon
     ];
-    for (key, midi) in keycodes.iter().zip(midi_map.as_mut()) {
+    for (key, midi) in keycodes.iter().zip(midi_map.iter_mut()) {
         keycode_maps.insert(key, midi);
     }
     let mut flag_octave_change = false;
