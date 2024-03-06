@@ -13,10 +13,10 @@ fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let poly = 16;
 
-    let osc1 = WaveTableOscillator::new(44100, 44100, Oscillator::Sine, 0.8);
-    let osc2 = WaveTableOscillator::new(44100, 44100, Oscillator::Square, 0.2);
-    let osc3 = WaveTableOscillator::new(44100, 44100, Oscillator::Saw, 0.5);
-    let osc4 = WaveTableOscillator::new(44100, 44100, Oscillator::WhiteNoise, 0.1);
+    let osc1 = WaveTableOscillator::new(44100, 44100, Oscillator::Sine, 0.8, 0.0);
+    let osc2 = WaveTableOscillator::new(44100, 44100, Oscillator::Square, 0.2, 0.0);
+    let osc3 = WaveTableOscillator::new(44100, 44100, Oscillator::Saw, 0.5, 0.0);
+    let osc4 = WaveTableOscillator::new(44100, 44100, Oscillator::WhiteNoise, 0.1, 0.0);
     let sound: MultiOscillator = osc1 + osc2 + (osc3 + osc4);
 
     let mut sinks: Vec<Sink> = Vec::new();

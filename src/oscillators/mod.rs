@@ -25,7 +25,7 @@ pub struct WaveTableOscillator {
 }
 
 impl WaveTableOscillator {
-    pub fn new(sample_rate: u32, wave_table_size: usize, oscillator: Oscillator, gain: f32) -> Self {
+    pub fn new(sample_rate: u32, wave_table_size: usize, oscillator: Oscillator, gain: f32, frequency: f32) -> Self {
         assert!(gain>=0.0 && gain<=1.0, "Gain must be between 0 and 1");
         let mut wave_table: Vec<f32> = Vec::new();
         match oscillator {
@@ -74,7 +74,7 @@ impl WaveTableOscillator {
             wave_table_size,
             wave_table,
             index: 0.0,
-            index_increment: 0.0
+            index_increment: frequency * wave_table_size as f32 / sample_rate as f32
         }
     }
 
