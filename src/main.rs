@@ -62,8 +62,6 @@ fn main() {
                 sink.clear();
             }
             prev_keys_pressed = num_keys_pressed;
-        }
-        if num_keys_pressed > 0{
             for (index, key) in keys.iter().enumerate() {
                 if keycodes.contains(key) {
                     let freq = midi_to_hz(*keycode_maps[key]).unwrap_or(1.0);
@@ -97,10 +95,6 @@ fn main() {
             }
             for sink in sinks.iter() { sink.play() }
         } else {
-            for sink in sinks.iter() {
-                sink.stop();
-                sink.clear();
-            }
             flag_octave_change = false;
         }
     }
