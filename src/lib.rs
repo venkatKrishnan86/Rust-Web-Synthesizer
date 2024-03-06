@@ -16,6 +16,7 @@ use std::{f32::consts::PI, ops::Add};
 use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
+#[derive(Clone)]
 pub enum Oscillator {
     Sine,
     Square,
@@ -26,6 +27,7 @@ pub enum Oscillator {
 }
 
 /// Convert WavetableOscillator parameters in to a vector and use aligned_allocator to play each sample from the wavetable
+#[derive(Clone)]
 pub struct WaveTableOscillator {
     sample_rate: u32,
     oscillator: Oscillator,
@@ -164,6 +166,7 @@ impl Add for WaveTableOscillator {
     }
 }
 
+#[derive(Clone)]
 pub struct MultiOscillator {
     multi_osc: Vec<WaveTableOscillator>,
     sample_rate: u32,
@@ -203,6 +206,10 @@ impl MultiOscillator{
     pub fn set_gain(&mut self, gain: f32, source_index: usize) -> Result<(), String> {
         self.multi_osc[source_index].set_gain(gain)?;
         Ok(())
+    }
+
+    pub fn num_sources(&self) -> usize {
+        self.multi_osc.len()
     }
 }
 

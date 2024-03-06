@@ -1,8 +1,10 @@
 use std::time::Duration;
 use std::collections::HashMap;
+use midi_typing_keyboard::{MultiOscillator, WaveTableOscillator, Oscillator};
 use rodio::{OutputStream, Sink};
 use rodio::source::{SineWave, Source};
 use device_query::{DeviceQuery, DeviceState, Keycode};
+
 
 mod utils;
 
@@ -11,6 +13,13 @@ use utils::{midi_to_hz, increase_octave, decrease_octave};
 fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let poly = 16;
+
+    let osc1 = WaveTableOscillator::new(44100, 44100, Oscillator::Sine, 0.8);
+    let osc2 = WaveTableOscillator::new(44100, 44100, Oscillator::Square, 0.2);
+    let osc3 = WaveTableOscillator::new(44100, 44100, Oscillator::Saw, 0.5);
+    let osc4 = WaveTableOscillator::new(44100, 44100, Oscillator::WhiteNoise, 0.1);
+    let sound = osc1 + osc2 + (osc3 + osc4);
+
     let mut sinks: Vec<Sink> = Vec::new();
     for i in 0..poly {
         sinks.push(Sink::try_new(&stream_handle).unwrap());
@@ -59,7 +68,10 @@ fn main() {
             for (index, key) in keys.iter().enumerate() {
                 if keycodes.contains(key) {
                     let freq = midi_to_hz(*keycode_maps[key]).unwrap_or(1.0);
-                    let source = SineWave::new(freq).take_duration(Duration::from_secs_f32(1.0/freq * 1000.0)).amplify(0.20).repeat_infinite();
+                    let mut source = sound.clone();
+                    for i in 0..source.num_sources() {
+                        let _ = source.set_frequency(freq, i);
+                    }
                     sinks[index].append(source);
                 }
                 if !flag_octave_change {
