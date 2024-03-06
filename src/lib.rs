@@ -153,6 +153,17 @@ impl Source for WaveTableOscillator {
     }
 }
 
+impl Add for WaveTableOscillator {
+    type Output = MultiOscillator;
+    fn add(self, rhs: Self) -> Self::Output {
+        assert!(self.sample_rate == rhs.sample_rate, "Sample rates must match for addition");
+        let mut new_osc = MultiOscillator::new(self.sample_rate);
+        let _ = new_osc.push(self);
+        let _ = new_osc.push(rhs);
+        new_osc
+    }
+}
+
 pub struct MultiOscillator {
     multi_osc: Vec<WaveTableOscillator>,
     sample_rate: u32,
@@ -222,6 +233,21 @@ impl Source for MultiOscillator {
 
     fn total_duration(&self) -> Option<std::time::Duration> {
         None // Means infinite playback
+    }
+}
+
+impl Add for MultiOscillator {
+    type Output = Self;
+    fn add(self, rhs: Self) -> Self::Output {
+        assert!(self.sample_rate == rhs.sample_rate, "Sample rates must match for addition");
+        let mut new_osc = MultiOscillator::new(self.sample_rate);
+        for wave in self.multi_osc {
+            let _ = new_osc.push(wave);
+        }
+        for wave in rhs.multi_osc {
+            let _ = new_osc.push(wave);
+        }
+        new_osc
     }
 }
 
