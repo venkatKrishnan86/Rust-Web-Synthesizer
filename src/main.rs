@@ -1,12 +1,11 @@
-use std::time::Duration;
 use std::collections::HashMap;
-use midi_typing_keyboard::{MultiOscillator, WaveTableOscillator, Oscillator};
+use oscillators::{MultiOscillator, WaveTableOscillator, Oscillator};
 use rodio::{OutputStream, Sink};
-use rodio::source::{SineWave, Source};
 use device_query::{DeviceQuery, DeviceState, Keycode};
 
 
 mod utils;
+mod oscillators;
 
 use utils::{midi_to_hz, increase_octave, decrease_octave};
 
@@ -18,7 +17,7 @@ fn main() {
     let osc2 = WaveTableOscillator::new(44100, 44100, Oscillator::Square, 0.2);
     let osc3 = WaveTableOscillator::new(44100, 44100, Oscillator::Saw, 0.5);
     let osc4 = WaveTableOscillator::new(44100, 44100, Oscillator::WhiteNoise, 0.1);
-    let sound = osc1 + osc2 + (osc3 + osc4);
+    let sound: MultiOscillator = osc1 + osc2 + (osc3 + osc4);
 
     let mut sinks: Vec<Sink> = Vec::new();
     for i in 0..poly {
