@@ -12,7 +12,7 @@
 
 mod utils;
 
-use std::f32::consts::PI;
+use std::{f32::consts::PI, ops::Add};
 use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
@@ -136,6 +136,78 @@ impl Iterator for WaveTableOscillator {
 }
 
 impl Source for WaveTableOscillator {
+    fn channels(&self) -> u16 {
+        1
+    }
+
+    fn sample_rate(&self) -> u32 {
+        self.sample_rate
+    }
+
+    fn current_frame_len(&self) -> Option<usize> {
+        None // Means infinite playback
+    }
+
+    fn total_duration(&self) -> Option<std::time::Duration> {
+        None // Means infinite playback
+    }
+}
+
+pub struct MultiOscillator {
+    multi_osc: Vec<WaveTableOscillator>,
+    sample_rate: u32,
+    normalization: f32
+}
+
+impl MultiOscillator{
+    pub fn new(sample_rate: u32) -> Self {
+        Self {
+            multi_osc: Vec::new(),
+            sample_rate: sample_rate,
+            normalization: 0.0
+        }
+    }
+
+    pub fn from(oscillator: WaveTableOscillator) -> Self {
+        let mut m_osc = MultiOscillator::new(oscillator.sample_rate);
+        m_osc.normalization = oscillator.gain;
+        m_osc.multi_osc.push(oscillator);
+        m_osc
+    }
+
+    pub fn push(&mut self, oscillator: WaveTableOscillator) -> Result<(), String> {
+        if oscillator.sample_rate != self.sample_rate {
+            return Err("Sample rate must be the same!".to_owned());
+        }
+        self.normalization += oscillator.gain;
+        self.multi_osc.push(oscillator);
+        Ok(())
+    }
+
+    pub fn set_frequency(&mut self, frequency: f32, source_index: usize) -> Result<(), String> {
+        self.multi_osc[source_index].set_frequency(frequency)?;
+        Ok(())
+    }
+
+    pub fn set_gain(&mut self, gain: f32, source_index: usize) -> Result<(), String> {
+        self.multi_osc[source_index].set_gain(gain)?;
+        Ok(())
+    }
+}
+
+impl Iterator for MultiOscillator {
+    type Item = f32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut value: f32 = 0.0;
+        for osc in self.multi_osc.iter_mut() {
+            value += osc.get_sample();
+        }
+        Some(value/self.normalization)
+    }
+}
+
+impl Source for MultiOscillator {
     fn channels(&self) -> u16 {
         1
     }
