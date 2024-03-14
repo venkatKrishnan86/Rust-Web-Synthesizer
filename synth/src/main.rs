@@ -1,4 +1,4 @@
-use synth_frontend::App;
+use synth::App;
 
 fn main() {
     yew::Renderer::<App>::new().render();

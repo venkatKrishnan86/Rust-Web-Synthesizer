@@ -7,8 +7,8 @@ mod components;
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 
-#[styled_component(App)]
-pub fn app() -> Html {
+#[styled_component(MIDIKeyboard)]
+pub fn midi_keyboard() -> Html {
     let white_keys_style = Style::new(WHITE_KEYS_CSS).unwrap();
     let black_keys_style = Style::new(BLACK_KEYS_CSS).unwrap();
     html! {
