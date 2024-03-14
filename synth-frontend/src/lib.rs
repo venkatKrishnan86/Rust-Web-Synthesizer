@@ -4,8 +4,8 @@ use components::atoms::{create_black_key, create_white_keys};
 
 mod components;
 
-const WHITE_KEYS_CSS: &str = include_str!("white_keys.css");
-const BLACK_KEYS_CSS: &str = include_str!("black_keys.css");
+const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
+const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 
 #[styled_component(App)]
 pub fn app() -> Html {
