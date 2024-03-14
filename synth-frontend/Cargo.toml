@@ -1,0 +1,13 @@
+[package]
+name = "synth-frontend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+yew = {version = "0.21.0", features = ["csr"]}
+stylist = {version = "0.13.0", features = ["yew", "parser"]}
+gloo = "0.11.0"
+wasm-bindgen = "0.2.92" # To use the JsCast for getting onchange events from text fields
+web-sys = {version = "0.3.56", features = ["HtmlInputElement"]} # For getting the input elements in a text field

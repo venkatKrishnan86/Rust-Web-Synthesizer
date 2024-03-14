@@ -1,0 +1,27 @@
+width: 100%;
+height: 10em;
+display: flex;
+flex-direction: row;
+border: 2px solid black;
+border-bottom: 0px;
+border-top: 0px;
+
+.whitekey {
+    display: flex;
+    flex-direction: row;
+    width: 50em;
+    background-color: white;
+}
+
+.whitekey button {
+    width: 100%;
+    background-color: white;
+    border-top: 0px;
+    border-left: 0px;
+    border-radius: 0%;
+    font-size: 1.5rem;
+}
+
+.whitekey button:active {
+    background-color: rgb(231, 231, 231);
+}
