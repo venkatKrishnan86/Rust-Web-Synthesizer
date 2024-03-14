@@ -17,7 +17,7 @@ fn main() {
     let osc2 = WaveTableOscillator::new(44100, 44100, Oscillator::Square, 0.2, 0.0);
     let osc3 = WaveTableOscillator::new(44100, 44100, Oscillator::Saw, 0.5, 0.0);
     let osc4 = WaveTableOscillator::new(44100, 44100, Oscillator::WhiteNoise, 0.8, 0.0);
-    let sound = Rc::new(osc1 + osc2 + (osc3 + osc4));
+    let sound: Rc<MultiOscillator> = Rc::new(osc1 + osc2 + (osc3 + osc4));
 
     let mut sinks: Vec<Sink> = Vec::new();
     for i in 0..poly {
@@ -27,9 +27,9 @@ fn main() {
     let device_state = DeviceState::new();
 
     let mut prev_keys_pressed: usize = 0;
-    let mut midi_map: [u8; 17] = [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76];
+    let mut midi_map: [u8; 13] = [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72];
     let mut keycode_maps = HashMap::new();
-    let keycodes: [Keycode; 17] = [
+    let keycodes: [Keycode; 13] = [
         Keycode::A,
         Keycode::W,
         Keycode::S,
@@ -42,11 +42,7 @@ fn main() {
         Keycode::H,
         Keycode::U,
         Keycode::J,
-        Keycode::K,
-        Keycode::O,
-        Keycode::L,
-        Keycode::P,
-        Keycode::Semicolon
+        Keycode::K
     ];
     for (key, midi) in keycodes.iter().zip(midi_map.iter_mut()) {
         keycode_maps.insert(key, midi);
