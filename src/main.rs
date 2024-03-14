@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::Deref};
 use oscillators::{MultiOscillator, WaveTableOscillator, Oscillator};
 use rodio::{OutputStream, Sink};
 use device_query::{DeviceQuery, DeviceState, Keycode};
-
+use std::rc::Rc;
 
 mod utils;
 mod oscillators;
@@ -16,8 +16,8 @@ fn main() {
     let osc1 = WaveTableOscillator::new(44100, 44100, Oscillator::Sine, 0.8, 0.0);
     let osc2 = WaveTableOscillator::new(44100, 44100, Oscillator::Square, 0.2, 0.0);
     let osc3 = WaveTableOscillator::new(44100, 44100, Oscillator::Saw, 0.5, 0.0);
-    let osc4 = WaveTableOscillator::new(44100, 44100, Oscillator::WhiteNoise, 0.1, 0.0);
-    let sound: MultiOscillator = osc1 + osc2 + (osc3 + osc4);
+    let osc4 = WaveTableOscillator::new(44100, 44100, Oscillator::WhiteNoise, 0.8, 0.0);
+    let sound = Rc::new(osc1 + osc2 + (osc3 + osc4));
 
     let mut sinks: Vec<Sink> = Vec::new();
     for i in 0..poly {
@@ -65,7 +65,7 @@ fn main() {
             for (index, key) in keys.iter().enumerate() {
                 if keycodes.contains(key) {
                     let freq = midi_to_hz(*keycode_maps[key]).unwrap_or(1.0);
-                    let mut source = sound.clone();
+                    let mut source = sound.deref().clone();
                     for i in 0..source.num_sources() {
                         let _ = source.set_frequency(freq, i);
                     }
