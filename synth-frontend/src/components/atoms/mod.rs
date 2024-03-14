@@ -1,11 +1,5 @@
 use yew::prelude::*;
 
-#[derive(Properties, PartialEq)]
-pub struct ButtonProps {
-    label: String,
-    onhold: Callback<bool>
-}
-
 pub fn create_white_keys() -> Vec<Html> {
     let mut keys = Vec::new();
     let keycodes = vec!['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'];

@@ -1777,6 +1777,12 @@ dependencies = [
 [[package]]
 name = "synth"
 version = "0.1.0"
+dependencies = [
+ "stylist",
+ "synth-backend",
+ "synth-frontend",
+ "yew",
+]
 
 [[package]]
 name = "synth-backend"
