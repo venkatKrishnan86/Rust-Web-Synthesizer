@@ -40,17 +40,24 @@ impl PolyphonyRingBuffer {
         }
     }
 
-    pub fn peek(&self) -> Option<MultiOscillator> {
+    pub fn peek(&self) -> Option<&MultiOscillator> {
         match self.tail {
             None => None,
-            Some(t) => Some(self.buffer[t].clone())
+            Some(t) => Some(&self.buffer[t])
         }
     }
 
-    pub fn get(&self, offset: usize) -> Option<MultiOscillator> {
+    pub fn get(&self, offset: usize) -> Option<&MultiOscillator> {
         match self.tail {
             None => None,
-            Some(t) => Some(self.buffer[(t + offset) % self.capacity()].clone())
+            Some(t) => Some(&self.buffer[(t + offset) % self.capacity()])
+        }
+    }
+
+    pub fn get_mutable(&mut self, offset: usize) -> Option<&mut MultiOscillator> {
+        match self.tail {
+            None => None,
+            Some(t) => Some(&mut self.buffer[(t + offset) % self.capacity])
         }
     }
 
@@ -122,8 +129,18 @@ impl PolyphonyRingBuffer {
         self.capacity
     }
 
-    pub fn get_sample(&self) {
-        todo!("Implement");
+    pub fn get_sample(&mut self) -> f32{
+        let temp_len = self.len();
+        if temp_len > 0 {
+            let mut value: f32 = 0.0;
+            for index in 0..temp_len {
+                let multi_osc = self.get_mutable(index).unwrap();
+                value += multi_osc.get_sample();
+            }
+            value
+        } else {
+            0.0
+        }
     }
 }
 
@@ -131,7 +148,7 @@ impl Iterator for PolyphonyRingBuffer {
     type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {
-        todo!("Implement");
+        Some(self.get_sample())
     }
 }
 
