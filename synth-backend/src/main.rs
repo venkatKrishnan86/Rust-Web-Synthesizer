@@ -47,37 +47,26 @@ fn main() {
         keycode_maps.insert(key, midi);
     }
 
-    println!("{:?}", keycode_maps);
-
     loop{
         let keys: Vec<Keycode> = device_state.get_keys();
-        // println!("{:?}", keys);
         let num_keys_pressed = keys.len();
-        println!("{:?}", keys);
-        if num_keys_pressed > prev_keys_pressed {
-            for i in 0..(num_keys_pressed-prev_keys_pressed){
-                let current_key = &keys[prev_keys_pressed + i];
-                if keycodes.contains(current_key) {
-                    sink.stop();
-                    sink.clear();
-                    let frequency = midi_to_hz(*keycode_maps[current_key]).unwrap_or(1.0);
-                    let mut source = sound.deref().clone();
-                    let _ = source.global_set_frequency(frequency);
-                    polyphony.push(source);
-                    sink.append(polyphony.clone());
-                    sink.play();
-                }
-                match current_key {
+        if num_keys_pressed != prev_keys_pressed {
+            polyphony.reset();
+            sink.clear();
+            for key in keys.iter() {
+                match key {
                     &Keycode::Z => decrease_octave(&mut keycode_maps),
                     &Keycode::X => increase_octave(&mut keycode_maps),
-                    _ => ()
+                    _ => {
+                        if keycodes.contains(key) {
+                            let frequency = midi_to_hz(*keycode_maps[key]).unwrap_or(1.0);
+                            let mut source = sound.deref().clone();
+                            let _ = source.global_set_frequency(frequency);
+                            polyphony.push(source);
+                        }
+                    }
                 }
             }
-        }
-        else if num_keys_pressed < prev_keys_pressed {
-            sink.stop();
-            sink.clear();
-            polyphony.pop();
             sink.append(polyphony.clone());
             sink.play();
         }
