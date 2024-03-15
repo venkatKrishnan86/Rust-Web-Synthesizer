@@ -192,6 +192,13 @@ impl MultiOscillator{
         Ok(())
     }
 
+    pub fn global_set_frequency(&mut self, frequency: f32) -> Result<(), String> {
+        for osc in self.multi_osc.iter_mut(){
+            osc.set_frequency(frequency)?;
+        }
+        Ok(())
+    }
+
     #[allow(dead_code)]
     pub fn set_gain(&mut self, gain: f32, source_index: usize) -> Result<(), String> {
         self.multi_osc[source_index].set_gain(gain)?;
@@ -201,17 +208,21 @@ impl MultiOscillator{
     pub fn num_sources(&self) -> usize {
         self.multi_osc.len()
     }
+
+    pub fn get_sample(&mut self) -> f32 {
+        let mut value: f32 = 0.0;
+        for osc in self.multi_osc.iter_mut() {
+            value += osc.get_sample();
+        }
+        value/self.normalization
+    }
 }
 
 impl Iterator for MultiOscillator {
     type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut value: f32 = 0.0;
-        for osc in self.multi_osc.iter_mut() {
-            value += osc.get_sample();
-        }
-        Some(value/self.normalization)
+        Some(self.get_sample())
     }
 }
 
