@@ -2,6 +2,7 @@ use std::{f32::consts::PI, ops::Add};
 use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
+#[allow(dead_code)]
 #[derive(Clone)]
 pub enum Oscillator {
     Sine,
@@ -86,6 +87,7 @@ impl WaveTableOscillator {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn set_gain(&mut self, gain: f32) -> Result<(), String> {
         if gain < 0.0 || gain > 1.0 {
             return Err("Gain must be between 0.0 and 1.0!".to_owned());
@@ -168,6 +170,7 @@ impl MultiOscillator{
         }
     }
 
+    #[allow(dead_code)]
     pub fn from(oscillator: WaveTableOscillator) -> Self {
         let mut m_osc = MultiOscillator::new(oscillator.sample_rate);
         m_osc.normalization = oscillator.gain;
@@ -189,6 +192,7 @@ impl MultiOscillator{
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn set_gain(&mut self, gain: f32, source_index: usize) -> Result<(), String> {
         self.multi_osc[source_index].set_gain(gain)?;
         Ok(())
