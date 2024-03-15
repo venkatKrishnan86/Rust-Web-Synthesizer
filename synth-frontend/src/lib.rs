@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
-use components::atoms::{create_black_key, create_white_keys};
+use components::atoms::{black_keys::BlackKey, white_keys::create_white_keys};
 
 mod components;
 
@@ -15,13 +15,13 @@ pub fn midi_keyboard() -> Html {
         <>
             <div class={black_keys_style}>
                 <div id="corner-left" class="filler" ></div>
-                {create_black_key('W')}
-                {create_black_key('E')}
+                <BlackKey label='W' />
+                <BlackKey label='E' />
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
-                {create_black_key('T')}
-                {create_black_key('Y')}
-                {create_black_key('U')}
+                <BlackKey label='T' />
+                <BlackKey label='Y' />
+                <BlackKey label='U' />
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
                 <div id="corner-right" class="filler"></div>

@@ -1,22 +1,9 @@
+pub mod white_keys;
+pub mod black_keys;
+
 use yew::prelude::*;
 
-pub fn create_white_keys() -> Vec<Html> {
-    let mut keys = Vec::new();
-    let keycodes = vec!['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'];
-    for index in 0..8{
-        keys.push(html! {
-            <div class = "whitekey">
-                <button class = "keycodes">{keycodes[index]}</button>
-            </div>
-        })
-    }
-    keys
-}
-
-pub fn create_black_key(letter: char) -> Html {
-    html! {
-        <div class = "blackkey">
-            <button class = "keycodes">{letter}</button>
-        </div>
-    }
+#[derive(Properties, PartialEq)]
+pub struct KeyProps {
+    pub label: char
 }
