@@ -166,7 +166,7 @@ impl MultiOscillator{
         Self {
             multi_osc: Vec::new(),
             sample_rate: sample_rate,
-            normalization: 0.0
+            normalization: 1.0
         }
     }
 
@@ -245,5 +245,15 @@ impl Add for MultiOscillator {
             let _ = new_osc.push(wave);
         }
         new_osc
+    }
+}
+
+impl Default for MultiOscillator {
+    fn default() -> Self {
+        Self {
+            multi_osc: Vec::new(),
+            sample_rate: 44100,
+            normalization: 1.0
+        }
     }
 }
