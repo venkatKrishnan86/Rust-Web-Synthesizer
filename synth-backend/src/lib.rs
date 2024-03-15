@@ -10,8 +10,62 @@
 //!     - Each source appended plays one after the other
 //!     - For multiple sounds to play together, one must use multiple sinks
 
+use oscillators::MultiOscillator;
+use ring_buffer::RingBuffer;
+use rodio::Source;
+
+/// # Polyphony handler struct
+/// Aim of this struct is to avoid the usage of multiple sinks on playing multiple notes, instead handle multiple notes 
+/// through a new source, which would be a RingBuffer filled with MultiOScillators
+pub struct PolyphonyHandler {
+    _source: RingBuffer<MultiOscillator>,
+    sample_rate: u32
+}
+
+impl PolyphonyHandler {
+    pub fn new() {
+        todo!("Implement");
+    }
+
+    pub fn push(&mut self, _multi_osc: MultiOscillator) {
+        todo!("Implement");
+    }
+
+    pub fn get_sample(&self) {
+        todo!("Implement");
+    }
+}
+
+impl Iterator for PolyphonyHandler {
+    type Item = f32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        todo!("Implement");
+    }
+}
+
+impl Source for PolyphonyHandler {
+    fn channels(&self) -> u16 {
+        1
+    }
+
+    fn sample_rate(&self) -> u32 {
+        self.sample_rate
+    }
+
+    fn current_frame_len(&self) -> Option<usize> {
+        None
+    }
+
+    fn total_duration(&self) -> Option<std::time::Duration> {
+        None
+    }
+}
+
+
 mod utils;
 mod oscillators;
+mod ring_buffer;
 
 #[cfg(test)]
 mod tests {
