@@ -1,7 +1,7 @@
 use gloo::console::log;
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
-use components::atoms::{black_keys::BlackKey, white_keys::create_white_keys};
+use components::atoms::keys::{Key, KeyColor, create_white_keys};
 
 mod components;
 
@@ -24,13 +24,13 @@ pub fn midi_keyboard() -> Html {
         <>
             <div class={black_keys_style}>
                 <div id="corner-left" class="filler" ></div>
-                <BlackKey label='W' on_mouse_click={&mouse_click}/>
-                <BlackKey label='E' on_mouse_click={&mouse_click}/>
+                <Key label='W' key_color={KeyColor::Black} on_mouse_click={&mouse_click}/>
+                <Key label='E' key_color={KeyColor::Black} on_mouse_click={&mouse_click}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
-                <BlackKey label='T' on_mouse_click={&mouse_click}/>
-                <BlackKey label='Y' on_mouse_click={&mouse_click}/>
-                <BlackKey label='U' on_mouse_click={&mouse_click}/>
+                <Key label='T' key_color={KeyColor::Black} on_mouse_click={&mouse_click}/>
+                <Key label='Y' key_color={KeyColor::Black} on_mouse_click={&mouse_click}/>
+                <Key label='U' key_color={KeyColor::Black} on_mouse_click={&mouse_click}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
                 <div id="corner-right" class="filler"></div>
