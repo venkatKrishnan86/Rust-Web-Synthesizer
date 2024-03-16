@@ -1,3 +1,6 @@
+# The `main.rs` function
+
+```rust
 use std::{collections::HashMap, ops::Deref};
 use oscillators::{MultiOscillator, WaveTableOscillator, Oscillator};
 use rodio::{OutputStream, Sink};
@@ -73,3 +76,5 @@ fn main() {
         prev_keys_pressed = num_keys_pressed;
     }
 }
+
+```
