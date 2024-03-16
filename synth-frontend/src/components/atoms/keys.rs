@@ -2,6 +2,8 @@ use gloo::console::log;
 use stylist::yew::styled_component;
 use yew::prelude::*;
 
+use crate::MIDIKeyboardProperties;
+
 #[derive(PartialEq)]
 pub enum KeyColor {
     White,
@@ -37,11 +39,13 @@ pub fn key(props: &KeyProps) -> Html {
     }
 }
 
-pub fn create_white_keys() -> Vec<Html> {
+
+pub fn create_white_keys(props: &MIDIKeyboardProperties) -> Vec<Html> {
     let mut keys = Vec::new();
     let keycodes = vec!['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'];
+    let mouse_click = props.mouse_click.clone();
     let mouse_click = Callback::from(move |_| {
-        log!("Clicked white key");
+        mouse_click.emit(());
     });
 
     for index in 0..8{
