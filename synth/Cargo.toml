@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 synth-frontend = {path = "../synth-frontend"}
-synth-backend = {path = "../synth-backend"}
+# synth-backend = {path = "../synth-backend"}
 yew = {version = "0.21.0", features = ["csr"]}
 stylist = {version = "0.13.0", features = ["yew", "parser"]}
