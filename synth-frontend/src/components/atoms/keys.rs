@@ -44,14 +44,14 @@ pub fn key(props: &KeyProps) -> Html {
 
     let key_down = props.on_key_down.clone();
     let key_down = Callback::from(move |event: KeyboardEvent| {
-        let target= char::from_u32(event.key_code()).unwrap_or('a');
-        key_down.emit(target);
+        let key_pressed= char::from_u32(event.key_code()).unwrap_or('a');
+        key_down.emit(key_pressed);
     });
 
     let key_up = props.on_key_up.clone();
     let key_up = Callback::from(move |event: KeyboardEvent| {
-        let target= char::from_u32(event.key_code()).unwrap_or('a');
-        key_up.emit(target);
+        let key_pressed= char::from_u32(event.key_code()).unwrap_or('a');
+        key_up.emit(key_pressed);
     });
 
     html! {
