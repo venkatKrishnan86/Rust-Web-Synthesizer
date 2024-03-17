@@ -10,9 +10,9 @@
 //!     - Each source appended plays one after the other
 //!     - For multiple sounds to play together, one must use multiple sinks
 
-mod utils;
-mod oscillators;
-mod ring_buffer;
+pub mod utils;
+pub mod oscillators;
+pub mod ring_buffer;
 
 #[cfg(test)]
 mod tests {
