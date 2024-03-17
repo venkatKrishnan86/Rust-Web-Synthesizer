@@ -10,13 +10,6 @@
 //!     - Each source appended plays one after the other
 //!     - For multiple sounds to play together, one must use multiple sinks
 
-use oscillators::MultiOscillator;
-use rodio::Source;
-
-/// # Polyphony handler struct
-/// Aim of this struct is to avoid the usage of multiple sinks on playing multiple notes, instead handle multiple notes 
-/// through a new source, which would be a RingBuffer filled with MultiOScillators
-
 mod utils;
 mod oscillators;
 mod ring_buffer;

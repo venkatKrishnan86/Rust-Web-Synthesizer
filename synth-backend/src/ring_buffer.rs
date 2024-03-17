@@ -1,6 +1,9 @@
 use crate::oscillators::MultiOscillator;
 use rodio::Source;
 
+/// # Polyphony handler struct
+/// Aim of this struct is to avoid the usage of multiple sinks on playing multiple notes, instead handle multiple notes 
+/// through a new source, which would be a RingBuffer filled with MultiOScillators
 #[derive(Clone)]
 pub struct PolyphonyRingBuffer {
     buffer: Vec<MultiOscillator>,
