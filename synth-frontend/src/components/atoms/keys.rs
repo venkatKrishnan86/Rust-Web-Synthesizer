@@ -24,6 +24,8 @@ pub struct KeyProps {
     pub key_color: KeyColor,
     pub on_mouse_down: Callback<char>,
     pub on_mouse_up: Callback<char>,
+    pub on_key_down: Callback<char>,
+    pub on_key_up: Callback<char>,
 }
 
 #[styled_component(Key)]
@@ -40,9 +42,21 @@ pub fn key(props: &KeyProps) -> Html {
         mouse_up.emit(label);
     });
 
+    let key_down = props.on_key_down.clone();
+    let key_down = Callback::from(move |event: KeyboardEvent| {
+        let target= char::from_u32(event.key_code()).unwrap_or('a');
+        key_down.emit(target);
+    });
+
+    let key_up = props.on_key_up.clone();
+    let key_up = Callback::from(move |event: KeyboardEvent| {
+        let target= char::from_u32(event.key_code()).unwrap_or('a');
+        key_up.emit(target);
+    });
+
     html! {
         <div class = {&props.key_color.to_string()}>
-            <button class = "keycodes" onmousedown={&mouse_down} onmouseup={&mouse_up}>{props.label}</button>
+            <button class = "keycodes" onmousedown={&mouse_down} onmouseup={&mouse_up} onkeydown={&key_down} onkeyup={&key_up}>{props.label}</button>
         </div>
     }
 }
@@ -61,8 +75,17 @@ pub fn create_white_keys(props: &MIDIKeyboardProperties) -> Vec<Html> {
         let mouse_up = Callback::from(move |label: char| {
             mouse_up.emit(label)
         });
+
+        let key_down = props.key_down.clone();
+        let key_up = props.key_up.clone();
+        let key_down = Callback::from(move |label: char| {
+            key_down.emit(label)
+        });
+        let key_up = Callback::from(move |label: char| {
+            key_up.emit(label)
+        });
         keys.push(html! {
-            <Key label={&keycodes[index]} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up}/>
+            <Key label={&keycodes[index]} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} on_key_down={&key_down} on_key_up={&key_up}/>
         })
     }
     keys

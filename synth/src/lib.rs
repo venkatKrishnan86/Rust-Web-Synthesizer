@@ -45,7 +45,17 @@ pub fn app() -> Html {
     let mouse_up = Callback::from(move |label: char| {
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up[&label].to_string());
     });
+
+    let key_map_down = keycode_maps.clone();
+    let key_down = Callback::from(move |label: char| {
+        log!("Holding key", label.to_string(), ", MIDI Note:", key_map_down[&label].to_string());
+    });
+
+    let key_map_up = keycode_maps.clone();
+    let key_up = Callback::from(move |label: char| {
+        log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up[&label].to_string());
+    });
     html! {
-        <MIDIKeyboard mouse_down={mouse_down} mouse_up={&mouse_up}/>
+        <MIDIKeyboard mouse_down={mouse_down} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
     }
 }
