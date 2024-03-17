@@ -1,5 +1,6 @@
 use stylist::yew::styled_component;
 use yew::prelude::*;
+use crate::components::atoms::button::CustomButton;
 
 use crate::MIDIKeyboardProperties;
 
@@ -56,7 +57,16 @@ pub fn key(props: &KeyProps) -> Html {
 
     html! {
         <div class = {&props.key_color.to_string()}>
-            <button class = "keycodes" onmousedown={&mouse_down} onmouseup={&mouse_up} onkeydown={&key_down} onkeyup={&key_up}>{props.label}</button>
+            // <button class = "keycodes" onmousedown={&mouse_down} onmouseup={&mouse_up} onkeydown={&key_down} onkeyup={&key_up}>{props.label}</button>
+            <CustomButton 
+                class="keycodes" 
+                label={props.label.to_string()} 
+                is_active={false}
+                mouse_down={mouse_down}
+                mouse_up={mouse_up}
+                key_down={key_down}
+                key_up={key_up}
+            />
         </div>
     }
 }

@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
-use components::atoms::keys::{Key, KeyColor, create_white_keys};
+use components::molecules::keys::{Key, KeyColor, create_white_keys};
 
 mod components;
 
