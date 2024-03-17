@@ -57,7 +57,6 @@ pub fn key(props: &KeyProps) -> Html {
 
     html! {
         <div class = {&props.key_color.to_string()}>
-            // <button class = "keycodes" onmousedown={&mouse_down} onmouseup={&mouse_up} onkeydown={&key_down} onkeyup={&key_up}>{props.label}</button>
             <CustomButton 
                 class="keycodes" 
                 label={props.label.to_string()} 
@@ -95,7 +94,14 @@ pub fn create_white_keys(props: &MIDIKeyboardProperties) -> Vec<Html> {
             key_up.emit(label)
         });
         keys.push(html! {
-            <Key label={&keycodes[index]} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} on_key_down={&key_down} on_key_up={&key_up}/>
+            <Key 
+                label={&keycodes[index]} 
+                key_color={KeyColor::White} 
+                on_mouse_down={&mouse_down} 
+                on_mouse_up= {&mouse_up} 
+                on_key_down={&key_down} 
+                on_key_up={&key_up}
+            />
         })
     }
     keys
