@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use synth_backend::utils::decrease_octave;
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -38,22 +39,22 @@ pub fn app() -> Html {
 
     let key_map_down = keycode_maps.clone();
     let mouse_down = Callback::from(move |label: char| {
-        log!("Holding key", label.to_string(), ", MIDI Note:", key_map_down[&label].to_string());
+        log!("Holding key", label.to_string(), ", MIDI Note:", key_map_down.get(&label).unwrap_or(&0).to_string());
     });
 
     let key_map_up = keycode_maps.clone();
     let mouse_up = Callback::from(move |label: char| {
-        log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up[&label].to_string());
+        log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
 
     let key_map_down = keycode_maps.clone();
     let key_down = Callback::from(move |label: char| {
-        log!("Holding key", label.to_string(), ", MIDI Note:", key_map_down[&label].to_string());
+        log!("Holding key", label.to_string(), ", MIDI Note:", key_map_down.get(&label).unwrap_or(&0).to_string());
     });
 
     let key_map_up = keycode_maps.clone();
     let key_up = Callback::from(move |label: char| {
-        log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up[&label].to_string());
+        log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
     html! {
         <MIDIKeyboard mouse_down={mouse_down} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
