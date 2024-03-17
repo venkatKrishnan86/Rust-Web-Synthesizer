@@ -5,10 +5,14 @@ use gloo::console::log;
 
 #[styled_component(App)]
 pub fn app() -> Html {
-    let mouse_click = Callback::from(move |_| {
-        log!("Clicked a key");
+    let mouse_down = Callback::from(move |_| {
+        log!("Holding key");
+    });
+
+    let mouse_up = Callback::from(move |_| {
+        log!("Lifted key");
     });
     html! {
-        <MIDIKeyboard mouse_click={mouse_click}/>
+        <MIDIKeyboard mouse_down={mouse_down} mouse_up={&mouse_up}/>
     }
 }
