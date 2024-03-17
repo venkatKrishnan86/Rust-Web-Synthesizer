@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use synth_backend::utils::decrease_octave;
+use std::ops::Deref;
+use synth_backend::utils::{decrease_octave, increase_octave};
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -21,7 +22,7 @@ pub fn app() -> Html {
     let _sound: Rc<MultiOscillator> = Rc::new(osc1 + osc2 + (osc3 + osc4));
     let mut _polyphony: PolyphonyRingBuffer = PolyphonyRingBuffer::new(poly, 44100);
 
-    let keycode_maps = Rc::new(HashMap::from([
+    let keycode_maps = use_state(|| HashMap::from([
         ('A', 60),
         ('W', 61),
         ('S', 62),
@@ -47,8 +48,16 @@ pub fn app() -> Html {
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
 
+    let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
     let key_down = Callback::from(move |label: char| {
+        let cloned_key_map = &mut key_map_down.deref().clone();
+        match label {
+            'Z' => decrease_octave(cloned_key_map),
+            'X' => increase_octave(cloned_key_map),
+            _ => ()
+        }
+        key_map_setter.set(cloned_key_map.deref().clone());
         log!("Holding key", label.to_string(), ", MIDI Note:", key_map_down.get(&label).unwrap_or(&0).to_string());
     });
 
