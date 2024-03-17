@@ -10,8 +10,7 @@ pub struct PolyphonyRingBuffer {
     capacity: usize,
     head: Option<usize>,
     tail: Option<usize>,
-    sample_rate: u32,
-    index: f32
+    sample_rate: u32
 }
 
 impl PolyphonyRingBuffer {
@@ -21,8 +20,7 @@ impl PolyphonyRingBuffer {
             capacity: capacity,
             head: None,
             tail: None,
-            sample_rate: sample_rate,
-            index: 0.0
+            sample_rate: sample_rate
         }
     }
 
