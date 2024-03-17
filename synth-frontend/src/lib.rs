@@ -6,6 +6,7 @@ mod components;
 
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
+const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octave_change.css");
 
 #[derive(Properties, PartialEq)]
 pub struct MIDIKeyboardProperties {
@@ -19,6 +20,7 @@ pub struct MIDIKeyboardProperties {
 pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     let white_keys_style = Style::new(WHITE_KEYS_CSS).unwrap();
     let black_keys_style = Style::new(BLACK_KEYS_CSS).unwrap();
+    let octave_change_style = Style::new(OCTAVE_CHANGE_CSS).unwrap();
 
     let mouse_down = props.mouse_down.clone();
     let mouse_up = props.mouse_up.clone();
@@ -41,6 +43,10 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
             </div>
             <div class={white_keys_style}>
                 {create_white_keys(props)}
+            </div>
+            <div class={octave_change_style}>
+                <button>{"Z"}</button>
+                <button>{"X"}</button>
             </div>
         </>
     }
