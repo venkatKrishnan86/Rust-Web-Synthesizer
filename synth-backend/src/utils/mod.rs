@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[allow(dead_code)]
 pub fn midi_to_hz(midi: u8) -> Result<f32, String> {
     if midi>=128 {
@@ -22,27 +24,17 @@ pub fn is_close_f32(a: f32, b: f32) -> bool {
     (a - b).abs() <= 0.01
 }
 
+pub fn increase_octave(midi_map: &mut HashMap<char, u8>) {
+    for (_, midi) in midi_map {
+        *midi+=12;
+    }
+}
 
-
-
-
-
-
-
-
-// #[allow(dead_code)]
-// pub fn increase_octave(midi_map: &mut HashMap<&Keycode, &mut u8>) {
-//     for (_, midi) in midi_map {
-//         **midi+=12;
-//     }
-// }
-
-// #[allow(dead_code)]
-// pub fn decrease_octave(midi_map: &mut HashMap<&Keycode, &mut u8>) {
-//     for (_, midi) in midi_map {
-//         **midi-=12;
-//     }
-// }
+pub fn decrease_octave(midi_map: &mut HashMap<char, u8>) {
+    for (_, midi) in midi_map {
+        *midi-=12;
+    }
+}
 
 // fn hz_to_midi(hz: ) -> f32 {
 //     f32::powf(2.0, (midi-69) as f32/12.0) * 440.0
