@@ -9,8 +9,8 @@ const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 
 #[derive(Properties, PartialEq)]
 pub struct MIDIKeyboardProperties {
-    pub mouse_down: Callback<()>,
-    pub mouse_up: Callback<()>,
+    pub mouse_down: Callback<char>,
+    pub mouse_up: Callback<char>,
 }
 
 #[styled_component(MIDIKeyboard)]
@@ -19,14 +19,7 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     let black_keys_style = Style::new(BLACK_KEYS_CSS).unwrap();
 
     let mouse_down = props.mouse_down.clone();
-    let mouse_down = Callback::from(move |_| {
-        mouse_down.emit(());
-    });
-
     let mouse_up = props.mouse_up.clone();
-    let mouse_up = Callback::from(move |_| {
-        mouse_up.emit(());
-    });
     html! {
         <>
             <div class={black_keys_style}>
