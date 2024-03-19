@@ -2,8 +2,6 @@ use stylist::yew::styled_component;
 use yew::prelude::*;
 use crate::components::atoms::button::CustomButton;
 
-use crate::MIDIKeyboardProperties;
-
 #[derive(PartialEq)]
 pub enum KeyColor {
     White,
@@ -52,30 +50,4 @@ pub fn key(props: &KeyProps) -> Html {
             />
         </div>
     }
-}
-
-
-pub fn create_white_keys(props: &MIDIKeyboardProperties) -> Vec<Html> {
-    let mut keys = Vec::new();
-    let keycodes = vec!['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'];
-
-    for index in 0..8{
-        let mouse_down = props.mouse_down.clone();
-        let mouse_up = props.mouse_up.clone();
-        let mouse_down = Callback::from(move |label: char| {
-            mouse_down.emit(label)
-        });
-        let mouse_up = Callback::from(move |label: char| {
-            mouse_up.emit(label)
-        });
-        keys.push(html! {
-            <Key 
-                label={&keycodes[index]} 
-                key_color={KeyColor::White} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up= {&mouse_up} 
-            />
-        })
-    }
-    keys
 }

@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
-use components::molecules::keys::{Key, KeyColor, create_white_keys};
+use components::molecules::keys::{Key, KeyColor};
 use components::atoms::keyboard_listener::KeyboardListener;
 use components::atoms::button::CustomButton;
 
@@ -63,7 +63,14 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
                 <div id="corner-right" class="filler"></div>
             </div>
             <div class={white_keys_style}>
-                {create_white_keys(props)}
+                <Key label={'A'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key label={'S'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key label={'D'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key label={'F'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key label={'G'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key label={'H'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key label={'J'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key label={'K'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
             </div>
             <div class={octave_change_style}>
                 <CustomButton 
