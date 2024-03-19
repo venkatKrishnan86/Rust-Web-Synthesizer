@@ -1,5 +1,7 @@
 # ASE-Project
 
+Run `trunk serve --open`
+
 ## Synthesizer 
 Topic Ideas: midi, synths/ MPE, UI, web dev 
 
