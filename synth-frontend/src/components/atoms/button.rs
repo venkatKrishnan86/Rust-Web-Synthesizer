@@ -7,14 +7,16 @@ pub struct ButtonProps {
     pub label: String,
     pub is_active: bool,
     pub mouse_down: Callback<MouseEvent>,
-    pub mouse_up: Callback<MouseEvent>,
-    pub key_down: Callback<KeyboardEvent>,
-    pub key_up: Callback<KeyboardEvent>
+    pub mouse_up: Callback<MouseEvent>
 }
 
 #[styled_component(CustomButton)]
 pub fn custom_button(props: &ButtonProps) -> Html{
     html! {
-        <button class = {&props.class} onmousedown={&props.mouse_down} onmouseup={&props.mouse_up} onkeydown={&props.key_down} onkeyup={&props.key_up}>{&props.label}</button>
+        <button 
+            class = {&props.class} 
+            onmousedown={&props.mouse_down} 
+            onmouseup={&props.mouse_up}
+        >{&props.label}</button>
     }
 }

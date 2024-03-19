@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
 use components::molecules::keys::{Key, KeyColor, create_white_keys};
+use components::atoms::keyboard_listener::KeyboardListener;
 
 mod components;
 
@@ -24,19 +25,29 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
 
     let mouse_down = props.mouse_down.clone();
     let mouse_up = props.mouse_up.clone();
+
     let key_down = props.key_down.clone();
+    let key_down = Callback::from(move |event: KeyboardEvent| {
+        let key_pressed= char::from_u32(event.key_code()).unwrap_or('a');
+        key_down.emit(key_pressed);
+    });
     let key_up = props.key_up.clone();
+    let key_up = Callback::from(move |event: KeyboardEvent| {
+        let key_pressed= char::from_u32(event.key_code()).unwrap_or('a');
+        key_up.emit(key_pressed);
+    });
     html! {
         <>
+            <KeyboardListener key_down={&key_down} key_up={&key_up}/>
             <div class={black_keys_style}>
                 <div id="corner-left" class="filler" ></div>
-                <Key label='W' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up} on_key_down={&key_down} on_key_up={&key_up}/>
-                <Key label='E' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up} on_key_down={&key_down} on_key_up={&key_up}/>
+                <Key label='W' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key label='E' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
-                <Key label='T' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up} on_key_down={&key_down} on_key_up={&key_up}/>
-                <Key label='Y' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up} on_key_down={&key_down} on_key_up={&key_up}/>
-                <Key label='U' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up} on_key_down={&key_down} on_key_up={&key_up}/>
+                <Key label='T' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key label='Y' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key label='U' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
                 <div id="corner-right" class="filler"></div>
