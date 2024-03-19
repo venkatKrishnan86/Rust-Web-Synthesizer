@@ -38,9 +38,17 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
+    let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
     let mouse_down = Callback::from(move |label: char| {
         log!("Holding key", label.to_string(), ", MIDI Note:", key_map_down.get(&label).unwrap_or(&0).to_string());
+        let cloned_key_map = &mut key_map_down.deref().clone();
+        match label {
+            'Z' => decrease_octave(cloned_key_map),
+            'X' => increase_octave(cloned_key_map),
+            _ => ()
+        }
+        key_map_setter.set(cloned_key_map.deref().clone());
     });
 
     let key_map_up = keycode_maps.clone();
@@ -65,7 +73,12 @@ pub fn app() -> Html {
     let key_up = Callback::from(move |label: char| {
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
+
+    let key_map_clone = keycode_maps.clone();
     html! {
-        <MIDIKeyboard mouse_down={mouse_down} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
+        <>
+            <MIDIKeyboard mouse_down={mouse_down} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
+            <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
+        </>
     }
 }

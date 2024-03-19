@@ -20,7 +20,7 @@ pub struct KeyboardListenerProps {
 }
 
 pub struct KeyboardListener {
-    /// Holds the listener once it's stood up. Can't be done before rendering because... the document doesn't exist yet!
+    /// Holds the listener once it's stood up. Can't be done before rendering because the document doesn't exist yet
     pub kbd_listener: Option<EventListener>,
     pub kbu_listener: Option<EventListener>,
 }

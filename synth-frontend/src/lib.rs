@@ -2,6 +2,7 @@ use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
 use components::molecules::keys::{Key, KeyColor, create_white_keys};
 use components::atoms::keyboard_listener::KeyboardListener;
+use components::atoms::button::CustomButton;
 
 mod components;
 
@@ -36,6 +37,15 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
         let key_pressed= char::from_u32(event.key_code()).unwrap_or('a');
         key_up.emit(key_pressed);
     });
+
+    let octave_down_mouse_down = props.mouse_down.clone();
+    let octave_down_mouse_down = Callback::from(move |_| {
+        octave_down_mouse_down.emit('Z')
+    });
+    let octave_up_mouse_down = props.mouse_down.clone();
+    let octave_up_mouse_down = Callback::from(move |_| {
+        octave_up_mouse_down.emit('X')
+    });
     html! {
         <>
             <KeyboardListener key_down={&key_down} key_up={&key_up}/>
@@ -56,8 +66,20 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
                 {create_white_keys(props)}
             </div>
             <div class={octave_change_style}>
-                <button>{"Z"}</button>
-                <button>{"X"}</button>
+                <CustomButton 
+                    class={"octave_change"}
+                    label={"Z"} 
+                    is_active={false}
+                    mouse_down={&octave_down_mouse_down}
+                    mouse_up={&None}
+                />
+                <CustomButton 
+                    class={"octave_change"}
+                    label={"X"} 
+                    is_active={false}
+                    mouse_down={&octave_up_mouse_down}
+                    mouse_up={&None}
+                />
             </div>
         </>
     }

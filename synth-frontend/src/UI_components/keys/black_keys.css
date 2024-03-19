@@ -32,11 +32,17 @@ border-bottom: 0px;
     border-left: 0px;
 }
 
-
-
-.blackkey button {
+.blackkey .keycodes {
     width: 100%;
     background-color: black;
+    color: white;
+    border-radius: 6%;
+    font-size: 1.5rem;
+}
+
+.blackkey .keycodes_active {
+    width: 100%;
+    background-color: rgb(42, 42, 42);
     color: white;
     border-radius: 6%;
     font-size: 1.5rem;
