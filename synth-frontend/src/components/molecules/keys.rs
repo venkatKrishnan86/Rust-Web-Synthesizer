@@ -19,6 +19,7 @@ impl KeyColor {
 
 #[derive(Properties, PartialEq)]
 pub struct KeyProps {
+    pub button_class: String,
     pub label: char,
     pub key_color: KeyColor,
     pub on_mouse_down: Callback<char>,
@@ -42,7 +43,7 @@ pub fn key(props: &KeyProps) -> Html {
     html! {
         <div class = {&props.key_color.to_string()}>
             <CustomButton 
-                class="keycodes" 
+                class={props.button_class.clone()} 
                 label={props.label.to_string()} 
                 is_active={false}
                 mouse_down={mouse_down}

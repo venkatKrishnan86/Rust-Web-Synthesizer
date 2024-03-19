@@ -51,26 +51,26 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
             <KeyboardListener key_down={&key_down} key_up={&key_up}/>
             <div class={black_keys_style}>
                 <div id="corner-left" class="filler" ></div>
-                <Key label='W' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key label='E' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={"keycodes"} label='W' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={"keycodes"} label='E' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
-                <Key label='T' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key label='Y' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key label='U' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={"keycodes"} label='T' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={"keycodes"} label='Y' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={"keycodes"} label='U' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
                 <div id="corner-right" class="filler"></div>
             </div>
             <div class={white_keys_style}>
-                <Key label={'A'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key label={'S'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key label={'D'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key label={'F'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key label={'G'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key label={'H'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key label={'J'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key label={'K'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'A'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'S'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'D'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'F'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'G'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'H'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'J'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={"keycodes"} label={'K'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
             </div>
             <div class={octave_change_style}>
                 <CustomButton 
