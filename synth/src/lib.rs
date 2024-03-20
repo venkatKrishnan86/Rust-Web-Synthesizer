@@ -125,17 +125,19 @@ pub fn app() -> Html {
                 key_map_setter.set(cloned_key_map.deref().clone());
             },
             _ => {
-                match buffer.get(key_label) {
-                    Some(_) => (),
-                    None => {
-                        let osc = context.create_oscillator().expect("Could not create oscillator");
-                        osc.connect_with_audio_node(&context.destination()).expect("Could not connect to audio node");
-                        osc.set_type(web_sys::OscillatorType::Sawtooth);
-                        osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
-                        osc.start().expect("Failed to start oscillator");
-                        buffer.insert(*key_label, osc);
-                        cloned_poly.set(buffer);
-                        cloned_audio_context.set(context);
+                if cloned_key_map.contains_key(&label) {
+                    match buffer.get(key_label) {
+                        Some(_) => (),
+                        None => {
+                            let osc = context.create_oscillator().expect("Could not create oscillator");
+                            osc.connect_with_audio_node(&context.destination()).expect("Could not connect to audio node");
+                            osc.set_type(web_sys::OscillatorType::Sawtooth);
+                            osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
+                            osc.start().expect("Failed to start oscillator");
+                            buffer.insert(*key_label, osc);
+                            cloned_poly.set(buffer);
+                            cloned_audio_context.set(context);
+                        }
                     }
                 }
             }
