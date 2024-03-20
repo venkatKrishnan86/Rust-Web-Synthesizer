@@ -11,7 +11,7 @@ use synth_backend::utils::midi_to_hz;
 
 #[styled_component(App)]
 pub fn app() -> Html {
-    let mut polyphony: UseStateHandle<HashMap<u8, OscillatorNode>> = use_state(|| HashMap::new());
+    let polyphony: UseStateHandle<HashMap<u8, OscillatorNode>> = use_state(|| HashMap::new());
     let audio_context = use_state(|| AudioContext::new().expect("Could not create an AudioContext object"));
     let keycode_maps = use_state(|| HashMap::from([
         ('A', 60),
