@@ -37,17 +37,35 @@ pub fn app() -> Html {
         let key_label = key_map_down.get(&label).unwrap_or(&0);
         log!("Holding key", label.to_string(), ", MIDI Note:", key_label.to_string());
         let cloned_key_map = &mut key_map_down.deref().clone();
+        let mut buffer = cloned_poly.deref().clone();
+        let context = cloned_audio_context.deref().clone();
         match label {
-            'Z' => decrease_octave(cloned_key_map),
-            'X' => increase_octave(cloned_key_map),
+            'Z' => {
+                decrease_octave(cloned_key_map);
+                for (_, val) in buffer.iter_mut() {
+                    val.stop().expect("Failed to stop oscillator");
+                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+                }
+                buffer.clear();
+                cloned_poly.set(buffer);
+                key_map_setter.set(cloned_key_map.deref().clone());
+            },
+            'X' => {
+                increase_octave(cloned_key_map);
+                for (_, val) in buffer.iter_mut() {
+                    val.stop().expect("Failed to stop oscillator");
+                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+                }
+                buffer.clear();
+                cloned_poly.set(buffer);
+                key_map_setter.set(cloned_key_map.deref().clone());
+            },
             _ => {
-                let context = cloned_audio_context.deref().clone();
-                let mut buffer = cloned_poly.deref().clone();
                 let osc = context.create_oscillator().expect("Could not create oscillator");
                 // let gain = context.create_gain().expect("Could not create gain");
                 // gain.connect_with_audio_node(&context.destination()).expect("Could not connect gain to audio node");
                 osc.connect_with_audio_node(&context.destination()).expect("Could not connect oscillator to audio node");
-                osc.set_type(web_sys::OscillatorType::Sine);
+                osc.set_type(web_sys::OscillatorType::Sawtooth);
                 osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
                 osc.start().expect("Failed to start oscillator");
                 buffer.insert(*key_label, osc);
@@ -55,7 +73,6 @@ pub fn app() -> Html {
                 cloned_audio_context.set(context);
             }
         }
-        key_map_setter.set(cloned_key_map.deref().clone());
     });
 
     let key_map_up = keycode_maps.clone();
@@ -84,23 +101,45 @@ pub fn app() -> Html {
     let key_down = Callback::from(move |label: char| {
         let key_label = key_map_down.get(&label).unwrap_or(&0);
         let cloned_key_map = &mut key_map_down.deref().clone();
+        let context = cloned_audio_context.deref().clone();
+        let mut buffer = cloned_poly.deref().clone();
         match label {
-            'Z' => decrease_octave(cloned_key_map),
-            'X' => increase_octave(cloned_key_map),
-            _ => {
-                let context = cloned_audio_context.deref().clone();
-                let mut buffer = cloned_poly.deref().clone();
-                let osc = context.create_oscillator().expect("Could not create oscillator");
-                osc.connect_with_audio_node(&context.destination()).expect("Could not connect to audio node");
-                osc.set_type(web_sys::OscillatorType::Sine);
-                osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
-                osc.start().expect("Failed to start oscillator");
-                buffer.insert(*key_label, osc);
+            'Z' => {
+                decrease_octave(cloned_key_map);
+                for (_, val) in buffer.iter_mut() {
+                    val.stop().expect("Failed to stop oscillator");
+                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+                }
+                buffer.clear();
                 cloned_poly.set(buffer);
-                cloned_audio_context.set(context);
+                key_map_setter.set(cloned_key_map.deref().clone());
+            },
+            'X' => {
+                increase_octave(cloned_key_map);
+                for (_, val) in buffer.iter_mut() {
+                    val.stop().expect("Failed to stop oscillator");
+                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+                }
+                buffer.clear();
+                cloned_poly.set(buffer);
+                key_map_setter.set(cloned_key_map.deref().clone());
+            },
+            _ => {
+                match buffer.get(key_label) {
+                    Some(_) => (),
+                    None => {
+                        let osc = context.create_oscillator().expect("Could not create oscillator");
+                        osc.connect_with_audio_node(&context.destination()).expect("Could not connect to audio node");
+                        osc.set_type(web_sys::OscillatorType::Sawtooth);
+                        osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
+                        osc.start().expect("Failed to start oscillator");
+                        buffer.insert(*key_label, osc);
+                        cloned_poly.set(buffer);
+                        cloned_audio_context.set(context);
+                    }
+                }
             }
         }
-        key_map_setter.set(cloned_key_map.deref().clone());
         log!("Holding key", label.to_string(), ", MIDI Note:", key_label.to_string());
     });
 
