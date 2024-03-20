@@ -44,7 +44,9 @@ pub fn app() -> Html {
                 let context = cloned_audio_context.deref().clone();
                 let mut buffer = cloned_poly.deref().clone();
                 let osc = context.create_oscillator().expect("Could not create oscillator");
-                osc.connect_with_audio_node(&context.destination()).expect("Could not connect to audio node");
+                // let gain = context.create_gain().expect("Could not create gain");
+                // gain.connect_with_audio_node(&context.destination()).expect("Could not connect gain to audio node");
+                osc.connect_with_audio_node(&context.destination()).expect("Could not connect oscillator to audio node");
                 osc.set_type(web_sys::OscillatorType::Sine);
                 osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
                 osc.start().expect("Failed to start oscillator");
@@ -58,13 +60,18 @@ pub fn app() -> Html {
 
     let key_map_up = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
+    let cloned_audio_context = audio_context.clone();
     let mouse_up = Callback::from(move |label: char| {
         let key_label = key_map_up.get(&label).unwrap_or(&0);
         let mut poly = cloned_poly.deref().clone();
+        let context = cloned_audio_context.deref().clone();
         let osc = poly.remove(key_label);
         match osc {
             None => (),
-            Some(val) => val.stop().expect("Failed to stop oscillator")
+            Some(val) => {
+                val.stop().expect("Failed to stop oscillator");
+                val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+            }
         }
         cloned_poly.set(poly);
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
@@ -84,7 +91,7 @@ pub fn app() -> Html {
                 let context = cloned_audio_context.deref().clone();
                 let mut buffer = cloned_poly.deref().clone();
                 let osc = context.create_oscillator().expect("Could not create oscillator");
-                osc.connect_with_audio_node(&audio_context.destination()).expect("Could not connect to audio node");
+                osc.connect_with_audio_node(&context.destination()).expect("Could not connect to audio node");
                 osc.set_type(web_sys::OscillatorType::Sine);
                 osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
                 osc.start().expect("Failed to start oscillator");
@@ -99,13 +106,18 @@ pub fn app() -> Html {
 
     let key_map_up = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
+    let cloned_audio_context = audio_context.clone();
     let key_up = Callback::from(move |label: char| {
         let key_label = key_map_up.get(&label).unwrap_or(&0);
         let mut poly = cloned_poly.deref().clone();
+        let context = cloned_audio_context.deref().clone();
         let osc = poly.remove(key_label);
         match osc {
             None => (),
-            Some(val) => val.stop().expect("Failed to stop oscillator")
+            Some(val) => {
+                val.stop().expect("Failed to stop oscillator");
+                val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+            }
         }
         cloned_poly.set(poly);
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
