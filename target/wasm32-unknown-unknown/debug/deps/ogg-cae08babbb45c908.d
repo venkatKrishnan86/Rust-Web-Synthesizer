@@ -1,0 +1,10 @@
+/Users/venkatakrishnanvk/Desktop/Georgia Tech/Sem 2/MUSI 6106 - Audio Software Engineering/ASE-Project/target/wasm32-unknown-unknown/debug/deps/libogg-cae08babbb45c908.rmeta: /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/lib.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/crc.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/reading.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/writing.rs
+
+/Users/venkatakrishnanvk/Desktop/Georgia Tech/Sem 2/MUSI 6106 - Audio Software Engineering/ASE-Project/target/wasm32-unknown-unknown/debug/deps/libogg-cae08babbb45c908.rlib: /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/lib.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/crc.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/reading.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/writing.rs
+
+/Users/venkatakrishnanvk/Desktop/Georgia Tech/Sem 2/MUSI 6106 - Audio Software Engineering/ASE-Project/target/wasm32-unknown-unknown/debug/deps/ogg-cae08babbb45c908.d: /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/lib.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/crc.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/reading.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/writing.rs
+
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/lib.rs:
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/crc.rs:
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/reading.rs:
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ogg-0.8.0/src/writing.rs:
