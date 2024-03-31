@@ -10,5 +10,15 @@ synth-frontend = {path = "../synth-frontend"}
 synth-backend = {path = "../synth-backend"}
 yew = {version = "0.21.0", features = ["csr"]}
 stylist = {version = "0.13.0", features = ["yew", "parser"]}
+web-sys = { version = "0.3.69", features = [
+    "AudioContext", 
+    "AudioDestinationNode",
+    "AudioParam",
+    "GainNode",
+    "GainOptions",
+    "OscillatorType", 
+    "OscillatorNode", 
+    "OscillatorOptions"
+]}
 gloo = "0.11.0"
 rodio = "0.17.3"

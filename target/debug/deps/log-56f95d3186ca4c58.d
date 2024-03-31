@@ -1,0 +1,10 @@
+/Users/venkatakrishnanvk/Downloads/Rust-Web-Synthesizer-336ee8bc2766f50ea22efab60b6a4ba29ce980f3/target/debug/deps/liblog-56f95d3186ca4c58.rmeta: /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/lib.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/macros.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/serde.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/__private_api.rs
+
+/Users/venkatakrishnanvk/Downloads/Rust-Web-Synthesizer-336ee8bc2766f50ea22efab60b6a4ba29ce980f3/target/debug/deps/liblog-56f95d3186ca4c58.rlib: /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/lib.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/macros.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/serde.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/__private_api.rs
+
+/Users/venkatakrishnanvk/Downloads/Rust-Web-Synthesizer-336ee8bc2766f50ea22efab60b6a4ba29ce980f3/target/debug/deps/log-56f95d3186ca4c58.d: /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/lib.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/macros.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/serde.rs /Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/__private_api.rs
+
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/lib.rs:
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/macros.rs:
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/serde.rs:
+/Users/venkatakrishnanvk/.cargo/registry/src/index.crates.io-6f17d22bba15001f/log-0.4.20/src/__private_api.rs:
