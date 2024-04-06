@@ -7,6 +7,7 @@ use gloo::console::log;
 use web_sys::{AudioContext, OscillatorNode};
 
 use synth_frontend::MIDIKeyboard;
+use synth_frontend::VolumeBar;
 use synth_backend::utils::midi_to_hz;
 
 #[styled_component(App)]
@@ -167,7 +168,9 @@ pub fn app() -> Html {
     let key_map_clone = keycode_maps.clone();
     html! {
         <>
-            <MIDIKeyboard mouse_down={mouse_down} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
+
+            <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
+            <VolumeBar mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
             <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
         </>
     }

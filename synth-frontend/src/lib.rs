@@ -139,3 +139,12 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     }
 }
 
+#[styled_component(VolumeBar)]
+pub fn volume_bar(props: &MIDIKeyboardProperties) -> Html {
+    html! {
+        <div>
+        // html for hello world
+            <h1>{"Hello World"}</h1>
+        </div>
+    }
+}
