@@ -6,12 +6,15 @@ use stylist::{yew::styled_component, Style};
 use components::molecules::keys::{Key, KeyColor};
 use components::atoms::keyboard_listener::KeyboardListener;
 use components::atoms::button::CustomButton;
+use components::atoms::icon::CustomIcon;
 
 mod components;
 
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octave_change.css");
+const OVERALL_CSS: &str = include_str!("UI_components/style.css");
+
 
 #[derive(Properties, PartialEq)]
 pub struct MIDIKeyboardProperties {
@@ -20,6 +23,19 @@ pub struct MIDIKeyboardProperties {
     pub key_down: Callback<char>,
     pub key_up: Callback<char>,
 }
+
+#[derive(Properties, PartialEq)]
+pub struct OscillatorSelectorProperties {
+    pub mouse_down: Callback<char>,
+    pub mouse_up: Callback<char>,
+}
+
+#[derive(Properties, PartialEq)]
+pub struct FilterSelectorProperties {
+    pub mouse_down: Callback<char>,
+    pub mouse_up: Callback<char>,
+}
+
 
 #[styled_component(MIDIKeyboard)]
 pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
@@ -144,7 +160,85 @@ pub fn volume_bar(props: &MIDIKeyboardProperties) -> Html {
     html! {
         <div>
         // html for hello world
-            <h1>{"Hello World"}</h1>
+            <h1>{"Hello World hello"}</h1>
+        </div>
+    }
+}
+
+
+#[styled_component(OscillatorSelector)]
+
+pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
+    let overall_css = Style::new(OVERALL_CSS).unwrap();
+
+    html! {
+        <div class={overall_css}>
+            <CustomIcon 
+                class={"oscillator-icon"} 
+                label={"Sine"} 
+                img_path={"UI_components/assets/icons/Sine.png"} 
+                is_active={false} 
+                mouse_down={Callback::from(|_|{})} 
+                mouse_up={Callback::from(|_|{})}
+            />
+            <CustomIcon 
+                class={"oscillator-icon"} 
+                label={"Square"} 
+                img_path={"UI_components/assets/icons/Square.png"} 
+                is_active={false} 
+                mouse_down={Callback::from(|_|{})} 
+                mouse_up={Callback::from(|_|{})}
+            />
+            <CustomIcon 
+                class={"oscillator-icon"} 
+                label={"Noise"} 
+                img_path={"https://styles.redditmedia.com/t5_2qlz9/styles/communityIcon_5ebr0z18yoxa1.jpg?format=pjpg&s=fecf8c6265ded5440f39c4cc727352871d60e3b1"} 
+                is_active={false} 
+                mouse_down={Callback::from(|_|{})} 
+                mouse_up={Callback::from(|_|{})}
+            />
+            <CustomIcon 
+                class={"oscillator-icon"} 
+                label={"Triangle"} 
+                img_path={"UI_components/assets/icons/Triangle.png"} 
+                is_active={false} 
+                mouse_down={Callback::from(|_|{})} 
+                mouse_up={Callback::from(|_|{})}
+            />
+        </div>
+    }
+}
+
+#[styled_component(FilterSelector)]
+pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
+    let overall_css = Style::new(OVERALL_CSS).unwrap();
+
+    html! {
+        <div class={overall_css}>
+            <CustomIcon 
+                class={"filter-icon"} 
+                label={"Low Pass"} 
+                img_path={"UI_components/assets/icons/LowPass.png"} 
+                is_active={false} 
+                mouse_down={Callback::from(|_|{})} 
+                mouse_up={Callback::from(|_|{})}
+            />
+            <CustomIcon 
+                class={"oscillator-icon"} 
+                label={"High Pass"} 
+                img_path={"UI_components/assets/icons/HighPass.png"} 
+                is_active={false} 
+                mouse_down={Callback::from(|_|{})} 
+                mouse_up={Callback::from(|_|{})}
+            />
+            <CustomIcon 
+                class={"oscillator-icon"} 
+                label={"Band Pass"} 
+                img_path={"UI_components/assets/icons/BandPass.png"} 
+                is_active={false} 
+                mouse_down={Callback::from(|_|{})} 
+                mouse_up={Callback::from(|_|{})}
+            />
         </div>
     }
 }
