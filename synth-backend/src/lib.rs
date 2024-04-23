@@ -10,6 +10,44 @@
 //!     - Each source appended plays one after the other
 //!     - For multiple sounds to play together, one must use multiple sinks
 
+// fn create_stream(device: &cpal::Device, config: &cpal::StreamConfig, polyphony: PolyphonyRingBuffer) -> Stream {
+//     let channels: usize = 1;
+//     let err_fn = |err| console::error_1(&format!("A stream error ocurred: {}", err).into());
+//     let c_stream = device
+//         .build_output_stream(
+//             config, 
+//             move |data: &mut [f32], _: &_| {
+//                 for frame in data.chunks_mut(channels) {
+//                     // Write sample to output buffer
+//                     for (output_sample, sample) in frame.iter_mut().zip(polyphony.clone().into_iter()) {
+//                         *output_sample = sample;
+//                     }
+//                 }
+//             },
+//             err_fn,
+//             None,
+//         )
+//         .unwrap();
+//     return c_stream;
+// }
+
+// const POLYPHONY: usize = 16;
+// const SAMPLE_RATE: u32 = 44100;
+
+// #[styled_component(App)]
+// pub fn app() -> Html {
+//     let host = cpal::default_host();
+//     let device = use_state(|| host.default_output_device().expect("No default output device found"));
+//     let supported_configs = device.supported_output_configs().unwrap();
+//     let config: UseStateHandle<StreamConfig> = use_state(|| {
+//         match supported_configs
+//         .filter(|c| c.channels() == 1)
+//         .max_by(|a, b| a.cmp_default_heuristics(b)) {
+//             Some(config) => config.with_sample_rate(SampleRate(SAMPLE_RATE)).into(),
+//             _ => panic!("No supported configuration found for output device")
+//         }
+//     });
+
 pub mod utils;
 pub mod oscillators;
 pub mod ring_buffer;

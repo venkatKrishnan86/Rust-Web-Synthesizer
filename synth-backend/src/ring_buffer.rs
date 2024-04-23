@@ -1,5 +1,8 @@
 use crate::oscillators::MultiOscillator;
 use rodio::Source;
+use std::collections::HashMap;
+use device_query::Keycode;
+
 
 /// # Polyphony handler struct
 /// Aim of this struct is to avoid the usage of multiple sinks on playing multiple notes, instead handle multiple notes 
@@ -154,6 +157,82 @@ impl Iterator for PolyphonyRingBuffer {
 }
 
 impl Source for PolyphonyRingBuffer {
+    fn channels(&self) -> u16 {
+        1
+    }
+
+    fn sample_rate(&self) -> u32 {
+        self.sample_rate
+    }
+
+    fn current_frame_len(&self) -> Option<usize> {
+        None
+    }
+
+    fn total_duration(&self) -> Option<std::time::Duration> {
+        None
+    }
+}
+
+
+#[derive(Clone, Debug)]
+pub struct IterablePolyphonyHashMap {
+    hashmap: HashMap<u8, MultiOscillator>,
+    sample_rate: u32
+}
+
+impl IterablePolyphonyHashMap {
+    pub fn new(sample_rate: u32) -> Self{
+        Self {
+            hashmap: HashMap::new(),
+            sample_rate
+        }
+    }
+
+    pub fn from(hashmap: HashMap<u8, MultiOscillator>) -> Self {
+        if hashmap.is_empty() {
+            panic!("Empty Hashmap! Use new() instead");
+        }
+        let mut sample_rate = 0;
+        for (_, osc) in hashmap.iter() {
+            sample_rate = osc.sample_rate();
+        }
+        Self {
+            hashmap,
+            sample_rate
+        }
+    }
+
+    pub fn insert(&mut self, k: u8, v: MultiOscillator){
+        self.hashmap.insert(k, v);
+    }
+
+    pub fn remove(&mut self, k:&u8) -> Option<MultiOscillator> {
+        self.hashmap.remove(k)
+    }
+
+    pub fn clear(&mut self) {
+        self.hashmap.clear()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.hashmap.is_empty()
+    }
+}
+
+impl Iterator for IterablePolyphonyHashMap {
+    type Item = f32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut sample = 0.0;
+        for (_, multi_osc) in self.hashmap.iter_mut() {
+            sample += multi_osc.get_sample();
+        }
+        Some(sample)
+    }
+}
+
+impl Source for IterablePolyphonyHashMap {
     fn channels(&self) -> u16 {
         1
     }

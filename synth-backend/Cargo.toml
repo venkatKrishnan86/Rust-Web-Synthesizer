@@ -9,6 +9,7 @@ edition = "2021"
 rodio = "0.17.2"
 rand = "0.8.5"
 rand_distr = "0.4.3"
+device_query = "2.0.0"
 web-sys = { version = "0.3.69", features = [
     "AudioContext", 
     "AudioDestinationNode",

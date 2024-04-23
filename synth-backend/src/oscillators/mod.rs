@@ -3,7 +3,7 @@ use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
 #[allow(dead_code)]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Oscillator {
     Sine,
     Square,
@@ -14,7 +14,7 @@ pub enum Oscillator {
 }
 
 /// Convert WavetableOscillator parameters in to a vector and use aligned_allocator to play each sample from the wavetable
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct WaveTableOscillator {
     sample_rate: u32,
     oscillator: Oscillator,
@@ -154,7 +154,7 @@ impl Add for WaveTableOscillator {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MultiOscillator {
     multi_osc: Vec<WaveTableOscillator>,
     sample_rate: u32,
