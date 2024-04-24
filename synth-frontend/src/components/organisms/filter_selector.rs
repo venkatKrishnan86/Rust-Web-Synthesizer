@@ -2,7 +2,7 @@ use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
 use crate::components::molecules::selector::Selector;
 
-const OVERALL_CSS: &str = include_str!("../../UI_components/style.css");
+const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
 
 #[derive(Properties, PartialEq)]
 pub struct FilterSelectorProperties {
@@ -12,7 +12,7 @@ pub struct FilterSelectorProperties {
 
 #[styled_component(FilterSelector)]
 pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
-    let overall_css = Style::new(OVERALL_CSS).unwrap();
+    let overall_css = Style::new(OSCILLATOR_SELECT_CSS).unwrap();
     let mouse_down = props.mouse_down.clone();
 
     html! {

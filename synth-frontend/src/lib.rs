@@ -15,7 +15,6 @@ pub mod components;
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octave_change.css");
-const OSCILLATOR_SELECT_CSS: &str = include_str!("UI_components/selectors/oscillator_selector.css");
 
 
 #[derive(Properties, PartialEq)]
