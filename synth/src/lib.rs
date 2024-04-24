@@ -52,11 +52,11 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
-    let osc1 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, 0.0);
-    let osc2 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.2, 0.0);
-    let osc3 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.5, 0.0);
-    let osc4 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0);
-    let sound = use_state(|| osc1 + osc2 + (osc3 + osc4));
+    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, 0.0));
+    let osc2 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.2, 0.0));
+    let osc3 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.5, 0.0));
+    let osc4 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
+    let sound = use_state(|| osc1 + osc2 + osc3 + osc4);
 
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
