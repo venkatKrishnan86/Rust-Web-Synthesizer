@@ -31,6 +31,8 @@
 pub mod utils;
 pub mod oscillators;
 pub mod ring_buffer;
+pub mod filters;
+pub mod wrapper;
 
 #[cfg(test)]
 mod tests {
