@@ -266,7 +266,8 @@ impl MultiOscillator{
         for osc in self.multi_osc.iter_mut() {
             value += osc.get_sample();
         }
-        value/self.normalization
+        // value/self.normalization
+        value
     }
 }
 
