@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::ops::Deref;
-use synth_backend::{ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
+use synth_backend::{filters::FilterParam, ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
 use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use yew::prelude::*;
 use stylist::yew::styled_component;
@@ -55,9 +55,9 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
-    let freq: UseStateHandle<f32> = use_state(|| 200.0);
-    let filter_type = use_state(|| FilterType::LowPass);
-    let bandwidth_hz = 5.0;
+    let freq: UseStateHandle<f32> = use_state(|| 1000.0);
+    let filter_type = use_state(|| FilterType::BandPass);
+    let bandwidth_hz = 500.0;
     let filter = Filter::new(
         filter_type.deref().clone(), 
         sample_rate as f32, 
@@ -66,6 +66,15 @@ pub fn app() -> Html {
     );
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
     let oscillator = use_state(|| Synth::new(osc1, sample_rate, Some(filter)));
+
+    let cloned_oscillator = oscillator.clone();
+    let cloned_freq = freq.clone();
+    let freq_change = Callback::from(move |freq: f64| {
+        cloned_freq.set(freq as f32);
+        let mut oscillator_type = cloned_oscillator.deref().clone();
+        oscillator_type.set_filter_params(FilterParam::FreqHz, freq as f32);
+        cloned_oscillator.set(oscillator_type);
+    });
     
 
     let key_map_setter = keycode_maps.setter();
@@ -240,6 +249,7 @@ pub fn app() -> Html {
 
     let key_map_clone = keycode_maps.clone();
     let oscillator_selector_display: Vec<Html> = display_oscillators(mouse_down.clone(), mouse_up.clone(), oscillator.deref());
+    // let cloned_freq = freq.clone();
     html! {
         <>
             <h1>{"Oscillator"}</h1>
@@ -247,7 +257,7 @@ pub fn app() -> Html {
             <br />
             <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
             <h1>{"Choose Your Filter Type"}</h1>
-            <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} />
+            <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64}/>
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
             <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
         </>
