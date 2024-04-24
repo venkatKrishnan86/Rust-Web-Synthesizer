@@ -87,6 +87,50 @@ impl WaveTableOscillator {
         Ok(())
     }
 
+    pub fn set_oscillator(&mut self, oscillator: Oscillator) {
+        let mut wave_table: Vec<f32> = Vec::new();
+        match oscillator {
+            Oscillator::Sine => {
+                for i in 0..self.wave_table_size {
+                    wave_table.push((2.0 * PI * (i as f32)/(self.wave_table_size as f32)).sin() * self.gain);
+                }
+            },
+            Oscillator::Square => {
+                for i in 0..self.wave_table_size {
+                    if i < self.wave_table_size/2 {
+                        wave_table.push(0.99 * self.gain);
+                    } else {
+                        wave_table.push(0.0);
+                    }
+                }
+            },
+            Oscillator::BidirectionalSquare => {
+                for i in 0..self.wave_table_size {
+                    if i < self.wave_table_size/2 {
+                        wave_table.push(0.99 * self.gain);
+                    } else {
+                        wave_table.push(-0.99 * self.gain);
+                    }
+                }
+            },
+            Oscillator::Saw => {
+                for i in 1..=self.wave_table_size {
+                    wave_table.push((((self.wave_table_size as f32 - i as f32)/(self.wave_table_size as f32) * 2.0) - 1.0) * self.gain);
+                }
+            },
+            Oscillator::Triangle => {
+                for i in 0..self.wave_table_size/2 {
+                    wave_table.push((((i as f32/self.wave_table_size as f32)*4.0) - 1.0) * self.gain)
+                }
+                for i in self.wave_table_size/2..self.wave_table_size {
+                    wave_table.push(((-(i as f32/self.wave_table_size as f32)*4.0) + 3.0) * self.gain)
+                }
+            },
+            Oscillator::WhiteNoise => ()
+        }
+        self.wave_table = wave_table;
+    }
+
     #[allow(dead_code)]
     pub fn set_gain(&mut self, gain: f32) -> Result<(), String> {
         if gain < 0.0 || gain > 1.0 {
@@ -203,6 +247,14 @@ impl MultiOscillator{
     pub fn set_gain(&mut self, gain: f32, source_index: usize) -> Result<(), String> {
         self.multi_osc[source_index].set_gain(gain)?;
         Ok(())
+    }
+
+    pub fn set_oscillator(&mut self, index: usize, oscillator: Oscillator) {
+        let osc = self.multi_osc.get_mut(index);
+        match osc {
+            Some(value) => value.set_oscillator(oscillator),
+            None => panic!("index out of bounds in oscillator")
+        }
     }
 
     pub fn num_sources(&self) -> usize {
