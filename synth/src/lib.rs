@@ -30,7 +30,7 @@ pub fn app() -> Html {
             _ => panic!("No supported configuration found for output device")
         }
     });
-    // println!("Sample Rate: {}", sample_rate);
+    log!(sample_rate);
     // let config = use_state(|| supported_config.into());
     let polyphony: UseStateHandle<IterablePolyphonyHashMap> = use_state(|| IterablePolyphonyHashMap::new(sample_rate));
     let stream = use_state(|| State::new(&device, &config, polyphony.deref().clone()));
