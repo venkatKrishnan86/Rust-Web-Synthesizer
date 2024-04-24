@@ -7,14 +7,11 @@ use gloo::console::log;
 use web_sys::{AudioContext, OscillatorNode, OscillatorType};
 
 use synth_frontend::MIDIKeyboard;
-use synth_frontend::VolumeBar;
 use synth_frontend::OscillatorSelector;
 use synth_frontend::FilterSelector;
 
 
 use synth_backend::utils::midi_to_hz;
-
-
 
 
 #[styled_component(App)]
@@ -225,8 +222,9 @@ pub fn app() -> Html {
     let key_map_clone = keycode_maps.clone();
     html! {
         <>
+        
             <h1>{"Choose Your Oscillator Type"}</h1>
-            <OscillatorSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} />
+            <OscillatorSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} key_down = {key_down.clone()} key_up = {key_up.clone()} />
             <h1>{"Choose Your Filter Type"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} />
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>

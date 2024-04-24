@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::hash;
 use std::ops::Deref;
 
 use yew::prelude::*;
@@ -14,7 +15,7 @@ mod components;
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octave_change.css");
-const OVERALL_CSS: &str = include_str!("UI_components/style.css");
+const OSCILLATOR_SELECT_CSS: &str = include_str!("UI_components/selectors/oscillator_selector.css");
 
 
 #[derive(Properties, PartialEq)]
@@ -29,6 +30,8 @@ pub struct MIDIKeyboardProperties {
 pub struct OscillatorSelectorProperties {
     pub mouse_down: Callback<char>,
     pub mouse_up: Callback<char>,
+    pub key_down: Callback<char>,
+    pub key_up: Callback<char>,
 }
 
 #[derive(Properties, PartialEq)]
@@ -43,6 +46,7 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     let white_keys_style = Style::new(WHITE_KEYS_CSS).unwrap();
     let black_keys_style = Style::new(BLACK_KEYS_CSS).unwrap();
     let octave_change_style = Style::new(OCTAVE_CHANGE_CSS).unwrap();
+
     let class_hashmap = use_state(|| HashMap::from([
         ('A', "keycodes"),
         ('W', "keycodes"),
@@ -79,7 +83,7 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
                 hashmap.insert(key_pressed, "octave_change_active");
             }
             cloned_octave_class_hashmap.set(hashmap)
-        }
+        } 
         key_down.emit(key_pressed);
     });
     
@@ -156,37 +160,56 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     }
 }
 
-#[styled_component(VolumeBar)]
-pub fn volume_bar(props: &MIDIKeyboardProperties) -> Html {
-    html! {
-        <div>
-        // html for hello world
-            <h1>{"Hello World hello"}</h1>
-        </div>
-    }
-}
-
 
 #[styled_component(OscillatorSelector)]
 
 pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
-    let overall_css = Style::new(OVERALL_CSS).unwrap();
+
+    
+    let oscillator_select_style = Style::new(OSCILLATOR_SELECT_CSS).unwrap();
+    let oscillator_class_hashmap = use_state(|| HashMap::from([
+        ('1', "oscillator"),
+        ('2', "oscillator"),
+        ('3', "oscillator"),
+        ('4', "oscillator"),
+        ('.', "container")
+    ]));
+    let key_down = props.key_down.clone();
+    let key_up = props.key_up.clone();
+    let cloned_oscillator_class_hashmap = oscillator_class_hashmap.clone();
     let mouse_down = props.mouse_down.clone();
+
+    let key_down = Callback::from(move |event: KeyboardEvent| {
+        if event.key() == "1" {
+            let key_pressed = '1';
+            let mut hashmap = cloned_oscillator_class_hashmap.deref().clone();
+            let current_state = hashmap.get(&key_pressed).unwrap_or(&"oscillator"); // Using a reference to a literal
+            let new_state = if *current_state == "oscillator" { "oscillator_active" } else { "oscillator" };
+            hashmap.insert(key_pressed, new_state);
+            cloned_oscillator_class_hashmap.set(hashmap);
+            key_down.emit(key_pressed);
+        }
+    });
+    
+    let key_up = Callback::from(move |event: KeyboardEvent| {
+    });
     
     html! {
-        <div class={overall_css}>
+        <>
+        <KeyboardListener key_down={&key_down} key_up={&key_up}/>
+        <div class={oscillator_select_style}>
             <Selector
-                icon_class={"oscillator-icon"} 
+                icon_class={oscillator_class_hashmap.deref()[&'1']} 
                 label={'1'} 
-                img_path={"UI_components/assets/icons/Sine.png"} 
+                img_path={"https://i.ibb.co/9Zmpqrm/Sine.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
             />
             <Selector
-                icon_class={"oscillator-icon"} 
+                icon_class={oscillator_class_hashmap.deref()[&'2']} 
                 label={'2'} 
-                img_path={"UI_components/assets/icons/Square.png"} 
+                img_path={"https://i.ibb.co/K6qzm4k/Square.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
@@ -194,7 +217,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
             <Selector
                 icon_class={"oscillator-icon"} 
                 label={'3'} 
-                img_path={"UI_components/assets/icons/Sawtooth.png"} 
+                img_path={"https://i.ibb.co/V3zfv0X/Sawtooth.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
@@ -202,25 +225,26 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
             <Selector
                 icon_class={"oscillator-icon"} 
                 label={'4'} 
-                img_path={"UI_components/assets/icons/Triangle.png"} 
+                img_path={"https://i.ibb.co/sRSLf5L/Triangle.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
             />
 
         </div>
+        </>
     }
 }
 
 #[styled_component(FilterSelector)]
 pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
-    let overall_css = Style::new(OVERALL_CSS).unwrap();
+    let oscillator_select_css = Style::new(OSCILLATOR_SELECT_CSS).unwrap();
     let mouse_down = props.mouse_down.clone();
 
     html! {
-        <div class={overall_css}>
+        <div>
         <Selector
-        icon_class={"filter-icon"} 
+        icon_class={"oscillator-icon"} 
         label={'0'} 
         img_path={"UI_components/assets/icons/HighPass.png"} 
         is_active={false} 
