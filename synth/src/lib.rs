@@ -55,9 +55,9 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
-    let freq: UseStateHandle<f32> = use_state(|| 200.0);
+    let freq: UseStateHandle<f32> = use_state(|| 500.0);
     let filter_type = use_state(|| FilterType::LowPass);
-    let bandwidth_hz = 5.0;
+    let bandwidth_hz = 250.0;
     let filter = Filter::new(
         filter_type.deref().clone(), 
         sample_rate as f32, 
