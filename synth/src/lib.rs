@@ -57,23 +57,25 @@ pub fn app() -> Html {
 
     let freq: UseStateHandle<f32> = use_state(|| 1000.0);
     let filter_type = use_state(|| FilterType::BandPass);
-    let bandwidth_hz = 500.0;
+    let bandwidth_hz = use_state(|| 500.0);
     let filter = Filter::new(
         filter_type.deref().clone(), 
         sample_rate as f32, 
         *freq.deref(), 
-        bandwidth_hz
+        *bandwidth_hz.deref()
     );
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
     let oscillator = use_state(|| Synth::new(osc1, sample_rate, Some(filter)));
 
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
+    let cloned_freq_bandwidth = bandwidth_hz.clone();
     let freq_change = Callback::from(move |freq: f64| {
         cloned_freq.set(freq as f32);
         let mut oscillator_type = cloned_oscillator.deref().clone();
         oscillator_type.set_filter_params(FilterParam::FreqHz, freq as f32);
         cloned_oscillator.set(oscillator_type);
+        cloned_freq_bandwidth.set(freq as f32*0.5)
     });
     
 
