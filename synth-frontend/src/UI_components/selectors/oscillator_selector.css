@@ -1,0 +1,32 @@
+display: flex;
+
+.oscillator {
+  width: 100px;
+  height: 100px;
+  border-radius: 1px;
+  background-color: gray;
+}
+
+.oscillator:hover {
+  background-color: lightgray;
+}
+
+.oscillator_active {
+  background-color: black;
+}
+
+
+
+.icon-image {
+    width: 100px;
+    height: 100px;
+    
+}
+
+.filter-icon {
+    width: 100 px;
+    height: 100%;
+    border-radius: 2px;
+    margin: 20px;
+}
+

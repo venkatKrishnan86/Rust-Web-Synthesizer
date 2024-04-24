@@ -14,8 +14,6 @@ use synth_frontend::components::organisms::{oscillator_selector::OscillatorSelec
 use synth_backend::utils::{midi_to_hz, State};
 
 
-
-
 #[styled_component(App)]
 pub fn app() -> Html {
     let host = cpal::default_host();

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::hash;
 use std::ops::Deref;
 
 use yew::prelude::*;
@@ -14,7 +15,7 @@ pub mod components;
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octave_change.css");
-const OVERALL_CSS: &str = include_str!("UI_components/style.css");
+const OSCILLATOR_SELECT_CSS: &str = include_str!("UI_components/selectors/oscillator_selector.css");
 
 
 #[derive(Properties, PartialEq)]
@@ -30,6 +31,7 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     let white_keys_style = Style::new(WHITE_KEYS_CSS).unwrap();
     let black_keys_style = Style::new(BLACK_KEYS_CSS).unwrap();
     let octave_change_style = Style::new(OCTAVE_CHANGE_CSS).unwrap();
+
     let class_hashmap = use_state(|| HashMap::from([
         ('A', "keycodes"),
         ('W', "keycodes"),
@@ -66,7 +68,7 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
                 hashmap.insert(key_pressed, "octave_change_active");
             }
             cloned_octave_class_hashmap.set(hashmap)
-        }
+        } 
         key_down.emit(key_pressed);
     });
     
