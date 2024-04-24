@@ -8,7 +8,7 @@ use gloo::console::log;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{FromSample, SampleRate, SizedSample, Stream, StreamConfig};
 
-use synth_frontend::MIDIKeyboard;
+use synth_frontend::{MIDIKeyboard, OscillatorSelector, FilterSelector};
 use synth_backend::utils::{midi_to_hz, State};
 
 
@@ -59,15 +59,15 @@ pub fn app() -> Html {
     let osc2 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.2, 0.0));
     let osc3 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.5, 0.0));
     let osc4 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
-    let sound = use_state(|| osc1 + osc2 + (osc3 + osc4));
-    let oscillator = use_state(|| OscillatorType::Sawtooth);
+    // let sound = use_state(|| osc1 + osc2 + (osc3 + osc4));
+    let oscillator = use_state(|| osc1);
     
 
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
     // let cloned_audio_context = audio_context.clone();
     let cloned_poly = polyphony.clone();
-    let cloned_sound = sound.clone();
+    // let cloned_sound = sound.clone();
     let cloned_device = device.clone();
     let cloned_config = config.clone();
     let stream_setter = stream.setter();
@@ -80,7 +80,6 @@ pub fn app() -> Html {
         let device_temp = cloned_device.deref().clone();
         let config_temp = cloned_config.deref().clone();
         // let context = cloned_audio_context.deref().clone();
-        let context = cloned_audio_context.deref().clone();
         let mut oscillator_type = cloned_oscillator.deref().clone();
         match label {
             'Z' => {
@@ -111,22 +110,22 @@ pub fn app() -> Html {
             },
             '1' => {
                 // OSCILLATOR_TYPE = Some(web_sys::OscillatorType::Sine);
-                oscillator_type = web_sys::OscillatorType::Sine;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Sine wave selected");
             },
             '2' => {
-                oscillator_type = web_sys::OscillatorType::Square;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Square wave selected");
             },
             '3' => {
-                oscillator_type = web_sys::OscillatorType::Sawtooth;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Sawtooth wave selected");
             },
             '4' => {
-                oscillator_type = web_sys::OscillatorType::Triangle;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Triangle, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Triangle wave selected");
             },
@@ -139,7 +138,7 @@ pub fn app() -> Html {
                 // osc.set_type(web_sys::OscillatorType::Sawtooth);
                 // osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
                 let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
-                let mut source = cloned_sound.deref().clone();
+                let mut source = cloned_oscillator.deref().clone();
                 let _ = source.global_set_frequency(frequency);
                 buffer.insert(*key_label, source);
                 let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
@@ -176,7 +175,7 @@ pub fn app() -> Html {
     let key_map_down = keycode_maps.clone();
     // let cloned_audio_context = audio_context.clone();
     let cloned_poly = polyphony.clone();
-    let cloned_sound = sound.clone();
+    // let cloned_sound = sound.clone();
     let cloned_device = device.clone();
     let cloned_config = config.clone();
     let stream_setter = stream.setter();
@@ -210,22 +209,22 @@ pub fn app() -> Html {
             },
             '1' => {
                 // OSCILLATOR_TYPE = Some(web_sys::OscillatorType::Sine);
-                oscillator_type = web_sys::OscillatorType::Sine;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Sine wave selected");
             },
             '2' => {
-                oscillator_type = web_sys::OscillatorType::Square;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Square wave selected");
             },
             '3' => {
-                oscillator_type = web_sys::OscillatorType::Sawtooth;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Sawtooth wave selected");
             },
             '4' => {
-                oscillator_type = web_sys::OscillatorType::Triangle;
+                oscillator_type = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Triangle, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Triangle wave selected");
             },
@@ -235,7 +234,7 @@ pub fn app() -> Html {
                         Some(_) => (),
                         None => {
                             let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
-                            let mut source = cloned_sound.deref().clone();
+                            let mut source = cloned_oscillator.deref().clone();
                             let _ = source.global_set_frequency(frequency);
                             buffer.insert(*key_label, source);
                             let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
