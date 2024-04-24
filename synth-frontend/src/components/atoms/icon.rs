@@ -33,7 +33,7 @@ pub fn custom_icon(props: &IconProps) -> Html{
                     onmousedown={&props.mouse_down}
                 >
                 // {props.label.clone()}
-                <img src={props.img_path.clone()} alt={props.label.clone()} />
+                <img class={&props.class} src={props.img_path.clone()} alt={props.label.clone()} />
                 </button>
             }
         }
