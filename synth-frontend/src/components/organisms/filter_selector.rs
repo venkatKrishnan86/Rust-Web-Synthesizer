@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
 use crate::components::molecules::selector::Selector;
+use crate::components::atoms::slider::Slider;
 
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
 
@@ -8,12 +9,15 @@ const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/
 pub struct FilterSelectorProperties {
     pub mouse_down: Callback<char>,
     pub mouse_up: Callback<char>,
+    pub freq_change: Callback<f64>,
+    pub freq: f64
 }
 
 #[styled_component(FilterSelector)]
 pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
     let overall_css = Style::new(OSCILLATOR_SELECT_CSS).unwrap();
     let mouse_down = props.mouse_down.clone();
+    let freq_change = props.freq_change.clone();
 
     html! {
         <div class={overall_css}>
@@ -40,6 +44,16 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
         is_active={false} 
         on_mouse_down={&mouse_down} 
         on_mouse_up={Callback::from(|_|{})}
+        />
+        <Slider 
+            label={"Frequency"}
+            value={props.freq}
+            onchange={freq_change}
+            precision={Some(1)}
+            percentage={false}
+            min={20.0}
+            max={20000.0}
+            step={Some(10.0)}
         />
         </div>
     }
