@@ -86,9 +86,9 @@ pub fn app() -> Html {
     let stream_setter = stream.setter();
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
-    let mouse_down = Callback::from(move |label: char| {
-        let key_label = key_map_down.get(&label).unwrap_or(&0);
-        log!("Holding key", label.to_string(), ", MIDI Note:", key_label.to_string());
+    let mouse_down = Callback::from(move |label: (char, usize)| {
+        let key_label = key_map_down.get(&label.0).unwrap_or(&0);
+        log!("Holding key", label.0.to_string(), ", MIDI Note:", key_label.to_string());
         let cloned_key_map = &mut key_map_down.deref().clone();
         let mut buffer = cloned_poly.deref().clone();
         let device_temp = cloned_device.deref().clone();
@@ -96,7 +96,7 @@ pub fn app() -> Html {
         let mut oscillator_type = cloned_oscillator.deref().clone();
         let freq_filter = cloned_freq.deref().clone();
         let bandwidth_hz_filter = freq_filter*0.5;
-        match label {
+        match label.0 {
             'Z' => {
                 decrease_octave(cloned_key_map);
                 buffer.clear();
@@ -116,20 +116,34 @@ pub fn app() -> Html {
                 key_map_setter.set(cloned_key_map.deref().clone());
             },
             '1' => {
-                oscillator_type.set_oscillator(0, Oscillator::Sine);
-                log!("Sine wave selected");
+                if label.1>0 {
+                    oscillator_type.set_oscillator(label.1 - 1, Oscillator::Sine);
+                    log!("Sine wave selected");
+                }
             },
             '2' => {
-                oscillator_type.set_oscillator(0, Oscillator::Square);
-                log!("Square wave selected");
+                if label.1>0 {
+                    oscillator_type.set_oscillator(label.1 - 1, Oscillator::BidirectionalSquare);
+                    log!("Square wave selected");
+                }
             },
             '3' => {
-                oscillator_type.set_oscillator(0, Oscillator::Saw);
-                log!("Sawtooth wave selected");
+                if label.1>0 {
+                    oscillator_type.set_oscillator(label.1 - 1, Oscillator::Saw);
+                    log!("Sawtooth wave selected");
+                }
             },
             '4' => {
-                oscillator_type.set_oscillator(0, Oscillator::Triangle);
-                log!("Triangle wave selected");
+                if label.1>0 {
+                    oscillator_type.set_oscillator(label.1 - 1, Oscillator::Triangle);
+                    log!("Triangle wave selected");
+                }
+            },
+            '5' => {
+                if label.1>0 {
+                    oscillator_type.set_oscillator(label.1 - 1, Oscillator::WhiteNoise);
+                    log!("White Noise wave selected");
+                }
             },
             '0' => {
                 oscillator_type.set_filter(Some(FilterType::HighPass), freq_filter, bandwidth_hz_filter);
@@ -148,9 +162,14 @@ pub fn app() -> Html {
                 log!("Filter off");
             },
             '+' => {
-                let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
+                let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
                 log!("Add an oscillator");
             }
+            '-' => {
+                if oscillator_type.num_sources() > 1 {
+                    let _ = oscillator_type.remove(label.1 - 1);
+                }
+            },
             _ => {
                 let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
                 let mut source = cloned_oscillator.deref().clone();
@@ -170,8 +189,8 @@ pub fn app() -> Html {
     let stream_setter = stream.setter();
     let cloned_device = device.clone();
     let cloned_config = config.clone();
-    let mouse_up = Callback::from(move |label: char| {
-        let key_label = key_map_up.get(&label).unwrap_or(&0);
+    let mouse_up = Callback::from(move |label: (char, usize)| {
+        let key_label = key_map_up.get(&label.0).unwrap_or(&0);
         let mut buffer = cloned_poly.deref().clone();
         let _ = buffer.remove(key_label);
         let device_temp = cloned_device.deref().clone();
@@ -180,7 +199,7 @@ pub fn app() -> Html {
         new_stream.play();
         stream_setter.set(new_stream);
         cloned_poly.set(buffer);
-        log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
+        log!("Lifted key", label.0.to_string(), ", MIDI Note:", key_map_up.get(&label.0).unwrap_or(&0).to_string());
     });
 
     let key_map_setter = keycode_maps.setter();
@@ -272,11 +291,11 @@ pub fn app() -> Html {
     }
 }
 
-pub fn display_oscillators(mouse_down: Callback<char>, mouse_up: Callback<char>, oscillator: &Synth) -> Vec<Html>{
+pub fn display_oscillators(mouse_down: Callback<(char, usize)>, mouse_up: Callback<(char, usize)>, oscillator: &Synth) -> Vec<Html>{
     let mut display = Vec::new();
     for idx in 0..oscillator.num_sources() {
         display.push(html! {
-            <OscillatorSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} number={idx as u32+1}/>
+            <OscillatorSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} number={idx as usize+1}/>
         })
     }
     display

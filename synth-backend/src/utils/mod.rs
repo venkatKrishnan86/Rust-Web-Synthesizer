@@ -71,7 +71,7 @@ impl State {
             buffer_size: cpal::BufferSize::Fixed(buffer_size),
         };
 
-        log!(channels);
+        // log!(channels);
 
         device
             .build_output_stream_raw (
@@ -96,7 +96,7 @@ impl State {
 
     fn write_data(output: &mut Data, channels: usize, next_sample: &mut dyn FnMut() -> f32){
         for frame in output.as_slice_mut() {
-            log!(frame.len());
+            // log!(frame.len());
             for sample in frame.iter_mut() {
                 *sample = next_sample();
             }

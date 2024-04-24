@@ -1,4 +1,5 @@
 use std::{f32::consts::PI, ops::Add};
+use rand::seq::index;
 use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
@@ -259,6 +260,10 @@ impl MultiOscillator{
 
     pub fn num_sources(&self) -> usize {
         self.multi_osc.len()
+    }
+
+    pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
+        self.multi_osc.remove(index)
     }
 
     pub fn get_sample(&mut self) -> f32 {

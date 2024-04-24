@@ -37,6 +37,10 @@ impl Synth {
         self.osc.set_oscillator(index, oscillator);
     }
 
+    pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
+        self.osc.remove(index)
+    }
+
     pub fn push(&mut self, oscillator: WaveTableOscillator) -> Result<(), String> {
         self.osc.push(oscillator)
     }
