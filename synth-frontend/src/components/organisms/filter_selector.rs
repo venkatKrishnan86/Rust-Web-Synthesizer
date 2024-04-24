@@ -7,8 +7,8 @@ const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/
 
 #[derive(Properties, PartialEq)]
 pub struct FilterSelectorProperties {
-    pub mouse_down: Callback<char>,
-    pub mouse_up: Callback<char>,
+    pub mouse_down: Callback<(char, usize)>,
+    pub mouse_up: Callback<(char, usize)>,
     pub freq_change: Callback<f64>,
     pub freq: f64
 }
@@ -23,7 +23,7 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
         <div class={overall_css}>
         <Selector
         icon_class={"power-off"} 
-        label={'7'} 
+        label={('7', 0)} 
         img_path={"UI_components/assets/icons/LowPass.png"} 
         is_active={false} 
         on_mouse_down={&mouse_down} 
@@ -31,7 +31,7 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
         />
         <Selector
         icon_class={"filter-icon"} 
-        label={'0'} 
+        label={('0', 0)} 
         img_path={"UI_components/assets/icons/HighPass.png"} 
         is_active={false} 
         on_mouse_down={&mouse_down} 
@@ -39,7 +39,7 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
         />
         <Selector
         icon_class={"oscillator-icon"} 
-        label={'9'} 
+        label={('9', 0)} 
         img_path={"UI_components/assets/icons/BandPass.png"} 
         is_active={false} 
         on_mouse_down={&mouse_down} 
@@ -47,7 +47,7 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
         />
         <Selector
         icon_class={"oscillator-icon"} 
-        label={'8'} 
+        label={('8', 0)} 
         img_path={"UI_components/assets/icons/LowPass.png"} 
         is_active={false} 
         on_mouse_down={&mouse_down} 
