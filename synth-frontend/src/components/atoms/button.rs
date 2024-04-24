@@ -5,7 +5,6 @@ use yew::prelude::*;
 pub struct ButtonProps {
     pub class: String,
     pub label: String,
-    pub is_active: bool,
     pub mouse_down: Callback<MouseEvent>,
     pub mouse_up: Option<Callback<MouseEvent>>
 }

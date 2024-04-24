@@ -44,8 +44,7 @@ pub fn key(props: &KeyProps) -> Html {
         <div class = {&props.key_color.to_string()}>
             <CustomButton 
                 class={props.button_class.clone()} 
-                label={props.label.to_string()} 
-                is_active={false}
+                label={props.label.to_string()}
                 mouse_down={mouse_down}
                 mouse_up={mouse_up}
             />
