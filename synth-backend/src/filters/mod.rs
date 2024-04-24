@@ -122,4 +122,19 @@ impl Filter {
             }
         }
     }
+
+    pub fn change_filter_type(&mut self, filter_type: FilterType) {
+        self.filter_type = filter_type;
+        match self.filter_type {
+            FilterType::LowPass | FilterType::HighPass => {
+                self.c = ((PI * self.freq_hz / self.sample_rate_hz).tan() - 1.0) 
+                    / ((PI * self.freq_hz / self.sample_rate_hz).tan() + 1.0);
+            }
+            FilterType::BandPass => {
+                self.c = ((PI * self.bandwidth_hz / self.sample_rate_hz).tan() - 1.0) 
+                    / ((PI * self.bandwidth_hz / self.sample_rate_hz).tan() + 1.0);
+                self.d = -(2.0 * PI * self.freq_hz / self.sample_rate_hz).cos();
+            }
+        }
+    }
 }

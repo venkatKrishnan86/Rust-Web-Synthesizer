@@ -1,5 +1,5 @@
 use crate::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
-use crate::filters::{Filter, FilterType};
+use crate::filters::{Filter, FilterParam, FilterType};
 use std::ops::Add;
 
 #[derive(Clone, Debug)]
@@ -47,5 +47,12 @@ impl Synth {
 
     pub fn num_sources(&self) -> usize {
         self.osc.num_sources()
+    }
+
+    pub fn set_filter(&mut self, filter: Option<FilterType>) {
+        match filter {
+            None => self.filter = None,
+            Some(filter_type) => self.filter.as_mut().unwrap().change_filter_type(filter_type)
+        }
     }
 }

@@ -57,12 +57,13 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
-    let freq = 500.0;
+    let freq: UseStateHandle<f32> = use_state(|| 200.0);
+    let filter_type = use_state(|| FilterType::LowPass);
     let bandwidth_hz = 5.0;
     let filter = Filter::new(
-        FilterType::LowPass, 
+        filter_type.deref().clone(), 
         sample_rate as f32, 
-        freq, 
+        *freq.deref(), 
         bandwidth_hz
     );
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
@@ -117,27 +118,34 @@ pub fn app() -> Html {
             '1' => {
                 // OSCILLATOR_TYPE = Some(web_sys::OscillatorType::Sine);
                 oscillator_type.set_oscillator(0, Oscillator::Sine);
-                cloned_oscillator.set(oscillator_type);
                 log!("Sine wave selected");
             },
             '2' => {
                 oscillator_type.set_oscillator(0, Oscillator::Square);
-                cloned_oscillator.set(oscillator_type);
                 log!("Square wave selected");
             },
             '3' => {
                 oscillator_type.set_oscillator(0, Oscillator::Saw);
-                cloned_oscillator.set(oscillator_type);
                 log!("Sawtooth wave selected");
             },
             '4' => {
                 oscillator_type.set_oscillator(0, Oscillator::Triangle);
-                cloned_oscillator.set(oscillator_type);
                 log!("Triangle wave selected");
             },
+            '0' => {
+                oscillator_type.set_filter(Some(FilterType::HighPass));
+                log!("High pass selected");
+            },
+            '9' => {
+                oscillator_type.set_filter(Some(FilterType::BandPass));
+                log!("Band pass selected");
+            },
+            '8' => {
+                oscillator_type.set_filter(Some(FilterType::LowPass));
+                log!("Low pass selected");
+            },
             '+' => {
-                oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
-                cloned_oscillator.set(oscillator_type);
+                let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
                 log!("Add an oscillator");
             }
             _ => {
@@ -157,6 +165,7 @@ pub fn app() -> Html {
                 cloned_poly.set(buffer);
             }
         }
+        cloned_oscillator.set(oscillator_type);
     });
 
     let key_map_up = keycode_maps.clone();
