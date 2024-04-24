@@ -41,14 +41,13 @@ pub fn decrease_octave(midi_map: &mut HashMap<char, u8>) {
 }
 
 pub struct State {
-    stream: Stream,
-    polyphony: IterablePolyphonyHashMap
+    stream: Stream
 }
 
 impl State {
     pub fn new(device: &cpal::Device, config: &cpal::StreamConfig, polyphony: IterablePolyphonyHashMap) -> Self {
-        let stream = State::create_stream(device, config, polyphony.clone());
-        return State { stream, polyphony};
+        let stream = State::create_stream(device, config, polyphony);
+        return State { stream};
     }
 
     fn create_stream(device: &cpal::Device, config: &cpal::StreamConfig, polyphony: IterablePolyphonyHashMap) -> Stream {
