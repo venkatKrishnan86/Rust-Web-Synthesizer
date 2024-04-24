@@ -1,18 +1,41 @@
 use std::collections::HashMap;
 use std::ops::Deref;
-use synth_backend::utils::{decrease_octave, increase_octave};
+use synth_backend::{ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
+use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
-use web_sys::{AudioContext, OscillatorNode};
+use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
+use cpal::{FromSample, SampleRate, SizedSample, Stream, StreamConfig};
 
 use synth_frontend::MIDIKeyboard;
-use synth_backend::utils::midi_to_hz;
+use synth_backend::utils::{midi_to_hz, State};
 
 #[styled_component(App)]
 pub fn app() -> Html {
-    let polyphony: UseStateHandle<HashMap<u8, OscillatorNode>> = use_state(|| HashMap::new());
-    let audio_context = use_state(|| AudioContext::new().expect("Could not create an AudioContext object"));
+    let host = cpal::default_host();
+    let device = use_state(|| host.default_output_device().expect("No default output device found"));
+    let mut supported_configs_range = device.supported_output_configs()
+    .expect("error while querying configs");
+    let supported_config = supported_configs_range.next()
+        .expect("no supported config?!")
+        .with_max_sample_rate();
+    let sample_rate = supported_config.sample_rate().0;
+    let supported_configs = device.supported_output_configs().unwrap();
+    let config: UseStateHandle<StreamConfig> = use_state(|| {
+        match supported_configs
+        .filter(|c| c.channels() == 1)
+        .max_by(|a, b| a.cmp_default_heuristics(b)) {
+            Some(config) => config.with_sample_rate(SampleRate(sample_rate)).into(),
+            _ => panic!("No supported configuration found for output device")
+        }
+    });
+    // println!("Sample Rate: {}", sample_rate);
+    // let config = use_state(|| supported_config.into());
+    let polyphony: UseStateHandle<IterablePolyphonyHashMap> = use_state(|| IterablePolyphonyHashMap::new(sample_rate));
+    let stream = use_state(|| State::new(&device, &config, polyphony.deref().clone()));
+
+    // let audio_context = use_state(|| AudioContext::new().expect("Could not create an AudioContext object"));
     let keycode_maps = use_state(|| HashMap::from([
         ('A', 60),
         ('W', 61),
@@ -29,98 +52,127 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
+    let osc1 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, 0.0);
+    let osc2 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.2, 0.0);
+    let osc3 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.5, 0.0);
+    let osc4 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0);
+    let sound = use_state(|| osc1 + osc2 + (osc3 + osc4));
+
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
-    let cloned_audio_context = audio_context.clone();
+    // let cloned_audio_context = audio_context.clone();
     let cloned_poly = polyphony.clone();
+    let cloned_sound = sound.clone();
+    let cloned_device = device.clone();
+    let cloned_config = config.clone();
+    let stream_setter = stream.setter();
     let mouse_down = Callback::from(move |label: char| {
         let key_label = key_map_down.get(&label).unwrap_or(&0);
         log!("Holding key", label.to_string(), ", MIDI Note:", key_label.to_string());
         let cloned_key_map = &mut key_map_down.deref().clone();
         let mut buffer = cloned_poly.deref().clone();
-        let context = cloned_audio_context.deref().clone();
+        let device_temp = cloned_device.deref().clone();
+        let config_temp = cloned_config.deref().clone();
+        // let context = cloned_audio_context.deref().clone();
         match label {
             'Z' => {
                 decrease_octave(cloned_key_map);
-                for (_, val) in buffer.iter_mut() {
-                    val.stop().expect("Failed to stop oscillator");
-                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
-                }
+                // for (_, val) in buffer.iter_mut() {
+                //     val.stop().expect("Failed to stop oscillator");
+                //     val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+                // }
                 buffer.clear();
+                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                new_stream.pause();
+                stream_setter.set(new_stream);
                 cloned_poly.set(buffer);
                 key_map_setter.set(cloned_key_map.deref().clone());
             },
             'X' => {
                 increase_octave(cloned_key_map);
-                for (_, val) in buffer.iter_mut() {
-                    val.stop().expect("Failed to stop oscillator");
-                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
-                }
+                // for (_, val) in buffer.iter_mut() {
+                //     val.stop().expect("Failed to stop oscillator");
+                //     val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
+                // }
                 buffer.clear();
+                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                new_stream.pause();
+                stream_setter.set(new_stream);
                 cloned_poly.set(buffer);
                 key_map_setter.set(cloned_key_map.deref().clone());
             },
             _ => {
-                let osc = context.create_oscillator().expect("Could not create oscillator");
-                // let gain = context.create_gain().expect("Could not create gain");
-                // gain.connect_with_audio_node(&context.destination()).expect("Could not connect gain to audio node");
-                osc.connect_with_audio_node(&context.destination()).expect("Could not connect oscillator to audio node");
-                osc.set_type(web_sys::OscillatorType::Sawtooth);
-                osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
-                osc.start().expect("Failed to start oscillator");
-                buffer.insert(*key_label, osc);
+                // let osc = context.create_oscillator().expect("Could not create oscillator");
+                // // let gain = context.create_gain().expect("Could not create gain");
+                // // gain.connect_with_audio_node(&context.destination()).expect("Could not connect gain to audio node");
+                // osc.connect_with_audio_node(&context.destination()).expect("Could not connect oscillator to audio node");
+                // osc.set_type(web_sys::OscillatorType::Sawtooth);
+                // osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
+                let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
+                let mut source = cloned_sound.deref().clone();
+                let _ = source.global_set_frequency(frequency);
+                buffer.insert(*key_label, source);
+                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                new_stream.play();
+                stream_setter.set(new_stream);
                 cloned_poly.set(buffer);
-                cloned_audio_context.set(context);
             }
         }
     });
 
     let key_map_up = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
-    let cloned_audio_context = audio_context.clone();
+    let stream_setter = stream.setter();
+    let cloned_device = device.clone();
+    let cloned_config = config.clone();
+    // let cloned_sound = sound.clone();
+    // let cloned_audio_context = audio_context.clone();
     let mouse_up = Callback::from(move |label: char| {
         let key_label = key_map_up.get(&label).unwrap_or(&0);
-        let mut poly = cloned_poly.deref().clone();
-        let context = cloned_audio_context.deref().clone();
-        let osc = poly.remove(key_label);
-        match osc {
-            None => (),
-            Some(val) => {
-                val.stop().expect("Failed to stop oscillator");
-                val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
-            }
-        }
-        cloned_poly.set(poly);
+        let mut buffer = cloned_poly.deref().clone();
+        // let context = cloned_audio_context.deref().clone();
+        let _ = buffer.remove(key_label);
+        // let stream_inside = cloned_stream.deref();
+        let device_temp = cloned_device.deref().clone();
+        let config_temp = cloned_config.deref().clone();
+        let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+        new_stream.play();
+        stream_setter.set(new_stream);
+        cloned_poly.set(buffer);
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
 
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
-    let cloned_audio_context = audio_context.clone();
+    // let cloned_audio_context = audio_context.clone();
     let cloned_poly = polyphony.clone();
+    let cloned_sound = sound.clone();
+    let cloned_device = device.clone();
+    let cloned_config = config.clone();
+    let stream_setter = stream.setter();
     let key_down = Callback::from(move |label: char| {
         let key_label = key_map_down.get(&label).unwrap_or(&0);
         let cloned_key_map = &mut key_map_down.deref().clone();
-        let context = cloned_audio_context.deref().clone();
+        // let context = cloned_audio_context.deref().clone();
         let mut buffer = cloned_poly.deref().clone();
+        let device_temp = cloned_device.deref().clone();
+        let config_temp = cloned_config.deref().clone();
         match label {
             'Z' => {
                 decrease_octave(cloned_key_map);
-                for (_, val) in buffer.iter_mut() {
-                    val.stop().expect("Failed to stop oscillator");
-                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
-                }
                 buffer.clear();
+                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                new_stream.pause();
+                stream_setter.set(new_stream);
                 cloned_poly.set(buffer);
                 key_map_setter.set(cloned_key_map.deref().clone());
             },
             'X' => {
                 increase_octave(cloned_key_map);
-                for (_, val) in buffer.iter_mut() {
-                    val.stop().expect("Failed to stop oscillator");
-                    val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
-                }
                 buffer.clear();
+                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                new_stream.pause();
+                stream_setter.set(new_stream);
                 cloned_poly.set(buffer);
                 key_map_setter.set(cloned_key_map.deref().clone());
             },
@@ -129,14 +181,14 @@ pub fn app() -> Html {
                     match buffer.get(key_label) {
                         Some(_) => (),
                         None => {
-                            let osc = context.create_oscillator().expect("Could not create oscillator");
-                            osc.connect_with_audio_node(&context.destination()).expect("Could not connect to audio node");
-                            osc.set_type(web_sys::OscillatorType::Sawtooth);
-                            osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
-                            osc.start().expect("Failed to start oscillator");
-                            buffer.insert(*key_label, osc);
+                            let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
+                            let mut source = cloned_sound.deref().clone();
+                            let _ = source.global_set_frequency(frequency);
+                            buffer.insert(*key_label, source);
+                            let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                            new_stream.play();
+                            stream_setter.set(new_stream);
                             cloned_poly.set(buffer);
-                            cloned_audio_context.set(context);
                         }
                     }
                 }
@@ -147,20 +199,21 @@ pub fn app() -> Html {
 
     let key_map_up = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
-    let cloned_audio_context = audio_context.clone();
+    let stream_setter = stream.setter();
+    let cloned_device = device.clone();
+    let cloned_config = config.clone();
+    // let cloned_audio_context = audio_context.clone();
     let key_up = Callback::from(move |label: char| {
         let key_label = key_map_up.get(&label).unwrap_or(&0);
-        let mut poly = cloned_poly.deref().clone();
-        let context = cloned_audio_context.deref().clone();
-        let osc = poly.remove(key_label);
-        match osc {
-            None => (),
-            Some(val) => {
-                val.stop().expect("Failed to stop oscillator");
-                val.disconnect_with_audio_node(&context.destination()).expect("Could not disconnect from audio node");
-            }
-        }
-        cloned_poly.set(poly);
+        let mut buffer = cloned_poly.deref().clone();
+        // let context = cloned_audio_context.deref().clone();
+        let _ = buffer.remove(key_label);
+        let device_temp = cloned_device.deref().clone();
+        let config_temp = cloned_config.deref().clone();
+        let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+        new_stream.play();
+        stream_setter.set(new_stream);
+        cloned_poly.set(buffer);
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
 

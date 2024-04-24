@@ -1,7 +1,7 @@
 use crate::oscillators::MultiOscillator;
 use rodio::Source;
 use std::collections::HashMap;
-use device_query::Keycode;
+// use device_query::Keycode;
 
 
 /// # Polyphony handler struct
@@ -217,6 +217,10 @@ impl IterablePolyphonyHashMap {
 
     pub fn is_empty(&self) -> bool {
         self.hashmap.is_empty()
+    }
+
+    pub fn get(&self, k: &u8) -> Option<&MultiOscillator> {
+        self.hashmap.get(k)
     }
 
     pub fn get_sample(&mut self) -> f32 {
