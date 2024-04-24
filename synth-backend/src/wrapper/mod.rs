@@ -49,10 +49,13 @@ impl Synth {
         self.osc.num_sources()
     }
 
-    pub fn set_filter(&mut self, filter: Option<FilterType>) {
+    pub fn set_filter(&mut self, filter: Option<FilterType>, freq_filter: f32, bandwidth_hz_filter: f32) {
         match filter {
             None => self.filter = None,
-            Some(filter_type) => self.filter.as_mut().unwrap().change_filter_type(filter_type)
+            Some(filter_type) => match self.filter {
+                None => self.filter = Some(Filter::new(filter_type, self.sample_rate as f32, freq_filter, bandwidth_hz_filter)),
+                Some(_) => self.filter.as_mut().unwrap().change_filter_type(filter_type)
+            }
         }
     }
 

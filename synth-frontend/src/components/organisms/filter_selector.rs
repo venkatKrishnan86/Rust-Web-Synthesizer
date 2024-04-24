@@ -22,6 +22,14 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
     html! {
         <div class={overall_css}>
         <Selector
+        icon_class={"power-off"} 
+        label={'7'} 
+        img_path={"UI_components/assets/icons/LowPass.png"} 
+        is_active={false} 
+        on_mouse_down={&mouse_down} 
+        on_mouse_up={Callback::from(|_|{})}
+        />
+        <Selector
         icon_class={"filter-icon"} 
         label={'0'} 
         img_path={"UI_components/assets/icons/HighPass.png"} 

@@ -35,7 +35,7 @@ pub fn app() -> Html {
             _ => panic!("No supported configuration found for output device")
         }
     });
-    // println!("Sample Rate: {}", sample_rate);
+    log!(sample_rate);
     // let config = use_state(|| supported_config.into());
     let polyphony: UseStateHandle<IterablePolyphonyHashMap> = use_state(|| IterablePolyphonyHashMap::new(sample_rate));
     let stream = use_state(|| State::new(&device, &config, polyphony.deref().clone()));
@@ -73,6 +73,7 @@ pub fn app() -> Html {
         cloned_freq.set(freq as f32);
         let mut oscillator_type = cloned_oscillator.deref().clone();
         oscillator_type.set_filter_params(FilterParam::FreqHz, freq as f32);
+        oscillator_type.set_filter_params(FilterParam::BandwidthHz, freq as f32*0.5);
         cloned_oscillator.set(oscillator_type);
     });
     
@@ -84,6 +85,7 @@ pub fn app() -> Html {
     let cloned_config = config.clone();
     let stream_setter = stream.setter();
     let cloned_oscillator = oscillator.clone();
+    let cloned_freq = freq.clone();
     let mouse_down = Callback::from(move |label: char| {
         let key_label = key_map_down.get(&label).unwrap_or(&0);
         log!("Holding key", label.to_string(), ", MIDI Note:", key_label.to_string());
@@ -92,6 +94,8 @@ pub fn app() -> Html {
         let device_temp = cloned_device.deref().clone();
         let config_temp = cloned_config.deref().clone();
         let mut oscillator_type = cloned_oscillator.deref().clone();
+        let freq_filter = cloned_freq.deref().clone();
+        let bandwidth_hz_filter = freq_filter*0.5;
         match label {
             'Z' => {
                 decrease_octave(cloned_key_map);
@@ -128,16 +132,20 @@ pub fn app() -> Html {
                 log!("Triangle wave selected");
             },
             '0' => {
-                oscillator_type.set_filter(Some(FilterType::HighPass));
+                oscillator_type.set_filter(Some(FilterType::HighPass), freq_filter, bandwidth_hz_filter);
                 log!("High pass selected");
             },
             '9' => {
-                oscillator_type.set_filter(Some(FilterType::BandPass));
+                oscillator_type.set_filter(Some(FilterType::BandPass), freq_filter, bandwidth_hz_filter);
                 log!("Band pass selected");
             },
             '8' => {
-                oscillator_type.set_filter(Some(FilterType::LowPass));
+                oscillator_type.set_filter(Some(FilterType::LowPass), freq_filter, bandwidth_hz_filter);
                 log!("Low pass selected");
+            },
+            '7' => {
+                oscillator_type.set_filter(None, freq_filter, bandwidth_hz_filter);
+                log!("Filter off");
             },
             '+' => {
                 let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
