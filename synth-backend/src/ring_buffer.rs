@@ -218,17 +218,21 @@ impl IterablePolyphonyHashMap {
     pub fn is_empty(&self) -> bool {
         self.hashmap.is_empty()
     }
+
+    pub fn get_sample(&mut self) -> f32 {
+        let mut sample = 0.0;
+        for (_, multi_osc) in self.hashmap.iter_mut() {
+            sample += multi_osc.get_sample();
+        }
+        sample
+    }
 }
 
 impl Iterator for IterablePolyphonyHashMap {
     type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut sample = 0.0;
-        for (_, multi_osc) in self.hashmap.iter_mut() {
-            sample += multi_osc.get_sample();
-        }
-        Some(sample)
+        Some(self.get_sample())
     }
 }
 
