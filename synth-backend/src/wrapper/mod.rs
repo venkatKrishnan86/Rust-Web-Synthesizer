@@ -55,4 +55,11 @@ impl Synth {
             Some(filter_type) => self.filter.as_mut().unwrap().change_filter_type(filter_type)
         }
     }
+
+    pub fn set_filter_params(&mut self, filterparam: FilterParam, value: f32) {
+        match self.filter {
+            None => (),
+            Some(_) => self.filter.as_mut().unwrap().set_param(filterparam, value)
+        }
+    }
 }
