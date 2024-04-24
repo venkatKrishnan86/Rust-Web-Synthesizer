@@ -1,4 +1,5 @@
 use crate::oscillators::MultiOscillator;
+use crate::wrapper::Synth;
 use rodio::Source;
 use std::collections::HashMap;
 // use device_query::Keycode;
@@ -177,7 +178,7 @@ impl Source for PolyphonyRingBuffer {
 
 #[derive(Clone, Debug)]
 pub struct IterablePolyphonyHashMap {
-    hashmap: HashMap<u8, MultiOscillator>,
+    hashmap: HashMap<u8, Synth>,
     sample_rate: u32
 }
 
@@ -189,13 +190,13 @@ impl IterablePolyphonyHashMap {
         }
     }
 
-    pub fn from(hashmap: HashMap<u8, MultiOscillator>) -> Self {
+    pub fn from(hashmap: HashMap<u8, Synth>) -> Self {
         if hashmap.is_empty() {
             panic!("Empty Hashmap! Use new() instead");
         }
         let mut sample_rate = 0;
-        for (_, osc) in hashmap.iter() {
-            sample_rate = osc.sample_rate();
+        for (_, synth) in hashmap.iter() {
+            sample_rate = synth.osc.sample_rate();
         }
         Self {
             hashmap,
@@ -203,11 +204,11 @@ impl IterablePolyphonyHashMap {
         }
     }
 
-    pub fn insert(&mut self, k: u8, v: MultiOscillator){
+    pub fn insert(&mut self, k: u8, v: Synth){
         self.hashmap.insert(k, v);
     }
 
-    pub fn remove(&mut self, k:&u8) -> Option<MultiOscillator> {
+    pub fn remove(&mut self, k:&u8) -> Option<Synth> {
         self.hashmap.remove(k)
     }
 
@@ -219,14 +220,14 @@ impl IterablePolyphonyHashMap {
         self.hashmap.is_empty()
     }
 
-    pub fn get(&self, k: &u8) -> Option<&MultiOscillator> {
+    pub fn get(&self, k: &u8) -> Option<&Synth> {
         self.hashmap.get(k)
     }
 
     pub fn get_sample(&mut self) -> f32 {
         let mut sample = 0.0;
-        for (_, multi_osc) in self.hashmap.iter_mut() {
-            sample += multi_osc.get_sample();
+        for (_, synth) in self.hashmap.iter_mut() {
+            sample += synth.get_sample();
         }
         sample
     }

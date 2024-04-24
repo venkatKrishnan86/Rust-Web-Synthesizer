@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use synth_backend::{ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
 use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
+use synth_backend::filters::{Filter, FilterType};
+use synth_backend::wrapper::Synth;
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -52,11 +54,15 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
-    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, 0.0));
-    let osc2 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.2, 0.0));
-    let osc3 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.5, 0.0));
-    let osc4 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
-    let sound = use_state(|| osc1 + osc2 + osc3 + osc4);
+    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
+    let osc2 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, 0.0));
+    let osc3 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 1.0, 0.0));
+    let osc4 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 1.0, 0.0));
+
+    // let filter = Filter::new(FilterType::LowPass, 44100.0, 880.0, 0.0, 0.0); // lp/hp
+    let filter = Filter::new(FilterType::BandPass, 44100.0, 0.0, 2000.0, 220.0); // bp
+
+    let sound = use_state(|| Synth::new(osc1 + osc2 + osc3 + osc4, Some(filter)));
 
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
@@ -110,7 +116,7 @@ pub fn app() -> Html {
                 // osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
                 let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
                 let mut source = cloned_sound.deref().clone();
-                let _ = source.global_set_frequency(frequency);
+                let _ = source.osc.global_set_frequency(frequency);
                 buffer.insert(*key_label, source);
                 let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
                 new_stream.play();
@@ -183,7 +189,7 @@ pub fn app() -> Html {
                         None => {
                             let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
                             let mut source = cloned_sound.deref().clone();
-                            let _ = source.global_set_frequency(frequency);
+                            let _ = source.osc.global_set_frequency(frequency);
                             buffer.insert(*key_label, source);
                             let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
                             new_stream.play();
