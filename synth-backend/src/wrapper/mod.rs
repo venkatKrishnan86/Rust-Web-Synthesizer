@@ -1,5 +1,6 @@
 use crate::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use crate::filters::{Filter, FilterParam, FilterType};
+use crate::envelopes::Envelope;
 use std::ops::Add;
 
 #[derive(Clone, Debug)]
@@ -7,30 +8,36 @@ pub struct Synth {
     pub osc: MultiOscillator,
     pub sample_rate: u32,
     pub filter: Option<Filter>, // Make filter an optional field
+    pub envelope: Option<Envelope>,
 }
 
 impl Synth {
-    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>) -> Self {
+    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>) -> Self {
         Self {
             osc,
             sample_rate,
             filter,
+            envelope,
         }
     }
 
     pub fn get_sample(&mut self) -> f32 {
         // Call the get_sample method of MultiOscillator
         let sample = self.osc.get_sample();
+        let mut output_sample = sample;
 
         // Check if filter exists
         if let Some(ref mut filter) = self.filter {
             // Apply the filter if it exists
-            let filtered_sample = filter.process(sample);
-            return filtered_sample;
+            output_sample = filter.process(sample);
+        }
+
+        if let Some(ref mut envelope) = self.envelope {
+            output_sample = output_sample * envelope.get_amplitude();
         }
 
         // If filter is None, return the sample directly
-        sample
+        output_sample
     }
 
     pub fn set_oscillator(&mut self, index: usize, oscillator: Oscillator) {

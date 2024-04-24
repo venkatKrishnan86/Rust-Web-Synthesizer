@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use synth_backend::{filters::FilterParam, ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
 use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
+use synth_backend::envelopes::{EnvelopeParam, Envelope};
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -57,15 +58,25 @@ pub fn app() -> Html {
 
     let freq: UseStateHandle<f32> = use_state(|| 200.0);
     let filter_type = use_state(|| FilterType::LowPass);
-    let bandwidth_hz = 5.0;
+    let bandwidth_hz = 500.0;
     let filter = Filter::new(
         filter_type.deref().clone(), 
         sample_rate as f32, 
         *freq.deref(), 
         bandwidth_hz
     );
+
+    let attack_ms = 0.0;
+    let decay_ms = 0.0;
+    let sustain_percentage = 1.0;
+    let release_ms = 0.0;
+    let mut envelope = Envelope::new(sample_rate as f32, attack_ms, decay_ms, sustain_percentage, release_ms);
+    envelope.set_param(EnvelopeParam::AttackMs, 100.0);
+    envelope.set_param(EnvelopeParam::DecayMs, 500.0);
+    envelope.set_param(EnvelopeParam::SustainPercentage, 0.5);
+
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
-    let oscillator = use_state(|| Synth::new(osc1, sample_rate, Some(filter)));
+    let oscillator = use_state(|| Synth::new(osc1, sample_rate, Some(filter), Some(envelope)));
     
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();

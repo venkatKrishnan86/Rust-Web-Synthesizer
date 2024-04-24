@@ -32,6 +32,7 @@ pub mod utils;
 pub mod oscillators;
 pub mod ring_buffer;
 pub mod filters;
+pub mod envelopes;
 pub mod wrapper;
 
 #[cfg(test)]
