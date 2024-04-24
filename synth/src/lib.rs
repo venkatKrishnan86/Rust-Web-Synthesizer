@@ -2,8 +2,6 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use synth_backend::{ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
 use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
-use synth_backend::filters::{Filter, FilterType};
-use synth_backend::wrapper::Synth;
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -14,6 +12,8 @@ use synth_frontend::MIDIKeyboard;
 use synth_frontend::components::molecules::add_button::AddButton;
 use synth_frontend::components::organisms::{oscillator_selector::OscillatorSelector, filter_selector::FilterSelector};
 use synth_backend::utils::{midi_to_hz, State};
+use synth_backend::filters::{Filter, FilterType};
+use synth_backend::wrapper::Synth;
 
 
 #[styled_component(App)]
@@ -57,11 +57,17 @@ pub fn app() -> Html {
         ('K', 72)
     ]));
 
-    let osc1 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, 0.0);
-    let osc2 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 0.2, 0.0);
-    let osc3 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Saw, 0.5, 0.0);
-    let osc4 = WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0);
-    let sound = use_state(|| osc1 + osc2 + (osc3 + osc4));
+    let freq = 500.0;
+    let bandwidth_hz = 5.0;
+    let filter = Filter::new(
+        FilterType::LowPass, 
+        sample_rate as f32, 
+        freq, 
+        bandwidth_hz
+    );
+    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
+    let oscillator = use_state(|| Synth::new(osc1, sample_rate, Some(filter)));
+    
 
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
@@ -130,7 +136,7 @@ pub fn app() -> Html {
                 log!("Triangle wave selected");
             },
             '+' => {
-                oscillator_type = oscillator_type + MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
+                oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::WhiteNoise, 0.8, 0.0));
                 cloned_oscillator.set(oscillator_type);
                 log!("Add an oscillator");
             }
@@ -142,7 +148,7 @@ pub fn app() -> Html {
                 // osc.set_type(web_sys::OscillatorType::Sawtooth);
                 // osc.frequency().set_value(midi_to_hz(*key_label).ok().unwrap());
                 let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
-                let mut source = cloned_sound.deref().clone();
+                let mut source = cloned_oscillator.deref().clone();
                 let _ = source.global_set_frequency(frequency);
                 buffer.insert(*key_label, source);
                 let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
@@ -238,7 +244,7 @@ pub fn app() -> Html {
                         Some(_) => (),
                         None => {
                             let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
-                            let mut source = cloned_sound.deref().clone();
+                            let mut source = cloned_oscillator.deref().clone();
                             let _ = source.global_set_frequency(frequency);
                             buffer.insert(*key_label, source);
                             let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
@@ -289,7 +295,7 @@ pub fn app() -> Html {
     }
 }
 
-pub fn display_oscillators(mouse_down: Callback<char>, mouse_up: Callback<char>, oscillator: &MultiOscillator) -> Vec<Html>{
+pub fn display_oscillators(mouse_down: Callback<char>, mouse_up: Callback<char>, oscillator: &Synth) -> Vec<Html>{
     let mut display = Vec::new();
     for idx in 0..oscillator.num_sources() {
         display.push(html! {
