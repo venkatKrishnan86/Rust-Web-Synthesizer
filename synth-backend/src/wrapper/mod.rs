@@ -9,15 +9,17 @@ pub struct Synth {
     pub sample_rate: u32,
     pub filter: Option<Filter>, // Make filter an optional field
     pub envelope: Option<Envelope>,
+    pub am_lfo: Option<WaveTableOscillator>,
 }
 
 impl Synth {
-    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>) -> Self {
+    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>, am_lfo: Option<WaveTableOscillator>) -> Self {
         Self {
             osc,
             sample_rate,
             filter,
             envelope,
+            am_lfo,
         }
     }
 
@@ -34,6 +36,11 @@ impl Synth {
 
         if let Some(ref mut envelope) = self.envelope {
             output_sample = output_sample * envelope.get_amplitude();
+        }
+
+        if let Some(ref mut am_lfo) = self.am_lfo {
+            let a = am_lfo.get_sample();
+            output_sample = output_sample * a.abs();
         }
 
         // If filter is None, return the sample directly

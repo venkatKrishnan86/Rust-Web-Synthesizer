@@ -75,8 +75,15 @@ pub fn app() -> Html {
     envelope.set_param(EnvelopeParam::DecayMs, 500.0);
     envelope.set_param(EnvelopeParam::SustainPercentage, 0.5);
 
+    let mut am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, 10.0);
+
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
-    let oscillator = use_state(|| Synth::new(osc1, sample_rate, Some(filter), Some(envelope)));
+    let oscillator = use_state(|| Synth::new(
+        osc1,
+        sample_rate,
+        Some(filter),
+        Some(envelope),
+        Some(am_lfo)));
     
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
