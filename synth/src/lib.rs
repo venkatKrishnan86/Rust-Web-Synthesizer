@@ -346,39 +346,33 @@ pub fn app() -> Html {
     let oscillator_selector_display: Vec<Html> = display_oscillators(mouse_down.clone(), mouse_up.clone(), key_up.clone(), key_down.clone(), oscillator.deref());
 
     html! {
-        // <div class= {overall_css}>
+        <div class= {overall_css}>
 
-        // <div class="parameters">
+        <div class="parameters">
             
-        //     <div class="column1">
-        //         <h1>{"Oscillator"}</h1>
-        //         {oscillator_selector_display}
-        //         <br />
-        //         <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
+            <div class="column1">
+                <h1>{"Oscillator"}</h1>
+                {oscillator_selector_display}
+                <br />
+                <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
                 
-        //         <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
-        //     </div>
-        //     <div class="column2">
-        //         <h1>{"Synth"}</h1>
-        //         <h1>{"Choose Your Filter Type"}</h1>
-        //         <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} />
-                
-        //     </div>
-
-        // </div>
-        // <div class="row">
-        <>
-            <h1>{"Oscillator"}</h1>
-            {oscillator_selector_display}
-            <br />
-            <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
+            </div>
+            <div class="column2">
             <h1>{"Filter"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64}/>
             <h1>{"LFO"}</h1>
             <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} freq={*lfo_freq.deref() as f64}/>
             <h1>{"Envelope"}</h1>
             <EnvelopeSettings attack_change={attack_change} decay_change={decay_change} sustain_change={sustain_change} attack={*attack_ms.deref() as f64} decay={*decay_ms.deref() as f64} sustain={*sustain_percentage.deref() as f64}/>
+                
+            </div>
+
+        </div>
+        <div class="row">
+
+     
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
+            <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
         </div>
 
 
