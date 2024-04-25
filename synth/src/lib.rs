@@ -380,8 +380,6 @@ pub fn app() -> Html {
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
 
-    let index = use_state(|| 0);
-
     let key_map_clone = keycode_maps.clone();
     let oscillator_selector_display: Vec<Html> = display_oscillators(
         mouse_down.clone(), 
@@ -390,8 +388,7 @@ pub fn app() -> Html {
         key_down.clone(), 
         oscillator.clone(),
         gain.clone(),
-        active_oscillators.deref().clone(),
-        index
+        active_oscillators.deref().clone()
     );
     html! {
         <>
@@ -418,8 +415,7 @@ pub fn display_oscillators(
     key_up: Callback<char>,
     oscillator: UseStateHandle<Synth>, 
     gain: UseStateHandle<Vec<f32>>,
-    active_indices: Vec<usize>,
-    index: UseStateHandle<usize>
+    active_indices: Vec<usize>
 ) -> Vec<Html>{
     let mut display = Vec::new();
     for idx in 0..oscillator.num_sources() {
@@ -427,16 +423,12 @@ pub fn display_oscillators(
         let cloned_gain = gain.clone();
         let idx_gain = gain.deref()[idx];
         let cloned_gain_set = gain.setter();
-        let cloned_index = index.clone();
         let gain_change = Callback::from(move |gain1: f64| {
-            cloned_index.set(idx);
-            let curr_index = cloned_index.deref().clone();
             let mut gain_vec = cloned_gain.deref().clone();
-            gain_vec[curr_index] = gain1 as f32;
+            gain_vec[idx] = gain1 as f32;
             cloned_gain_set.set(gain_vec);
             let mut oscillator_type = cloned_oscillator.deref().clone();
-            log!(gain1);
-            let _ = oscillator_type.set_gain(curr_index, gain1 as f32);
+            let _ = oscillator_type.set_gain(idx, gain1 as f32);
             cloned_oscillator.set(oscillator_type);
         });
         display.push(html! {
