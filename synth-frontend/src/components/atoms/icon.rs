@@ -1,13 +1,20 @@
 use stylist::yew::styled_component;
 use yew::prelude::*;
 
+/// Properties for the custom icon component.
 #[derive(Properties, PartialEq)]
 pub struct IconProps {
+    /// The CSS class for the icon.
     pub class: String,
+    /// The label for the icon.
     pub label: String,
+     /// The path to the icon image.
     pub img_path: String,
+    /// Whether the icon is active.
     pub is_active: bool,
+    /// Callback for mouse down event.
     pub mouse_down: Callback<MouseEvent>,
+    /// Optional callback for the mouse up event.
     pub mouse_up: Option<Callback<MouseEvent>>
 }
 

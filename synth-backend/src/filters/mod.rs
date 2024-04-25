@@ -1,19 +1,52 @@
+//! Filters
+//!
+//! This module provides digital filter implementations including low-pass, high-pass, and
+//! band-pass filters.
+//!
+//! # Examples
+//!
+//! ```
+//! use synth_backend::filters::{Filter, FilterParam, FilterType};
+//!
+//! // Create a new low-pass filter with the following parameters:
+//! // - Sample rate: 44100 Hz
+//! // - Cutoff frequency: 1000 Hz
+//! let mut filter = Filter::new(FilterType::LowPass, 44100.0, 1000.0, 0.0);
+//!
+//! // Process an input sample through the filter
+//! let output = filter.process(0.5);
+//!
+//! // Reset the filter to its initial state
+//! filter.reset();
+//!
+//! // Change the filter type to high-pass
+//! filter.change_filter_type(FilterType::HighPass);
+//! ```
 use std::f32::consts::PI;
 
+/// Parameters that can be set for a filter.
 #[derive(Debug, Clone, Copy)]
 pub enum FilterParam {
+    /// Sample rate in Hertz.
     SampleRateHz,
+    /// Cutoff frequency in Hertz.
     FreqHz,
+    /// Bandwidth in Hertz (only applicable for band-pass filters).
     BandwidthHz,
 }
 
+/// Types of digital filters.
 #[derive(Clone, Debug)]
 pub enum FilterType {
+    /// Low-pass filter.
     LowPass,
+    /// High-pass filter.
     HighPass,
+    /// Band-pass filter.
     BandPass,
 }
 
+/// Represents a digital filter.
 #[derive(Clone, Debug)]
 pub struct Filter {
     filter_type: FilterType,
@@ -27,6 +60,18 @@ pub struct Filter {
 }
 
 impl Filter {
+    /// Creates a new digital filter with the specified parameters.
+    ///
+    /// # Arguments
+    ///
+    /// * `filter_type` - The type of filter (LowPass, HighPass, or BandPass).
+    /// * `sample_rate_hz` - The sample rate in Hertz.
+    /// * `freq_hz` - The cutoff or center frequency in Hertz.
+    /// * `bandwidth_hz` - The bandwidth in Hertz (only applicable for band-pass filters).
+    ///
+    /// # Returns
+    ///
+    /// A new `Filter` instance.
     pub fn new (
         filter_type: FilterType,
         sample_rate_hz: f32,
@@ -67,6 +112,15 @@ impl Filter {
 
     }
 
+    /// Process an input sample through the filter and returns the output.
+    ///
+    /// # Arguments
+    ///
+    /// * `input` - The input sample.
+    ///
+    /// # Returns
+    ///
+    /// The output sample after filtering.
     pub fn process(&mut self, input: f32) -> f32 {
         match self.filter_type {
             FilterType::LowPass => self.process_lp(input),
@@ -97,11 +151,18 @@ impl Filter {
         0.5 * (input - ap_y)
     }
 
+    /// Resets the filter to its initial state.
     pub fn reset(&mut self) {
         self.xh = 0.0;
         self.xh_bp = [0.0, 0.0];
     }
 
+    /// Sets a parameter of the filter to the specified value.
+    ///
+    /// # Arguments
+    ///
+    /// * `param` - The parameter to set.
+    /// * `value` - The new value of the parameter.
     pub fn set_param(&mut self, param: FilterParam, value: f32) {
         match param {
             FilterParam::SampleRateHz => self.sample_rate_hz = value,
@@ -121,6 +182,11 @@ impl Filter {
         }
     }
 
+    /// Changes the filter type to the specified type.
+    ///
+    /// # Arguments
+    ///
+    /// * `filter_type` - The new filter type.
     pub fn change_filter_type(&mut self, filter_type: FilterType) {
         self.filter_type = filter_type;
         match self.filter_type {

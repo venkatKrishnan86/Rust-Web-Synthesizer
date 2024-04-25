@@ -1,3 +1,27 @@
+//! Wrapper module providing a high-level interface for creating synthesizers.
+//!
+//! # Examples
+//!
+//! ```
+//! use synth_backend::wrapper::{Synth, Oscillator, FilterType, EnvelopeParam};
+//!
+//! // Create a new synthesizer with default settings
+//! let synth = Synth::new_default();
+//!
+//! // Set the oscillator type
+//! synth.set_oscillator(0, Oscillator::Sine);
+//!
+//! // Set the filter type
+//! synth.set_filter(Some(FilterType::LowPass), 1000.0, 500.0);
+//!
+//! // Set envelope parameters
+//! synth.set_envelope_params(EnvelopeParam::AttackMs, 10.0);
+//!
+//! // Generate audio samples
+//! let sample = synth.get_sample();
+//! ```
+//!
+//! The `Synth` struct provides methods for configuring and generating audio samples from a synthesizer.
 use crate::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use crate::filters::{Filter, FilterParam, FilterType};
 use crate::envelopes::{Envelope, EnvelopeParam};
@@ -5,6 +29,7 @@ use std::ops::Add;
 
 const GAIN: f32 = 1.0;
 
+/// Synth struct representing a synthesizer.
 #[derive(Clone, Debug)]
 pub struct Synth {
     pub osc: MultiOscillator,
@@ -15,6 +40,19 @@ pub struct Synth {
 }
 
 impl Synth {
+    /// Creates a new `Synth` instance with the provided parameters.
+    ///
+    /// # Arguments
+    ///
+    /// * `osc` - The multi-oscillator to be used by the synthesizer.
+    /// * `sample_rate` - The sample rate of the synthesizer.
+    /// * `filter` - An optional filter to be applied to the audio output.
+    /// * `envelope` - An optional envelope to shape the audio output.
+    /// * `am_lfo` - An optional low-frequency oscillator for amplitude modulation.
+    ///
+    /// # Returns
+    ///
+    /// A new `Synth` instance configured with the provided parameters.
     pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>, am_lfo: Option<WaveTableOscillator>) -> Self {
         Self {
             osc,
@@ -25,6 +63,14 @@ impl Synth {
         }
     }
 
+    /// Generates the next audio sample from the synthesizer.
+    ///
+    /// This method calculates the next audio sample by processing the output of the multi-oscillator
+    /// and applying any configured filter, envelope, and amplitude modulation.
+    ///
+    /// # Returns
+    ///
+    /// The next audio sample as a 32-bit floating point value.
     pub fn get_sample(&mut self) -> f32 {
         // Call the get_sample method of MultiOscillator
         let sample = self.osc.get_sample();
@@ -49,26 +95,71 @@ impl Synth {
         output_sample
     }
 
+    /// Sets the oscillator type at the specified index.
+    ///
+    /// # Arguments
+    ///
+    /// * `index` - The index of the oscillator to be set.
+    /// * `oscillator` - The type of oscillator to set.
     pub fn set_oscillator(&mut self, index: usize, oscillator: Oscillator) {
         self.osc.set_oscillator(index, oscillator);
     }
 
+    /// Removes the oscillator at the specified index and returns it.
+    ///
+    /// # Arguments
+    ///
+    /// * `index` - The index of the oscillator to be removed.
+    ///
+    /// # Returns
+    ///
+    /// The removed oscillator.
     pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
         self.osc.remove(index)
     }
 
+    /// Pushes a new oscillator into the synthesizer's multi-oscillator.
+    ///
+    /// # Arguments
+    ///
+    /// * `oscillator` - The oscillator to be added.
+    ///
+    /// # Returns
+    ///
+    /// A result indicating success or failure.
     pub fn push(&mut self, oscillator: WaveTableOscillator) -> Result<(), String> {
         self.osc.push(oscillator)
     }
 
+    /// Sets the frequency of all oscillators in the multi-oscillator to the specified value.
+    ///
+    /// # Arguments
+    ///
+    /// * `frequency` - The new frequency value.
+    ///
+    /// # Returns
+    ///
+    /// A result indicating success or failure.
     pub fn global_set_frequency(&mut self, frequency: f32) -> Result<(), String> {
         self.osc.global_set_frequency(frequency)
     }
 
+    /// Returns the number of sources (oscillators) in the multi-oscillator.
+    ///
+    /// # Returns
+    ///
+    /// The number of sources.
     pub fn num_sources(&self) -> usize {
         self.osc.num_sources()
     }
 
+    /// Sets the filter type, frequency, and bandwidth of the synthesizer's filter.
+    ///
+    /// # Arguments
+    ///
+    /// * `filter` - The type of filter to set.
+    /// * `freq_filter` - The frequency of the filter.
+    /// * `bandwidth_hz_filter` - The bandwidth of the filter in Hertz.
     pub fn set_filter(&mut self, filter: Option<FilterType>, freq_filter: f32, bandwidth_hz_filter: f32) {
         match filter {
             None => self.filter = None,
@@ -79,6 +170,12 @@ impl Synth {
         }
     }
 
+     /// Sets the parameter value of the synthesizer's filter.
+    ///
+    /// # Arguments
+    ///
+    /// * `filterparam` - The filter parameter to set.
+    /// * `value` - The value to set the parameter.
     pub fn set_filter_params(&mut self, filterparam: FilterParam, value: f32) {
         match self.filter {
             None => (),
@@ -86,6 +183,12 @@ impl Synth {
         }
     }
 
+    /// Sets the parameter value of the synthesizer's envelope.
+    ///
+    /// # Arguments
+    ///
+    /// * `envelope_param` - The envelope parameter to set.
+    /// * `value` - The value to set the parameter to.
     pub fn set_envelope_params(&mut self, envelope_param: EnvelopeParam, value: f32) {
         match self.envelope {
             None => (),
@@ -93,6 +196,15 @@ impl Synth {
         }
     }
 
+    /// Sets the frequency of the amplitude modulation low-frequency oscillator (LFO).
+    ///
+    /// # Arguments
+    ///
+    /// * `frequency` - The new frequency value.
+    ///
+    /// # Returns
+    ///
+    /// A result indicating success or failure.
     pub fn set_lfo_frequency(&mut self, frequency: f32) -> Result<(), String> {
         match self.am_lfo {
             None => Err("LFO is not assigned".to_string()),
@@ -100,6 +212,12 @@ impl Synth {
         }
     }
 
+    /// Sets the type of the amplitude modulation low-frequency oscillator (LFO) and its frequency.
+    ///
+    /// # Arguments
+    ///
+    /// * `oscillator` - The type of oscillator to set.
+    /// * `frequency` - The frequency of the oscillator.
     pub fn set_lfo_osc(&mut self, oscillator: Option<Oscillator>, frequency: f32){
         match oscillator {
             None => self.am_lfo = None,

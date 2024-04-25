@@ -2,14 +2,18 @@ use stylist::yew::styled_component;
 use yew::prelude::*;
 use crate::components::atoms::button::CustomButton;
 
-
+/// Properties for the `RemoveButton` component.
 #[derive(Properties, PartialEq)]
 pub struct RemoveButtonProps {
+    /// Callback invoked when the mouse button is pressed down on the button.
     pub on_mouse_down: Callback<(char, usize)>,
+    /// Callback invoked when the mouse button is released on the button.
     pub on_mouse_up: Callback<(char, usize)>,
+    /// The number associated with the remove button.
     pub number: usize
 }
 
+/// The `remove_button` component displays a styled button with a `x` label for removing items.
 #[styled_component(RemoveButton)]
 pub fn remove_button(props: &RemoveButtonProps) -> Html{
     let mouse_down = props.on_mouse_down.clone();

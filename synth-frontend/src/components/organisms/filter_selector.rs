@@ -4,17 +4,25 @@ use crate::components::molecules::multi_selector::MultiSelector;
 use crate::components::atoms::slider::Slider;
 use std::collections::HashMap;
 
+/// CSS for the oscillator selector component.
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
 
+/// Properties for the `FilterSelector` component.
 #[derive(Properties, PartialEq)]
 pub struct FilterSelectorProperties {
+     /// Callback invoked when the mouse button is pressed down on the component.
     pub mouse_down: Callback<(char, usize)>,
+    /// Callback invoked when the mouse button is released on the component.
     pub mouse_up: Callback<(char, usize)>,
+    /// Callback invoked when the frequency value changes.
     pub freq_change: Callback<f64>,
+    /// The frequency value.
     pub freq: f64,
+    /// The index of the active item in the multi-selector.
     pub active_index: usize
 }
 
+/// The `filter_selector` component represents a filter selector with a multi-selector and a frequency slider.
 #[styled_component(FilterSelector)]
 pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
     let overall_css = Style::new(OSCILLATOR_SELECT_CSS).unwrap();

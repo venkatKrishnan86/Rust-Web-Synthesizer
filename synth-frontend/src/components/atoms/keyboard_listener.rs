@@ -3,25 +3,34 @@ use gloo::events::EventListener;
 use web_sys::KeyboardEvent;
 use wasm_bindgen::JsCast;
 
+/// Represents the type of keyboard event.
 pub enum KeyHitType {
+    /// Indicates a key down event.
     Up,
+    /// Indicates a key up event.
     Down
 }
 
 // Yew component messages
 pub enum Msg{
+    /// Represents a keyboard event.
     KeyEvent { event: KeyboardEvent, hit_type: KeyHitType},
 }
 
+/// Properties for the `KeyboardListener` component.
 #[derive(Properties, PartialEq)]
 pub struct KeyboardListenerProps {
+    /// Callback for handling key down events.
     pub key_down: Callback<KeyboardEvent>,
+    /// Callback for handling key up events.
     pub key_up: Callback<KeyboardEvent>
 }
 
+/// A Yew component that listens for keyboard events.
 pub struct KeyboardListener {
-    /// Holds the listener once it's stood up. Can't be done before rendering because the document doesn't exist yet
+    /// Holds the listener for key down events.
     pub kbd_listener: Option<EventListener>,
+    /// Holds the listener for key up events.
     pub kbu_listener: Option<EventListener>,
 }
 
@@ -30,6 +39,7 @@ impl Component for KeyboardListener {
     type Message = Msg;
     type Properties = KeyboardListenerProps;
 
+    /// Creates a new `KeyboardListener` component.
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
             kbd_listener: None,
@@ -37,12 +47,14 @@ impl Component for KeyboardListener {
         }
     }
 
+    /// Renders the `KeyboardListener` component.
     fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <h1></h1>
         }
     }
 
+    /// Handles messages sent to the `KeyboardListener` component.
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::KeyEvent { event , hit_type: KeyHitType::Down} => {
@@ -58,6 +70,7 @@ impl Component for KeyboardListener {
         }
     }
 
+    /// Executes after the `KeyboardListener` component is rendered.
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
         // we only need to run the below stuff the first time
         if !first_render {

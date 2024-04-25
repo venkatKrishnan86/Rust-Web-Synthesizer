@@ -2,18 +2,27 @@ use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
 use crate::components::atoms::slider::Slider;
 
+/// CSS styling for the envelope settings.
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
 
+/// Properties for the `EnvelopeSettings` component.
 #[derive(Properties, PartialEq)]
 pub struct EnvelopeProperties {
+    /// Callback invoked when the attack value changes.
     pub attack_change: Callback<f64>,
+    /// Callback invoked when the decay value changes.
     pub decay_change: Callback<f64>,
+    /// Callback invoked when the sustain value changes.
     pub sustain_change: Callback<f64>,
+    /// The current value of the attack.
     pub attack: f64,
+    /// The current value of the decay.
     pub decay: f64,
+    /// The current value of the sustain.
     pub sustain: f64
 }
 
+/// The `EnvelopeSettings` component represents settings for an envelope.
 #[styled_component(EnvelopeSettings)]
 pub fn filter_selector(props: &EnvelopeProperties) -> Html {
     let overall_css = Style::new(OSCILLATOR_SELECT_CSS).unwrap();
