@@ -85,15 +85,19 @@ impl WaveTableOscillator {
     }
 
     pub fn set_frequency(&mut self, frequency: f32) -> Result<(), String> {
-        if frequency <= 0.0 {
+        if frequency < 0.0 {
             return Err("Frequency must be a positive floating point value!".to_owned());
         }
-        let curr_midi = hz_to_midi(frequency).expect("Frequency is less than 0.0");
-        let new_midi = curr_midi as i8 + self.detune_semitones;
-        if new_midi > 0 {
-            self.index_increment = midi_to_hz(new_midi as u8).unwrap() * self.wave_table_size as f32 / self.sample_rate as f32;
+        if self.detune_semitones == 0 {
+            self.index_increment = frequency * self.wave_table_size as f32 / self.sample_rate as f32;
         } else {
-            return Err("Net midi is less than 0".to_owned());
+            let curr_midi = hz_to_midi(frequency).expect("Frequency is less than 0.0");
+            let new_midi = curr_midi as i8 + self.detune_semitones;
+            if new_midi > 0 {
+                self.index_increment = midi_to_hz(new_midi as u8).unwrap() * self.wave_table_size as f32 / self.sample_rate as f32;
+            } else {
+                return Err("Net midi is less than 0".to_owned());
+            }
         }
         Ok(())
     }
