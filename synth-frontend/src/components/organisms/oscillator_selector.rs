@@ -25,6 +25,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
         ('2', "oscillator"),
         ('3', "oscillator"),
         ('4', "oscillator"),
+        ('5', "oscillator"),
         ('.', "container")
     ]));
 
@@ -96,9 +97,9 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
                 on_mouse_up={Callback::from(|_|{})}
             />
             <Selector
-                icon_class={"oscillator-icon"} 
+                icon_class={oscillator_class_hashmap.deref()[&'5']} 
                 label={('5', number)} 
-                img_path={"UI_components/assets/icons/Triangle.png"} 
+                img_path={"https://i.ibb.co/VxRNs6g/Noise.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
