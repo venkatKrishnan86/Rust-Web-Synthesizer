@@ -74,13 +74,14 @@ pub fn app() -> Html {
     let envelope = Envelope::new(sample_rate as f32, *attack_ms.deref(), *decay_ms.deref(), *sustain_percentage.deref(), release_ms);
 
     let lfo_freq = use_state(|| 0.01);
+    let lfo_type = use_state(|| LFOType::Amplitude);
     // let am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, *lfo_freq.deref());
     let mut osillator = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0);
-    let mut lfo = LFO::new(LFOType::Amplitude, sample_rate as f32,  osillator, 0.0015);
-    lfo.set_frequency(5.0);
-    lfo.set_width(0.0015);
-    lfo.set_type(LFOType::Frequency);
-    lfo.set_oscillator(Oscillator::Triangle);
+    // let mut lfo = LFO::new(LFOType::Amplitude, sample_rate as f32,  osillator, 0.0015);
+    // lfo.set_frequency(5.0);
+    // lfo.set_width(0.0015);
+    // lfo.set_type(LFOType::Frequency);
+    // lfo.set_oscillator(Oscillator::Triangle);
 
     let gain = use_state(|| vec![0.5]);
     let detune_semitones = use_state(|| vec![0]);
@@ -157,6 +158,7 @@ pub fn app() -> Html {
     let cloned_active_lfo = active_lfo.clone();
     let cloned_active_filter = active_filter.clone();
     let cloned_freq_lfo = lfo_freq.clone();
+    let cloned_type_lfo = lfo_type.clone();
     let cloned_osc_gain = gain.clone();
     let cloned_osc_detune = detune_semitones.clone();
     let mouse_down = Callback::from(move |label: (char, usize)| {
@@ -173,6 +175,7 @@ pub fn app() -> Html {
         let mut active_lfo_index = cloned_active_lfo.deref().clone();
         let mut active_filter_index = cloned_active_filter.deref().clone();
         let lfo_freq = cloned_freq_lfo.deref().clone();
+        let lfo_type = cloned_type_lfo.deref().clone();
         let mut list_of_gains = cloned_osc_gain.deref().clone();
         let mut list_of_detunes = cloned_osc_detune.deref().clone();
         match label.0 {
@@ -269,23 +272,23 @@ pub fn app() -> Html {
                 }
             },
             '|' => {
-                oscillator_type.set_lfo_osc(None, lfo_freq);
+                oscillator_type.set_lfo_osc(None, lfo_freq, lfo_type);
                 active_lfo_index = 0;
             },
             '[' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Sine), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Sine), lfo_freq, lfo_type);
                 active_lfo_index = 1;
             },
             ']' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Square), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Square), lfo_freq, lfo_type);
                 active_lfo_index = 2;
             },
             '{' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Saw), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Saw), lfo_freq, lfo_type);
                 active_lfo_index = 3;
             },
             '}' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Triangle), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Triangle), lfo_freq, lfo_type);
                 active_lfo_index = 4;
             },
             _ => {
