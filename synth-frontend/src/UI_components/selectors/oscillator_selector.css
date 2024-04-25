@@ -4,8 +4,8 @@ justify-content: flex-start;
 gap: 10px;
 
 .oscillator {
-  width: 100px;
-  height: 100px;
+  width: 5vh;
+  height: 5vh;
   border-radius: 1px;
   margin: 2px;
   background-color: gray;
@@ -21,8 +21,8 @@ gap: 10px;
 
 .oscillator:active {
   background-color: black;
-  width: 100px;
-  height: 100px;
+  width: 5vh;
+  height: 5vh;
   border-radius: 1px;
   margin: 2px;
 }
@@ -30,8 +30,8 @@ gap: 10px;
 
 
 .icon-image {
-    width: 100px;
-    height: 100px;
+    width: 5vh;
+    height: 5vh;
     
 }
 

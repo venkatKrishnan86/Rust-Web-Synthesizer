@@ -15,6 +15,7 @@ use synth_backend::utils::{midi_to_hz, State};
 use synth_backend::filters::{Filter, FilterType};
 use synth_backend::wrapper::Synth;
 
+const OVERALL_CSS: &str = include_str!("../../synth-frontend/src/UI_components/overall.css");
 
 #[styled_component(App)]
 pub fn app() -> Html {
@@ -237,21 +238,40 @@ pub fn app() -> Html {
         cloned_poly.set(buffer);
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
-
+    let overall_css = stylist::Style::new(OVERALL_CSS).unwrap();
     let key_map_clone = keycode_maps.clone();
     let oscillator_selector_display: Vec<Html> = display_oscillators(mouse_down.clone(), mouse_up.clone(), key_up.clone(), key_down.clone(), oscillator.deref());
+
     html! {
-        <>
-            <h1>{"Oscillator"}</h1>
-            {oscillator_selector_display}
-            <br />
-            <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
-            <h1>{"Choose Your Filter Type"}</h1>
-            <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} />
+        <div class= {overall_css}>
+
+        <div class="parameters">
+            
+            <div class="column1">
+                <h1>{"Oscillator"}</h1>
+                {oscillator_selector_display}
+                <br />
+                <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
+                
+                <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
+            </div>
+            <div class="column2">
+                <h1>{"Synth"}</h1>
+                <h1>{"Choose Your Filter Type"}</h1>
+                <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} />
+                
+            </div>
+
+        </div>
+        <div class="row">
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
-            <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
-        </>
+        </div>
+
+
+        </div>
+
     }
+
 }
 
 pub fn display_oscillators(mouse_down: Callback<char>, mouse_up: Callback<char>, key_down: Callback<char>, key_up: Callback<char> ,oscillator: &Synth) -> Vec<Html>{
