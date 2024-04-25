@@ -80,7 +80,7 @@ impl WaveTableOscillator {
     }
 
     pub fn set_frequency(&mut self, frequency: f32) -> Result<(), String> {
-        if frequency <= 0.0 {
+        if frequency < 0.0 {
             return Err("Frequency must be a positive floating point value!".to_owned());
         }
         self.index_increment = frequency * self.wave_table_size as f32 / self.sample_rate as f32;
