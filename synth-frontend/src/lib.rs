@@ -151,3 +151,13 @@ pub fn volume_bar(props: &MIDIKeyboardProperties) -> Html {
         </div>
     }
 }
+
+// pub struct SelectOne {
+//     list: Vec<bool>
+// }
+
+// impl SelectOne {
+//     pub fn new(capacity: usize, default_index: usize) {
+
+//     }
+// }

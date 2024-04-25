@@ -47,7 +47,7 @@ pub fn selector(props: &SelectorProps) -> Html {
             <CustomIcon 
                 class={props.icon_class.clone()} 
                 label={props.label.0.to_string()} 
-                is_active={false}
+                is_active={props.is_active}
                 img_path={props.img_path.clone()}
                 mouse_down={mouse_down}
                 mouse_up={mouse_up}

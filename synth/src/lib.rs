@@ -131,6 +131,8 @@ pub fn app() -> Html {
         let _ = oscillator_type.set_lfo_frequency(freq as f32);
         cloned_oscillator.set(oscillator_type);
     });
+
+    let active_oscillators = use_state(|| vec![0; oscillator.deref().num_sources()]);
     
 
     let key_map_setter = keycode_maps.setter();
@@ -141,6 +143,7 @@ pub fn app() -> Html {
     let stream_setter = stream.setter();
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
+    let cloned_active_osc = active_oscillators.clone();
     let mouse_down = Callback::from(move |label: (char, usize)| {
         let key_label = key_map_down.get(&label.0).unwrap_or(&0);
         log!("Holding key", label.0.to_string(), ", MIDI Note:", key_label.to_string());
@@ -151,6 +154,7 @@ pub fn app() -> Html {
         let mut oscillator_type = cloned_oscillator.deref().clone();
         let freq_filter = cloned_freq.deref().clone();
         let bandwidth_hz_filter = freq_filter*0.5;
+        let mut active_indices = cloned_active_osc.deref().clone();
         match label.0 {
             'Z' => {
                 decrease_octave(cloned_key_map);
@@ -173,30 +177,35 @@ pub fn app() -> Html {
             '1' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::Sine);
+                    active_indices[label.1 - 1] = 0;
                     log!("Sine wave selected");
                 }
             },
             '2' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::BidirectionalSquare);
+                    active_indices[label.1 - 1] = 1;
                     log!("Square wave selected");
                 }
             },
             '3' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::Saw);
+                    active_indices[label.1 - 1] = 2;
                     log!("Sawtooth wave selected");
                 }
             },
             '4' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::Triangle);
+                    active_indices[label.1 - 1] = 3;
                     log!("Triangle wave selected");
                 }
             },
             '5' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::WhiteNoise);
+                    active_indices[label.1 - 1] = 4;
                     log!("White Noise wave selected");
                 }
             },
@@ -218,11 +227,13 @@ pub fn app() -> Html {
             },
             '+' => {
                 let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
+                active_indices.push(0);
                 log!("Add an oscillator");
             }
             '-' => {
                 if oscillator_type.num_sources() > 1 {
                     let _ = oscillator_type.remove(label.1 - 1);
+                    active_indices.remove(label.1 - 1);
                 }
             },
             '[' => {
@@ -249,6 +260,7 @@ pub fn app() -> Html {
             }
         }
         cloned_oscillator.set(oscillator_type);
+        cloned_active_osc.set(active_indices);
     });
 
     let key_map_up = keycode_maps.clone();
@@ -342,7 +354,14 @@ pub fn app() -> Html {
     });
 
     let key_map_clone = keycode_maps.clone();
-    let oscillator_selector_display: Vec<Html> = display_oscillators(mouse_down.clone(), mouse_up.clone(), key_up.clone(), key_down.clone(), oscillator.deref());
+    let oscillator_selector_display: Vec<Html> = display_oscillators(
+        mouse_down.clone(), 
+        mouse_up.clone(), 
+        key_up.clone(), 
+        key_down.clone(), 
+        oscillator.deref(),
+        active_oscillators.deref().clone()
+    );
     html! {
         <>
             <h1>{"Oscillator"}</h1>
@@ -361,11 +380,16 @@ pub fn app() -> Html {
     }
 }
 
-pub fn display_oscillators(mouse_down: Callback<(char, usize)>, mouse_up: Callback<(char, usize)>, key_down: Callback<char>, key_up: Callback<char> ,oscillator: &Synth) -> Vec<Html>{
+pub fn display_oscillators(mouse_down: Callback<(char, usize)>, mouse_up: Callback<(char, usize)>, key_down: Callback<char>, key_up: Callback<char> ,oscillator: &Synth, active_indices: Vec<usize>) -> Vec<Html>{
     let mut display = Vec::new();
     for idx in 0..oscillator.num_sources() {
         display.push(html! {
-            <OscillatorSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} number={idx as usize+1}/>
+            <OscillatorSelector 
+                mouse_down={mouse_down.clone()} 
+                mouse_up={mouse_up.clone()} 
+                number={idx as usize+1} 
+                active_index={active_indices[idx]}
+            />
         })
     }
     display

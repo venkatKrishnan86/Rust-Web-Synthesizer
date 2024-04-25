@@ -16,7 +16,7 @@ pub fn custom_icon(props: &IconProps) -> Html{
     match &props.mouse_up {
         Some(callback_val) => {
             html! {
-                <button 
+                <button
                     onmousedown={&props.mouse_down} 
                     onmouseup={callback_val}
                 >
