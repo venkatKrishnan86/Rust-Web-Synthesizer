@@ -1,3 +1,21 @@
+//! # MIDI Keyboard Component Library
+//!
+//! This library provides components for building MIDI keyboard interfaces in Yew, a modern
+//! Rust framework for creating web apps.
+//!
+//! ## Components
+//!
+//! - [`MIDIKeyboard`](crate::midi_keyboard::MIDIKeyboard): A MIDI keyboard component that
+//!   generates MIDI events based on keyboard input.
+//! - [`VolumeBar`](crate::midi_keyboard::VolumeBar): A simple volume bar component for visualizing
+//!   volume levels.
+//! 
+//! ## Example
+//!
+//! For a complete example of how to use the MIDI keyboard component, refer to the examples directory
+//! in the repository.
+//!
+
 use std::collections::HashMap;
 use std::hash;
 use std::ops::Deref;
@@ -10,21 +28,30 @@ use components::atoms::keyboard_listener::KeyboardListener;
 use components::atoms::button::CustomButton;
 use components::atoms::icon::CustomIcon;
 
+/// Contains all the UI components used to build a MIDI keyboard interface.
 pub mod components;
 
+/// CSS style for white keys.
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
+/// CSS style for black keys.
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
+/// CSS style for octave change controls.
 const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octave_change.css");
 
-
+/// Properties for the MIDI keyboard component.
 #[derive(Properties, PartialEq)]
 pub struct MIDIKeyboardProperties {
+    /// Callback for mouse down events.
     pub mouse_down: Callback<(char, usize)>,
+    /// Callback for mouse up events.
     pub mouse_up: Callback<(char, usize)>,
+    /// Callback for key down events.
     pub key_down: Callback<char>,
+    /// Callback for key up events.
     pub key_up: Callback<char>,
 }
 
+/// Renders a MIDI keyboard component.
 #[styled_component(MIDIKeyboard)]
 pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     let white_keys_style = Style::new(WHITE_KEYS_CSS).unwrap();

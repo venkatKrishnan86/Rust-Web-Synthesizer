@@ -1,6 +1,6 @@
 //! # Polyphonic MIDI map
 //! 
-//! I aim to create a polyphonic sine MIDI map.
+//! We aim to create a polyphonic sine MIDI map.
 //! ## Key takeaways
 //! - `Source`: Any struct containing the audio array information, and must implement the `Source` trait
 //! - `Sink`: One track, which feeds to the output. The appending happens in the time domain. Each source appended plays one after the other
@@ -9,24 +9,32 @@
 //!     - The appending happens in the time domain
 //!     - Each source appended plays one after the other
 //!     - For multiple sounds to play together, one must use multiple sinks
-
-
-// const POLYPHONY: usize = 16;
-// const SAMPLE_RATE: u32 = 44100;
-
-// #[styled_component(App)]
-// pub fn app() -> Html {
-//     let host = cpal::default_host();
-//     let device = use_state(|| host.default_output_device().expect("No default output device found"));
-//     let supported_configs = device.supported_output_configs().unwrap();
-//     let config: UseStateHandle<StreamConfig> = use_state(|| {
-//         match supported_configs
-//         .filter(|c| c.channels() == 1)
-//         .max_by(|a, b| a.cmp_default_heuristics(b)) {
-//             Some(config) => config.with_sample_rate(SampleRate(SAMPLE_RATE)).into(),
-//             _ => panic!("No supported configuration found for output device")
-//         }
-//     });
+//!
+//! The `synth-backend` crate provides modules for implementing polyphonic MIDI mapping, including utilities,
+//! oscillators, ring buffers, filters, envelopes, and a high-level wrapper for synthesizer creation.
+//!
+//! ## Examples
+//!
+//! ```
+//! use synth_backend::wrapper::{Synth, Oscillator, FilterType, EnvelopeParam};
+//!
+//! // Create a new synthesizer with default settings
+//! let synth = Synth::new_default();
+//!
+//! // Set the oscillator type
+//! synth.set_oscillator(0, Oscillator::Sine);
+//!
+//! // Set the filter type
+//! synth.set_filter(Some(FilterType::LowPass), 1000.0, 500.0);
+//!
+//! // Set envelope parameters
+//! synth.set_envelope_params(EnvelopeParam::AttackMs, 10.0);
+//!
+//! // Generate audio samples
+//! let sample = synth.get_sample();
+//! ```
+//!
+//! The `Synth` struct provides methods for configuring and generating audio samples from a synthesizer.
 
 pub mod utils;
 pub mod oscillators;

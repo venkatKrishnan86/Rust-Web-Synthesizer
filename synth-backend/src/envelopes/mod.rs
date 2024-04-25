@@ -1,10 +1,39 @@
 //! ADSR: Attack Decay Sustain Release
+//!
+//! This module defines an ADSR envelope generator.
+//!
+//! # Examples
+//!
+//! ```
+//! use synth_backend::envelopes::{Envelope, EnvelopeParam};
+//!
+//! // Create a new ADSR envelope with the following parameters:
+//! // - Sample rate: 44100 Hz
+//! // - Attack time: 100 ms
+//! // - Decay time: 200 ms
+//! // - Sustain level: 0.5
+//! // - Release time: 300 ms
+//! let mut envelope = Envelope::new(44100.0, 100.0, 200.0, 0.5, 300.0);
+//!
+//! // Get the amplitude of the envelope at a given step in time
+//! let amplitude = envelope.get_amplitude();
+//!
+//! // Reset the envelope to its initial state
+//! envelope.reset();
+//!
+//! // Set the attack time to 50 ms
+//! envelope.set_param(EnvelopeParam::AttackMs, 50.0);
+//! ```
 
 #[derive(Clone, Debug)]
 pub enum EnvelopeParam {
+    /// Attack time in milliseconds (ms)
     AttackMs,
+    /// Decay time in ms
     DecayMs,
+    /// Sustain level as a percentage (0.0 - 1.0)
     SustainPercentage,
+    /// Release time in ms
     ReleaseMs,
 }
 
@@ -19,6 +48,19 @@ pub struct Envelope {
 }
 
 impl Envelope {
+    /// Creates a new ADSR envelope with the specified parameters.
+    ///
+    /// # Arguments
+    ///
+    /// * `sample_rate_hz` - Sample rate in Hertz.
+    /// * `attack_ms` - Attack time in milliseconds.
+    /// * `decay_ms` - Decay time in milliseconds.
+    /// * `sustain_percentage` - Sustain level as a percentage (0.0 - 1.0).
+    /// * `release_ms` - Release time in milliseconds.
+    ///
+    /// # Returns
+    ///
+    /// A new `Envelope` instance.
     pub fn new(
         sample_rate_hz: f32,
         attack_ms: f32,
@@ -37,6 +79,13 @@ impl Envelope {
         }
     }
 
+    /// Returns the current amplitude of the envelope.
+    ///
+    /// The amplitude is calculated based on the current time step and envelope parameters.
+    ///
+    /// # Returns
+    ///
+    /// The current amplitude value.
     pub fn get_amplitude(&mut self) -> f32 {
         self.current_step += 1;
         if self.current_step < self.attack_step {
@@ -48,10 +97,17 @@ impl Envelope {
         }
     }
 
+    /// Resets the envelope to its initial state.
     pub fn reset(&mut self) {
         self.current_step = 0;
     }
 
+    /// Sets a parameter of the envelope to the specified value.
+    ///
+    /// # Arguments
+    ///
+    /// * `param` - Parameter to set.
+    /// * `value` - New value of the parameter.
     pub fn set_param(&mut self, param: EnvelopeParam, value: f32) {
         match param {
             EnvelopeParam::AttackMs => {

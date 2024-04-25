@@ -1,3 +1,46 @@
+//! # Browser Based Synthesizer
+//!
+//! This crate contains the implementation of a synthesizer application using the Yew framework.
+//!
+//! ## Components
+//!
+//! - `app`: The main component representing the entire application. It manages state, sets up audio streams,
+//!         and orchestrates interactions between other synth and UI components.
+//! - `display_oscillators`: A helper function to display oscillator selectors dynamically based on the number
+//!                          of oscillators in the synthesizer.
+//!
+//! ## State Management
+//!
+//! This application uses Yew's `use_state` for managing component state. Each component manages its own state
+//! using hooks provided by Yew.
+//!
+//! ## Event Handling
+//!
+//! Events such as mouse clicks and key presses are handled using Yew's event system. Callbacks are used to
+//! handle these events and update the component state accordingly.
+//!
+//! ## Code Structure
+//!
+//! The code is organized into modules representing different aspects of the application, such as oscillators,
+//! filters, envelopes, etc. Components are structured hierarchically, with the main `App` component at the top.
+//!
+//! ## External Dependencies
+//!
+//! This application relies on the following external crates:
+//!
+//! - `synth_backend`: Provides backend functionality for the synthesizer.
+//! - `synth_frontend`: Contains frontend components for the synthesizer UI.
+//! - `yew`: The web framework used for building the user interface.
+//! - `stylist`: Provides styling utilities for Yew components.
+//! - `gloo`: Provides utilities for web APIs.
+//! - `cpal`: Used for audio input and output.
+//!
+//! For detailed documentation of each crate, refer to their respective documentation.
+
+
+#[doc(include = "synth/src/lib.rs")]
+
+
 use std::collections::HashMap;
 use std::ops::Deref;
 use synth_backend::{filters::FilterParam, ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};

@@ -6,20 +6,27 @@ use crate::components::atoms::slider::{Slider, IntSlider};
 use crate::components::molecules::multi_selector::MultiSelector;
 use crate::components::molecules::remove_button::RemoveButton;
 
+/// CSS for the oscillator selector component.
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
 
+/// Properties for the `OscillatorSelector` component.
 #[derive(Properties, PartialEq)]
 pub struct OscillatorSelectorProperties {
+    /// Callback invoked when the mouse button is pressed down on the component.
     pub mouse_down: Callback<(char, usize)>,
+    /// Callback invoked when the mouse button is released on the component.
     pub mouse_up: Callback<(char, usize)>,
     pub gain_change: Callback<f64>,
     pub detune_change: Callback<i8>,
     pub gain: f64,
     pub detune: i8,
+    /// The number of the oscillator.
     pub number: usize,
+    /// The index of the active item in the multi-selector.
     pub active_index: usize,
 }
 
+/// The `oscillator_selector` component represents an oscillator selector with a multi-selector and a remove button.
 #[styled_component(OscillatorSelector)]
 pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
     let mouse_down = props.mouse_down.clone();
