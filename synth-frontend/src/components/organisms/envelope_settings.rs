@@ -1,6 +1,5 @@
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
-use crate::components::molecules::selector::Selector;
 use crate::components::atoms::slider::Slider;
 
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
