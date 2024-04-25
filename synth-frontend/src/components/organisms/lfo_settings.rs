@@ -27,7 +27,7 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
         ('}', 0),
     ];
     let images = vec![
-        "".to_owned(),
+        "https://i.ibb.co/d7W1DrQ/Power.png".to_owned(),
         "https://i.ibb.co/XZWhWv5/Sine.png".to_owned(),
         "https://i.ibb.co/P1wjXPj/Square.png".to_owned(),
         "https://i.ibb.co/VSSfGGZ/Sawtooth.png".to_owned(),
