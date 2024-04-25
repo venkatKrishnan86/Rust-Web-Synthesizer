@@ -347,6 +347,12 @@ pub fn app() -> Html {
 
     html! {
         <div class= {overall_css}>
+        <div class = "header">
+            <img src="https://i.ibb.co/VDXtLD5/mr-krabb.png" alt="Mr. Krabs" border="0"/>
+            <img src="https://i.ibb.co/YDBhvC5/Rusty-Krabby-Synthie-4-25-2024-2.png" alt="Rusty Krabby Synthie" border="0"/>
+            <img src="https://i.ibb.co/ryZDfXg/sponge-bob-transparent.png" alt="SpongeBob" border="0"/>
+
+        </div>
 
         <div class="parameters">
             
