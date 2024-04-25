@@ -390,7 +390,7 @@ pub fn app() -> Html {
             <br />
             <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
             <h1>{"Filter"}</h1>
-            <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64}/>
+            <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64} active_index={active_filter.deref()}/>
             <h1>{"LFO"}</h1>
             <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} active_index={active_lfo.deref()} freq={*lfo_freq.deref() as f64}/>
             <h1>{"Envelope"}</h1>
