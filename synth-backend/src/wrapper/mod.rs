@@ -90,4 +90,18 @@ impl Synth {
             Some(_) => self.envelope.as_mut().unwrap().set_param(envelope_param, value)
         }
     }
+
+    pub fn set_lfo_frequency(&mut self, frequency: f32) -> Result<(), String> {
+        match self.am_lfo {
+            None => Err("LFO is not assigned".to_string()),
+            Some(_) => self.am_lfo.as_mut().unwrap().set_frequency(frequency)
+        }
+    }
+
+    pub fn set_lfo_osc(&mut self, osc: Oscillator){
+        match self.am_lfo {
+            None => (),
+            Some(_) => self.am_lfo.as_mut().unwrap().set_oscillator(osc)
+        }
+    }
 }

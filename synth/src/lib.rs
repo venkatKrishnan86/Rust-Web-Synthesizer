@@ -9,7 +9,7 @@ use gloo::console::log;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{FromSample, SampleRate, SizedSample, Stream, StreamConfig};
 
-use synth_frontend::MIDIKeyboard;
+use synth_frontend::{components::organisms::lfo_settings::LFOSelector, MIDIKeyboard};
 use synth_frontend::components::molecules::add_button::AddButton;
 use synth_frontend::components::organisms::{oscillator_selector::OscillatorSelector, filter_selector::FilterSelector, envelope_settings::EnvelopeSettings};
 use synth_backend::utils::{midi_to_hz, State};
@@ -72,9 +72,10 @@ pub fn app() -> Html {
     let release_ms = 0.0;
     let envelope = Envelope::new(sample_rate as f32, *attack_ms.deref(), *decay_ms.deref(), *sustain_percentage.deref(), release_ms);
 
-    let mut am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, 10.0);
+    let lfo_freq = use_state(|| 0.0);
+    let am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, *lfo_freq.deref());
 
-    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
+    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
     let oscillator = use_state(|| Synth::new(
         osc1,
         sample_rate,
@@ -119,6 +120,15 @@ pub fn app() -> Html {
         let mut oscillator_type = cloned_oscillator.deref().clone();
         oscillator_type.set_filter_params(FilterParam::FreqHz, freq as f32);
         oscillator_type.set_filter_params(FilterParam::BandwidthHz, freq as f32*0.5);
+        cloned_oscillator.set(oscillator_type);
+    });
+
+    let cloned_oscillator = oscillator.clone();
+    let cloned_freq_lfo = lfo_freq.clone();
+    let freq_lfo_change = Callback::from(move |freq: f64| {
+        cloned_freq_lfo.set(freq as f32);
+        let mut oscillator_type = cloned_oscillator.deref().clone();
+        let _ = oscillator_type.set_lfo_frequency(freq as f32);
         cloned_oscillator.set(oscillator_type);
     });
     
@@ -214,6 +224,18 @@ pub fn app() -> Html {
                 if oscillator_type.num_sources() > 1 {
                     let _ = oscillator_type.remove(label.1 - 1);
                 }
+            },
+            '[' => {
+                oscillator_type.set_lfo_osc(Oscillator::Sine)
+            },
+            ']' => {
+                oscillator_type.set_lfo_osc(Oscillator::Square)
+            },
+            '{' => {
+                oscillator_type.set_lfo_osc(Oscillator::Saw)
+            },
+            '}' => {
+                oscillator_type.set_lfo_osc(Oscillator::Triangle)
             },
             _ => {
                 let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
@@ -330,6 +352,8 @@ pub fn app() -> Html {
             <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
             <h1>{"Filter"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64}/>
+            <h1>{"LFO"}</h1>
+            <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} freq={*lfo_freq.deref() as f64}/>
             <h1>{"Envelope"}</h1>
             <EnvelopeSettings attack_change={attack_change} decay_change={decay_change} sustain_change={sustain_change} attack={*attack_ms.deref() as f64} decay={*decay_ms.deref() as f64} sustain={*sustain_percentage.deref() as f64}/>
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
