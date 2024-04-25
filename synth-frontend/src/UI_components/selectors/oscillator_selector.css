@@ -1,0 +1,215 @@
+display: flex;
+flex-direction: row;
+justify-content: space-around;
+gap: 10px;
+color: #fff56c;
+
+
+.oscillator img {
+  width: 100%;
+  height:auto;
+  display: block;
+  border-radius: 1px;
+
+  background-color: #26B9C8;
+}
+
+.oscillator button {
+  width: 5vh;
+  height: 5vh;
+  padding: 0;      
+  border: none;     
+  background: none; 
+  cursor: pointer;  
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+}
+
+.oscillator_active img {
+  width: 100%;
+  height:auto;
+  display: block;
+  border-radius: 1px;
+
+  background-color: #AEAD0D;
+}
+
+.oscillator_active button {
+  width: 5vh;
+  height: 5vh;
+  padding: 0;      
+  border: none;     
+  background: none; 
+  cursor: pointer;  
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+}
+.lfo-icon-type img {
+  width: 100%;
+  height:auto;
+  display: block;
+  border-radius: 1px;
+
+  background-color: #26B9C8;
+}
+
+.lfo-icon-type button {
+  width: 5vh;
+  height: 5vh;
+  padding: 0;      
+  border: none;     
+  background: none; 
+  cursor: pointer;  
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+}
+
+.lfo-icon-type_active img {
+  width: 100%;
+  height:auto;
+  display: block;
+  border-radius: 1px;
+
+  background-color: #AEAD0D;
+}
+
+.lfo-icon-type_active button {
+  width: 5vh;
+  height: 5vh;
+  padding: 0;      
+  border: none;     
+  background: none; 
+  cursor: pointer;  
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+}
+/* .lfo-icon-type {
+  width: 50px;
+  height: 50px;
+  border-radius: 1px;
+  margin: 2px;
+  background-color: gray;
+} */
+
+/* .lfo-icon-type_active {
+  width: 50px;
+  height: 50px;
+  border-radius: 1px;
+  margin: 2px;
+  background-color: black;
+} */
+
+.lfo-icon img {
+  width: 100%;
+  height:auto;
+  display: block;
+  border-radius: 1px;
+  background-color: #26B9C8;
+}
+
+.lfo-icon button {
+  width: 5vh;
+  height: 5vh;
+  padding: 0;      
+  border: none;     
+  background: none; 
+  cursor: pointer;  
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+}
+.lfo-icon_active img {
+  width: 100%;
+  height:auto;
+  display: block;
+  border-radius: 1px;
+  background-color: #AEAD0D;
+}
+
+.lfo-icon_active button {
+  width: 5vh;
+  height: 5vh;
+  padding: 0;      
+  border: none;     
+  background: none; 
+  cursor: pointer;  
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+}
+
+.lfo-icon:hover {
+  background-color: #FFF56C;
+}
+
+.lfo-icon:active {
+  background-color: #AEAD0D;
+}
+
+.oscillator:hover {
+  background-color: #FFF56C;
+}
+
+.oscillator:focus {
+  background-color: #AEAD0D;
+}
+
+.oscillator:active {
+  width: 5vh;
+  height: 5vh;
+  background-color: #AEAD0D;
+  border-radius: 1px;
+  /* margin: 2px; */
+}
+
+
+
+.icon-image {
+    width: 5vh;
+    height: 5vh;
+    
+}
+
+.filter-icon {
+    width: 5vh;
+    height: 5vh;
+    border-radius: 2px;
+    margin: 20px;
+}
+
+/* The slider thumb (the draggable circle) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Removes default thumb */
+  appearance: none;
+  width: 20px;              /* Width and height of the thumb */
+  height: 20px;
+  background: #FF6347;      /* Tomato red background */
+  cursor: pointer;          /* Cursor changes to pointer when over thumb */
+  border-radius: 50%;       /* Makes the thumb circular */
+  border: 2px solid #FFFFFF;   /* White border for the thumb */
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #FF6347;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+}

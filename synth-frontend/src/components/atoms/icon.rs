@@ -16,20 +16,20 @@ pub fn custom_icon(props: &IconProps) -> Html{
     match &props.mouse_up {
         Some(callback_val) => {
             html! {
-                <button 
-                    class = {&props.class} 
+                <div class={&props.class}>
+                <button
                     onmousedown={&props.mouse_down} 
                     onmouseup={callback_val}
                 >
                 // {props.label.clone()}
                 <img src={props.img_path.clone()} alt={props.label.clone()} />
                 </button>
+                </div>
             }
         },
         None => {
             html! {
                 <button 
-                    class = {&props.class} 
                     onmousedown={&props.mouse_down}
                 >
                 // {props.label.clone()}

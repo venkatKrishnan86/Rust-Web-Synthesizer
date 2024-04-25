@@ -10,9 +10,31 @@
 //!     - Each source appended plays one after the other
 //!     - For multiple sounds to play together, one must use multiple sinks
 
+
+// const POLYPHONY: usize = 16;
+// const SAMPLE_RATE: u32 = 44100;
+
+// #[styled_component(App)]
+// pub fn app() -> Html {
+//     let host = cpal::default_host();
+//     let device = use_state(|| host.default_output_device().expect("No default output device found"));
+//     let supported_configs = device.supported_output_configs().unwrap();
+//     let config: UseStateHandle<StreamConfig> = use_state(|| {
+//         match supported_configs
+//         .filter(|c| c.channels() == 1)
+//         .max_by(|a, b| a.cmp_default_heuristics(b)) {
+//             Some(config) => config.with_sample_rate(SampleRate(SAMPLE_RATE)).into(),
+//             _ => panic!("No supported configuration found for output device")
+//         }
+//     });
+
 pub mod utils;
 pub mod oscillators;
 pub mod ring_buffer;
+pub mod filters;
+pub mod envelopes;
+pub mod lfo;
+pub mod wrapper;
 
 #[cfg(test)]
 mod tests {

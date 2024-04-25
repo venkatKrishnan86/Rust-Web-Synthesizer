@@ -20,12 +20,12 @@ use crate::components::atoms::icon::CustomIcon;
 #[derive(Properties, PartialEq)]
 pub struct SelectorProps {
     pub icon_class: String,
-    pub label: char,
+    pub label: (char, usize),
     // pub icon_type: IconType,
     pub is_active: bool,
     pub img_path: String,
-    pub on_mouse_down: Callback<char>,
-    pub on_mouse_up: Callback<char>,
+    pub on_mouse_down: Callback<(char, usize)>,
+    pub on_mouse_up: Callback<(char, usize)>,
 }
 
 #[styled_component(Selector)]
@@ -46,8 +46,8 @@ pub fn selector(props: &SelectorProps) -> Html {
         <div>
             <CustomIcon 
                 class={props.icon_class.clone()} 
-                label={props.label.to_string()} 
-                is_active={false}
+                label={props.label.0.to_string()} 
+                is_active={props.is_active}
                 img_path={props.img_path.clone()}
                 mouse_down={mouse_down}
                 mouse_up={mouse_up}

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::hash;
 use std::ops::Deref;
 
 use yew::prelude::*;
@@ -9,40 +10,27 @@ use components::atoms::keyboard_listener::KeyboardListener;
 use components::atoms::button::CustomButton;
 use components::atoms::icon::CustomIcon;
 
-mod components;
+pub mod components;
 
 const WHITE_KEYS_CSS: &str = include_str!("UI_components/keys/white_keys.css");
 const BLACK_KEYS_CSS: &str = include_str!("UI_components/keys/black_keys.css");
 const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octave_change.css");
-const OVERALL_CSS: &str = include_str!("UI_components/style.css");
 
 
 #[derive(Properties, PartialEq)]
 pub struct MIDIKeyboardProperties {
-    pub mouse_down: Callback<char>,
-    pub mouse_up: Callback<char>,
+    pub mouse_down: Callback<(char, usize)>,
+    pub mouse_up: Callback<(char, usize)>,
     pub key_down: Callback<char>,
     pub key_up: Callback<char>,
 }
-
-#[derive(Properties, PartialEq)]
-pub struct OscillatorSelectorProperties {
-    pub mouse_down: Callback<char>,
-    pub mouse_up: Callback<char>,
-}
-
-#[derive(Properties, PartialEq)]
-pub struct FilterSelectorProperties {
-    pub mouse_down: Callback<char>,
-    pub mouse_up: Callback<char>,
-}
-
 
 #[styled_component(MIDIKeyboard)]
 pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
     let white_keys_style = Style::new(WHITE_KEYS_CSS).unwrap();
     let black_keys_style = Style::new(BLACK_KEYS_CSS).unwrap();
     let octave_change_style = Style::new(OCTAVE_CHANGE_CSS).unwrap();
+
     let class_hashmap = use_state(|| HashMap::from([
         ('A', "keycodes"),
         ('W', "keycodes"),
@@ -79,7 +67,7 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
                 hashmap.insert(key_pressed, "octave_change_active");
             }
             cloned_octave_class_hashmap.set(hashmap)
-        }
+        } 
         key_down.emit(key_pressed);
     });
     
@@ -104,50 +92,48 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
 
     let octave_down_mouse_down = props.mouse_down.clone();
     let octave_down_mouse_down = Callback::from(move |_| {
-        octave_down_mouse_down.emit('Z')
+        octave_down_mouse_down.emit(('Z', 0))
     });
     let octave_up_mouse_down = props.mouse_down.clone();
     let octave_up_mouse_down = Callback::from(move |_| {
-        octave_up_mouse_down.emit('X')
+        octave_up_mouse_down.emit(('X', 0))
     });
     html! {
         <>
             <KeyboardListener key_down={&key_down} key_up={&key_up}/>
             <div class={black_keys_style}>
                 <div id="corner-left" class="filler" ></div>
-                <Key button_class={class_hashmap.deref()[&'W']} label='W' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key button_class={class_hashmap.deref()[&'E']} label='E' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'W']} label={('W', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'E']} label={('E', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
-                <Key button_class={class_hashmap.deref()[&'T']} label='T' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key button_class={class_hashmap.deref()[&'Y']} label='Y' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key button_class={class_hashmap.deref()[&'U']} label='U' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'T']} label={('T', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'Y']} label={('Y', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'U']} label={('U', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
                 <div id="corner-right" class="filler"></div>
             </div>
             <div class={white_keys_style}>
-                <Key button_class={class_hashmap.deref()[&'A']} label={'A'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'S']} label={'S'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'D']} label={'D'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'F']} label={'F'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'G']} label={'G'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'H']} label={'H'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'J']} label={'J'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'K']} label={'K'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'A']} label={('A', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'S']} label={('S', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'D']} label={('D', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'F']} label={('F', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'G']} label={('G', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'H']} label={('H', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'J']} label={('J', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'K']} label={('K', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
             </div>
             <div class={octave_change_style}>
                 <CustomButton 
                     class={octave_class_hashmap.deref()[&'Z']}
-                    label={"Z"} 
-                    is_active={false}
+                    label={"Z"}
                     mouse_down={&octave_down_mouse_down}
                     mouse_up={&None}
                 />
                 <CustomButton 
                     class={octave_class_hashmap.deref()[&'X']}
-                    label={"X"} 
-                    is_active={false}
+                    label={"X"}
                     mouse_down={&octave_up_mouse_down}
                     mouse_up={&None}
                 />
@@ -162,87 +148,6 @@ pub fn volume_bar(props: &MIDIKeyboardProperties) -> Html {
         <div>
         // html for hello world
             <h1>{"Hello World hello"}</h1>
-        </div>
-    }
-}
-
-
-#[styled_component(OscillatorSelector)]
-
-pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
-    let overall_css = Style::new(OVERALL_CSS).unwrap();
-    let mouse_down = props.mouse_down.clone();
-    
-    html! {
-        <div class={overall_css}>
-            <Selector
-                icon_class={"oscillator-icon"} 
-                label={'1'} 
-                img_path={"UI_components/assets/icons/Sine.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
-            />
-            <Selector
-                icon_class={"oscillator-icon"} 
-                label={'2'} 
-                img_path={"UI_components/assets/icons/Square.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
-            />
-            <Selector
-                icon_class={"oscillator-icon"} 
-                label={'3'} 
-                img_path={"UI_components/assets/icons/Sawtooth.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
-            />
-            <Selector
-                icon_class={"oscillator-icon"} 
-                label={'4'} 
-                img_path={"UI_components/assets/icons/Triangle.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
-            />
-
-        </div>
-    }
-}
-
-#[styled_component(FilterSelector)]
-pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
-    let overall_css = Style::new(OVERALL_CSS).unwrap();
-    let mouse_down = props.mouse_down.clone();
-
-    html! {
-        <div class={overall_css}>
-        <Selector
-        icon_class={"filter-icon"} 
-        label={'0'} 
-        img_path={"UI_components/assets/icons/HighPass.png"} 
-        is_active={false} 
-        on_mouse_down={&mouse_down} 
-        on_mouse_up={Callback::from(|_|{})}
-        />
-        <Selector
-        icon_class={"oscillator-icon"} 
-        label={'9'} 
-        img_path={"UI_components/assets/icons/BandPass.png"} 
-        is_active={false} 
-        on_mouse_down={&mouse_down} 
-        on_mouse_up={Callback::from(|_|{})}
-        />
-        <Selector
-        icon_class={"oscillator-icon"} 
-        label={'8'} 
-        img_path={"UI_components/assets/icons/LowPass.png"} 
-        is_active={false} 
-        on_mouse_down={&mouse_down} 
-        on_mouse_up={Callback::from(|_|{})}
-        />
         </div>
     }
 }

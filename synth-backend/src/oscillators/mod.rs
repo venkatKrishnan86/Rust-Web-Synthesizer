@@ -1,9 +1,12 @@
 use std::{f32::consts::PI, ops::Add};
+use rand::seq::index;
 use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
+use crate::utils::{hz_to_midi, midi_to_hz};
+
 #[allow(dead_code)]
-#[derive(Clone)]
+#[derive(Clone, Debug, Copy)]
 pub enum Oscillator {
     Sine,
     Square,
@@ -14,13 +17,14 @@ pub enum Oscillator {
 }
 
 /// Convert WavetableOscillator parameters in to a vector and use aligned_allocator to play each sample from the wavetable
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct WaveTableOscillator {
     sample_rate: u32,
     oscillator: Oscillator,
     wave_table_size: usize,
     wave_table: Vec<f32>,
     gain: f32,
+    detune_semitones: i8,
     index: f32,
     index_increment: f32
 }
@@ -38,7 +42,7 @@ impl WaveTableOscillator {
             Oscillator::Square => {
                 for i in 0..wave_table_size {
                     if i < wave_table_size/2 {
-                        wave_table.push(0.99 * gain);
+                        wave_table.push(0.4 * gain);
                     } else {
                         wave_table.push(0.0);
                     }
@@ -47,9 +51,9 @@ impl WaveTableOscillator {
             Oscillator::BidirectionalSquare => {
                 for i in 0..wave_table_size {
                     if i < wave_table_size/2 {
-                        wave_table.push(0.99 * gain);
+                        wave_table.push(0.4 * gain);
                     } else {
-                        wave_table.push(-0.99 * gain);
+                        wave_table.push(-0.4 * gain);
                     }
                 }
             },
@@ -72,6 +76,7 @@ impl WaveTableOscillator {
             sample_rate,
             oscillator,
             gain,
+            detune_semitones: 0,
             wave_table_size,
             wave_table,
             index: 0.0,
@@ -80,11 +85,88 @@ impl WaveTableOscillator {
     }
 
     pub fn set_frequency(&mut self, frequency: f32) -> Result<(), String> {
-        if frequency <= 0.0 {
+        if frequency < 0.0 {
             return Err("Frequency must be a positive floating point value!".to_owned());
         }
-        self.index_increment = frequency * self.wave_table_size as f32 / self.sample_rate as f32;
+        if self.detune_semitones == 0 {
+            self.index_increment = frequency * self.wave_table_size as f32 / self.sample_rate as f32;
+        } else {
+            let curr_midi = hz_to_midi(frequency).expect("Frequency is less than 0.0");
+            let new_midi = curr_midi as i8 + self.detune_semitones;
+            if new_midi > 0 {
+                self.index_increment = midi_to_hz(new_midi as u8).unwrap() * self.wave_table_size as f32 / self.sample_rate as f32;
+            } else {
+                return Err("Net midi is less than 0".to_owned());
+            }
+        }
         Ok(())
+    }
+
+    pub fn get_frequency(&self) -> f32 {
+        self.index_increment * self.sample_rate as f32 / self.wave_table_size as f32
+    }
+
+    pub fn set_detune_semitones(&mut self, detune_semitones: i8) -> Result<(), String> {
+        self.detune_semitones = detune_semitones;
+        let curr_frequency = self.get_frequency();
+        let curr_midi = hz_to_midi(curr_frequency).expect("Frequency is less than 0.0");
+        let new_midi = curr_midi as i8 + detune_semitones;
+        
+        if new_midi > 0 {
+            self.index_increment = midi_to_hz(new_midi as u8).unwrap() * self.wave_table_size as f32 / self.sample_rate as f32;
+        } else {
+            return Err("Net midi is less than 0".to_owned());
+        }
+        Ok(())
+    }
+
+    pub fn set_oscillator(&mut self, oscillator: Oscillator) {
+        let mut wave_table: Vec<f32> = Vec::new();
+        self.oscillator = oscillator.clone();
+        match oscillator {
+            Oscillator::Sine => {
+                for i in 0..self.wave_table_size {
+                    wave_table.push((2.0 * PI * (i as f32)/(self.wave_table_size as f32)).sin() * self.gain);
+                }
+            },
+            Oscillator::Square => {
+                for i in 0..self.wave_table_size {
+                    if i < self.wave_table_size/2 {
+                        wave_table.push(0.99 * self.gain);
+                    } else {
+                        wave_table.push(0.0);
+                    }
+                }
+            },
+            Oscillator::BidirectionalSquare => {
+                for i in 0..self.wave_table_size {
+                    if i < self.wave_table_size/2 {
+                        wave_table.push(0.99 * self.gain);
+                    } else {
+                        wave_table.push(-0.99 * self.gain);
+                    }
+                }
+            },
+            Oscillator::Saw => {
+                for i in 1..=self.wave_table_size {
+                    wave_table.push((((self.wave_table_size as f32 - i as f32)/(self.wave_table_size as f32) * 2.0) - 1.0) * self.gain);
+                }
+            },
+            Oscillator::Triangle => {
+                for i in 0..self.wave_table_size/2 {
+                    wave_table.push((((i as f32/self.wave_table_size as f32)*4.0) - 1.0) * self.gain)
+                }
+                for i in self.wave_table_size/2..self.wave_table_size {
+                    wave_table.push(((-(i as f32/self.wave_table_size as f32)*4.0) + 3.0) * self.gain)
+                }
+            },
+            Oscillator::WhiteNoise => ()
+        }
+        self.wave_table = wave_table;
+    }
+
+    pub fn get_oscillator(&self) -> Oscillator {
+        self.oscillator
     }
 
     #[allow(dead_code)]
@@ -107,7 +189,7 @@ impl WaveTableOscillator {
                 let index_1 = self.index.trunc() as usize;
                 let frac = self.index - index_1 as f32;
                 self.index = (self.index + self.index_increment) % self.wave_table_size as f32;
-                WaveTableOscillator::lerp(self.wave_table[index_1], self.wave_table[(index_1 + 1)%self.wave_table_size], frac)
+                WaveTableOscillator::lerp(self.wave_table[index_1], self.wave_table[(index_1 + 1)%self.wave_table_size], frac) * self.gain
             }
         }
     }
@@ -154,7 +236,7 @@ impl Add for WaveTableOscillator {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MultiOscillator {
     multi_osc: Vec<WaveTableOscillator>,
     sample_rate: u32,
@@ -192,6 +274,11 @@ impl MultiOscillator{
         Ok(())
     }
 
+    pub fn set_detune_semitones(&mut self, detune_semitones: i8, source_index: usize) -> Result<(), String> {
+        self.multi_osc[source_index].set_detune_semitones(detune_semitones)?;
+        Ok(())
+    }
+
     pub fn global_set_frequency(&mut self, frequency: f32) -> Result<(), String> {
         for osc in self.multi_osc.iter_mut(){
             osc.set_frequency(frequency)?;
@@ -205,8 +292,20 @@ impl MultiOscillator{
         Ok(())
     }
 
+    pub fn set_oscillator(&mut self, index: usize, oscillator: Oscillator) {
+        let osc = self.multi_osc.get_mut(index);
+        match osc {
+            Some(value) => value.set_oscillator(oscillator),
+            None => panic!("index out of bounds in oscillator")
+        }
+    }
+
     pub fn num_sources(&self) -> usize {
         self.multi_osc.len()
+    }
+
+    pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
+        self.multi_osc.remove(index)
     }
 
     pub fn get_sample(&mut self) -> f32 {
@@ -214,7 +313,8 @@ impl MultiOscillator{
         for osc in self.multi_osc.iter_mut() {
             value += osc.get_sample();
         }
-        value/self.normalization
+        // value/self.normalization
+        value
     }
 }
 
