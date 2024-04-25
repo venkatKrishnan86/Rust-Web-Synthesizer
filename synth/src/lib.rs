@@ -342,8 +342,7 @@ pub fn app() -> Html {
     });
 
     let key_map_clone = keycode_maps.clone();
-    let oscillator_selector_display: Vec<Html> = display_oscillators(mouse_down.clone(), mouse_up.clone(), oscillator.deref());
-    // let cloned_freq = freq.clone();
+    let oscillator_selector_display: Vec<Html> = display_oscillators(mouse_down.clone(), mouse_up.clone(), key_up.clone(), key_down.clone(), oscillator.deref());
     html! {
         <>
             <h1>{"Oscillator"}</h1>
@@ -362,7 +361,7 @@ pub fn app() -> Html {
     }
 }
 
-pub fn display_oscillators(mouse_down: Callback<(char, usize)>, mouse_up: Callback<(char, usize)>, oscillator: &Synth) -> Vec<Html>{
+pub fn display_oscillators(mouse_down: Callback<char>, mouse_up: Callback<char>, key_down: Callback<char>, key_up: Callback<char> ,oscillator: &Synth) -> Vec<Html>{
     let mut display = Vec::new();
     for idx in 0..oscillator.num_sources() {
         display.push(html! {

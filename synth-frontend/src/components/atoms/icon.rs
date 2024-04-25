@@ -17,7 +17,6 @@ pub fn custom_icon(props: &IconProps) -> Html{
         Some(callback_val) => {
             html! {
                 <button 
-                    class = {&props.class} 
                     onmousedown={&props.mouse_down} 
                     onmouseup={callback_val}
                 >
@@ -29,7 +28,6 @@ pub fn custom_icon(props: &IconProps) -> Html{
         None => {
             html! {
                 <button 
-                    class = {&props.class} 
                     onmousedown={&props.mouse_down}
                 >
                 // {props.label.clone()}
