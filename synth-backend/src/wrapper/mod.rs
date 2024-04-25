@@ -1,6 +1,6 @@
 use crate::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use crate::filters::{Filter, FilterParam, FilterType};
-use crate::envelopes::Envelope;
+use crate::envelopes::{Envelope, EnvelopeParam};
 use std::ops::Add;
 
 #[derive(Clone, Debug)]
@@ -81,6 +81,13 @@ impl Synth {
         match self.filter {
             None => (),
             Some(_) => self.filter.as_mut().unwrap().set_param(filterparam, value)
+        }
+    }
+
+    pub fn set_envelope_params(&mut self, envelope_param: EnvelopeParam, value: f32) {
+        match self.envelope {
+            None => (),
+            Some(_) => self.envelope.as_mut().unwrap().set_param(envelope_param, value)
         }
     }
 }

@@ -11,7 +11,7 @@ use cpal::{FromSample, SampleRate, SizedSample, Stream, StreamConfig};
 
 use synth_frontend::MIDIKeyboard;
 use synth_frontend::components::molecules::add_button::AddButton;
-use synth_frontend::components::organisms::{oscillator_selector::OscillatorSelector, filter_selector::FilterSelector};
+use synth_frontend::components::organisms::{oscillator_selector::OscillatorSelector, filter_selector::FilterSelector, envelope_settings::EnvelopeSettings};
 use synth_backend::utils::{midi_to_hz, State};
 use synth_backend::filters::{Filter, FilterType};
 use synth_backend::wrapper::Synth;
@@ -66,14 +66,16 @@ pub fn app() -> Html {
         bandwidth_hz
     );
 
-    let attack_ms = 0.0;
-    let decay_ms = 0.0;
-    let sustain_percentage = 1.0;
+    let attack_ms = use_state(|| 0.0);
+    let decay_ms = use_state(|| 0.0);
+    let sustain_percentage = use_state(|| 1.0);
     let release_ms = 0.0;
-    let mut envelope = Envelope::new(sample_rate as f32, attack_ms, decay_ms, sustain_percentage, release_ms);
-    envelope.set_param(EnvelopeParam::AttackMs, 100.0);
-    envelope.set_param(EnvelopeParam::DecayMs, 500.0);
-    envelope.set_param(EnvelopeParam::SustainPercentage, 0.5);
+    let mut envelope = Envelope::new(sample_rate as f32, *attack_ms.deref(), *decay_ms.deref(), *sustain_percentage.deref(), release_ms);
+    // envelope.set_param(EnvelopeParam::AttackMs, 100.0);
+    // envelope.set_param(EnvelopeParam::DecayMs, 500.0);
+    // envelope.set_param(EnvelopeParam::SustainPercentage, 0.5);
+
+
 
     let mut am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, 10.0);
 
@@ -83,7 +85,37 @@ pub fn app() -> Html {
         sample_rate,
         Some(filter),
         Some(envelope),
-        Some(am_lfo)));
+        Some(am_lfo)
+    ));
+
+    let cloned_oscillator = oscillator.clone();
+    let cloned_attack = attack_ms.clone();
+    let attack_change = Callback::from(move |attack: f64| {
+        cloned_attack.set(attack as f32);
+        let mut oscillator_type = cloned_oscillator.deref().clone();
+        oscillator_type.set_envelope_params(EnvelopeParam::AttackMs, attack as f32);
+        cloned_oscillator.set(oscillator_type);
+    });
+
+    let cloned_oscillator = oscillator.clone();
+    let cloned_decay = decay_ms.clone();
+    let decay_change = Callback::from(move |decay: f64| {
+        cloned_decay.set(decay as f32);
+        let mut oscillator_type = cloned_oscillator.deref().clone();
+        oscillator_type.set_envelope_params(EnvelopeParam::DecayMs, decay as f32);
+        cloned_oscillator.set(oscillator_type);
+    });
+    
+
+    let cloned_oscillator = oscillator.clone();
+    let cloned_sustain = sustain_percentage.clone();
+    let sustain_change = Callback::from(move |sustain: f64| {
+        cloned_sustain.set(sustain as f32);
+        let mut oscillator_type = cloned_oscillator.deref().clone();
+        oscillator_type.set_envelope_params(EnvelopeParam::SustainPercentage, sustain as f32);
+        cloned_oscillator.set(oscillator_type);
+    });
+    
     
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
@@ -303,6 +335,7 @@ pub fn app() -> Html {
             <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
             <h1>{"Choose Your Filter Type"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64}/>
+            <EnvelopeSettings attack_change={attack_change} decay_change={decay_change} sustain_change={sustain_change} attack={*attack_ms.deref() as f64} decay={*decay_ms.deref() as f64} sustain={*sustain_percentage.deref() as f64}/>
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
             <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
         </>
