@@ -360,22 +360,26 @@ pub fn app() -> Html {
         // let mut oscillator_type = cloned_oscillator.deref().clone();
         match label {
             'Z' => {
-                decrease_octave(cloned_key_map);
-                buffer.clear();
-                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                new_stream.pause();
-                stream_setter.set(new_stream);
-                cloned_poly.set(buffer);
-                key_map_setter.set(cloned_key_map.deref().clone());
+                if cloned_key_map[&'A'] > 12 {
+                    decrease_octave(cloned_key_map);
+                    buffer.clear();
+                    let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                    new_stream.pause();
+                    stream_setter.set(new_stream);
+                    cloned_poly.set(buffer);
+                    key_map_setter.set(cloned_key_map.deref().clone());
+                }
             },
             'X' => {
-                increase_octave(cloned_key_map);
-                buffer.clear();
-                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                new_stream.pause();
-                stream_setter.set(new_stream);
-                cloned_poly.set(buffer);
-                key_map_setter.set(cloned_key_map.deref().clone());
+                if cloned_key_map[&'A'] < 108 {
+                    increase_octave(cloned_key_map);
+                    buffer.clear();
+                    let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                    new_stream.pause();
+                    stream_setter.set(new_stream);
+                    cloned_poly.set(buffer);
+                    key_map_setter.set(cloned_key_map.deref().clone());
+                }
             },
             _ => {
                 if cloned_key_map.contains_key(&label) {
