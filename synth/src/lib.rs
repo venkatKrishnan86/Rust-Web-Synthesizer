@@ -3,6 +3,7 @@ use std::ops::Deref;
 use synth_backend::{filters::FilterParam, ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
 use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use synth_backend::envelopes::{EnvelopeParam, Envelope};
+use synth_backend::vibrato::Vibrato;
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -75,7 +76,13 @@ pub fn app() -> Html {
     envelope.set_param(EnvelopeParam::DecayMs, 500.0);
     envelope.set_param(EnvelopeParam::SustainPercentage, 0.5);
 
-    let mut am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, 10.0);
+    let mut am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0);
+    am_lfo.set_frequency(0.0);
+
+    let mut fm_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0);
+    let mut vibrato = Vibrato::new(sample_rate as f32, 0.001, fm_lfo);
+    vibrato.set_frequency(4.0);
+    vibrato.set_width(0.0015);
 
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
     let oscillator = use_state(|| Synth::new(
@@ -83,7 +90,9 @@ pub fn app() -> Html {
         sample_rate,
         Some(filter),
         Some(envelope),
-        Some(am_lfo)));
+        Some(am_lfo),
+        Some(vibrato)
+    ));
     
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();

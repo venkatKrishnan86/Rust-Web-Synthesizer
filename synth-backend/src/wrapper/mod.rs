@@ -1,6 +1,7 @@
 use crate::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use crate::filters::{Filter, FilterParam, FilterType};
 use crate::envelopes::Envelope;
+use crate::vibrato::Vibrato;
 use std::ops::Add;
 
 #[derive(Clone, Debug)]
@@ -10,16 +11,18 @@ pub struct Synth {
     pub filter: Option<Filter>, // Make filter an optional field
     pub envelope: Option<Envelope>,
     pub am_lfo: Option<WaveTableOscillator>,
+    pub vibrato: Option<Vibrato>,
 }
 
 impl Synth {
-    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>, am_lfo: Option<WaveTableOscillator>) -> Self {
+    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>, am_lfo: Option<WaveTableOscillator>, vibrato: Option<Vibrato>) -> Self {
         Self {
             osc,
             sample_rate,
             filter,
             envelope,
             am_lfo,
+            vibrato,
         }
     }
 
@@ -41,6 +44,10 @@ impl Synth {
         if let Some(ref mut am_lfo) = self.am_lfo {
             let a = am_lfo.get_sample();
             output_sample = output_sample * (1.0 + a) / 2.0;
+        }
+
+        if let Some(ref mut vibrato) = self.vibrato {
+            output_sample = vibrato.process(output_sample);
         }
 
         // If filter is None, return the sample directly
