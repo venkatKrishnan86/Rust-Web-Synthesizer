@@ -167,22 +167,26 @@ pub fn app() -> Html {
         let mut list_of_gains = cloned_osc_gain.deref().clone();
         match label.0 {
             'Z' => {
-                decrease_octave(cloned_key_map);
-                buffer.clear();
-                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                new_stream.pause();
-                stream_setter.set(new_stream);
-                cloned_poly.set(buffer);
-                key_map_setter.set(cloned_key_map.deref().clone());
+                if cloned_key_map[&'A'] > 12 {
+                    decrease_octave(cloned_key_map);
+                    buffer.clear();
+                    let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                    new_stream.pause();
+                    stream_setter.set(new_stream);
+                    cloned_poly.set(buffer);
+                    key_map_setter.set(cloned_key_map.deref().clone());
+                }
             },
             'X' => {
-                increase_octave(cloned_key_map);
-                buffer.clear();
-                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                new_stream.pause();
-                stream_setter.set(new_stream);
-                cloned_poly.set(buffer);
-                key_map_setter.set(cloned_key_map.deref().clone());
+                if cloned_key_map[&'A'] < 108 {
+                    increase_octave(cloned_key_map);
+                    buffer.clear();
+                    let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                    new_stream.pause();
+                    stream_setter.set(new_stream);
+                    cloned_poly.set(buffer);
+                    key_map_setter.set(cloned_key_map.deref().clone());
+                }
             },
             '1' => {
                 if label.1>0 {
