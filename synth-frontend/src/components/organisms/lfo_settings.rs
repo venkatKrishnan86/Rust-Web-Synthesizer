@@ -41,8 +41,8 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
         ('>', 0),
     ];
     let images_type = vec![
-        "https://i.ibb.co/XZWhWv5/Sine.png".to_owned(),
-        "https://i.ibb.co/P1wjXPj/Square.png".to_owned(),
+        "https://i.ibb.co/B4Kf4R0/amp.png".to_owned(),
+        "https://i.ibb.co/tKSRKFR/freq.png".to_owned(),
     ];
     html! {
         <div class={overall_css}>
