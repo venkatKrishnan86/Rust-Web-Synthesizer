@@ -3,7 +3,7 @@ use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
 #[allow(dead_code)]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub enum Oscillator {
     Sine,
     Square,
@@ -129,6 +129,10 @@ impl WaveTableOscillator {
             Oscillator::WhiteNoise => ()
         }
         self.wave_table = wave_table;
+    }
+
+    pub fn get_oscillator(&self) -> Oscillator {
+        self.oscillator
     }
 
     #[allow(dead_code)]

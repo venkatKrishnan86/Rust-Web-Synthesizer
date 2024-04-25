@@ -33,7 +33,7 @@ pub mod oscillators;
 pub mod ring_buffer;
 pub mod filters;
 pub mod envelopes;
-pub mod vibrato;
+pub mod lfo;
 pub mod wrapper;
 
 #[cfg(test)]
