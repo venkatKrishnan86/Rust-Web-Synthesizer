@@ -34,7 +34,7 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
         ('8', 0),
     ];
     let images = vec![
-        "".to_owned(),
+        "https://i.ibb.co/d7W1DrQ/Power.png".to_owned(),
         "https://i.ibb.co/HFCG4h1/HighPass.png".to_owned(),
         "https://i.ibb.co/23gfy5Q/BandPass.png".to_owned(),
         "https://i.ibb.co/SQXCXkf/LowPass.png".to_owned(),
