@@ -14,16 +14,18 @@ pub struct Synth {
     pub filter: Option<Filter>, // Make filter an optional field
     pub envelope: Option<Envelope>,
     pub lfo: Option<LFO>,
+    pub lfo_type: LFOType,
 }
 
 impl Synth {
-    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>, lfo: Option<LFO>) -> Self {
+    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>, lfo: Option<LFO>, lfo_type: LFOType) -> Self {
         Self {
             osc,
             sample_rate,
             filter,
             envelope,
-            lfo
+            lfo,
+            lfo_type
         }
     }
 
@@ -60,6 +62,16 @@ impl Synth {
 
     pub fn set_detune_semitones(&mut self, index: usize, detune_semitones: i8) -> Result<(), String> {
         self.osc.set_detune_semitones(detune_semitones, index)
+    }
+
+    pub fn set_lfo_type(&mut self, lfo_type: LFOType) {
+        match self.lfo {
+            None => {
+                let lfo_type = self.lfo_type.clone();
+                self.lfo.as_mut().unwrap().set_type(lfo_type)
+            },
+            Some(_) => self.lfo.as_mut().unwrap().set_type(lfo_type)
+        }
     }
 
     pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
@@ -123,5 +135,12 @@ impl Synth {
             }
         }
         
+    }
+
+    pub fn get_lfo_osc(&mut self) -> Option<Oscillator> {
+        match self.lfo {
+            None => None,
+            Some(_) => Some(self.lfo.as_mut().unwrap().get_oscillator())
+        }
     }
 }

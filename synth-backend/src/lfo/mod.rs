@@ -77,4 +77,8 @@ impl LFO {
         }
         
     }
+
+    pub fn get_oscillator(&self) -> Oscillator {
+        self.lfo.get_oscillator()
+    }
 }

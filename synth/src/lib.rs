@@ -91,7 +91,8 @@ pub fn app() -> Html {
         sample_rate,
         Some(filter),
         Some(envelope),
-        None
+        None,
+        lfo_type.deref().clone()
     ));
 
     let cloned_oscillator = oscillator.clone();
@@ -144,6 +145,7 @@ pub fn app() -> Html {
 
     let active_oscillators = use_state(|| vec![0; oscillator.deref().num_sources()]);
     let active_lfo = use_state(|| 0);
+    let active_lfo_type = use_state(|| 0);
     let active_filter = use_state(|| 0);
 
     let key_map_setter = keycode_maps.setter();
@@ -156,6 +158,7 @@ pub fn app() -> Html {
     let cloned_freq = freq.clone();
     let cloned_active_osc = active_oscillators.clone();
     let cloned_active_lfo = active_lfo.clone();
+    let cloned_active_lfo_type = active_lfo_type.clone();
     let cloned_active_filter = active_filter.clone();
     let cloned_freq_lfo = lfo_freq.clone();
     let cloned_type_lfo = lfo_type.clone();
@@ -173,6 +176,7 @@ pub fn app() -> Html {
         let bandwidth_hz_filter = freq_filter*0.5;
         let mut active_indices = cloned_active_osc.deref().clone();
         let mut active_lfo_index = cloned_active_lfo.deref().clone();
+        let mut active_lfo_type_index = cloned_active_lfo_type.deref().clone();
         let mut active_filter_index = cloned_active_filter.deref().clone();
         let lfo_freq = cloned_freq_lfo.deref().clone();
         let lfo_type = cloned_type_lfo.deref().clone();
@@ -271,6 +275,16 @@ pub fn app() -> Html {
                     active_indices.remove(label.1 - 1);
                 }
             },
+            '<' => {
+                let curr_oscillator = oscillator_type.get_lfo_osc();
+                oscillator_type.set_lfo_type(LFOType::Amplitude);
+                active_lfo_type_index = 0;
+            },
+            '>' => {
+                let curr_oscillator = oscillator_type.get_lfo_osc();
+                oscillator_type.set_lfo_type(LFOType::Frequency);
+                active_lfo_type_index = 1;
+            },
             '|' => {
                 oscillator_type.set_lfo_osc(None, lfo_freq, lfo_type);
                 active_lfo_index = 0;
@@ -305,6 +319,7 @@ pub fn app() -> Html {
         cloned_oscillator.set(oscillator_type);
         cloned_active_osc.set(active_indices);
         cloned_active_lfo.set(active_lfo_index);
+        cloned_active_lfo_type.set(active_lfo_type_index);
         cloned_active_filter.set(active_filter_index);
         cloned_osc_gain.set(list_of_gains);
         cloned_osc_detune.set(list_of_detunes);
@@ -420,7 +435,7 @@ pub fn app() -> Html {
             <h1>{"Filter"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64} active_index={active_filter.deref()}/>
             <h1>{"LFO"}</h1>
-            <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} active_index={active_lfo.deref()} freq={*lfo_freq.deref() as f64}/>
+            <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} active_index={active_lfo.deref()} active_index_type={active_lfo_type.deref()} freq={*lfo_freq.deref() as f64}/>
             <h1>{"Envelope"}</h1>
             <EnvelopeSettings attack_change={attack_change} decay_change={decay_change} sustain_change={sustain_change} attack={*attack_ms.deref() as f64} decay={*decay_ms.deref() as f64} sustain={*sustain_percentage.deref() as f64}/>
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
