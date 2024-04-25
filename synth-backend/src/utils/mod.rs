@@ -12,6 +12,13 @@ pub fn midi_to_hz(midi: u8) -> Result<f32, String> {
     Ok(f32::powf(2.0, ((midi as f32 - 69 as f32))/12.0) * 440.0)
 }
 
+pub fn hz_to_midi(frequency: f32) -> Result<u8, String>  {
+    if frequency<0.0 {
+        return Err("MIDI must range between 0-128".to_owned());
+    }
+    Ok((69.0 + 12.0 * (frequency / 440.0).log2()).round() as u8)
+}
+
 #[allow(dead_code)]
 pub fn midi_cents_to_hz(midi: u8, cents_dev: i8) -> Result<f32, String> {
     if cents_dev < -50 && cents_dev > 50 {

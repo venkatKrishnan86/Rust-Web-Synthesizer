@@ -76,6 +76,7 @@ pub fn app() -> Html {
     // let am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, *lfo_freq.deref());
 
     let gain = use_state(|| vec![0.5]);
+    let detune_semitones = use_state(|| vec![0]);
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, gain.deref().clone()[0], 0.0));
     let oscillator = use_state(|| Synth::new(
         osc1,
@@ -150,6 +151,7 @@ pub fn app() -> Html {
     let cloned_active_filter = active_filter.clone();
     let cloned_freq_lfo = lfo_freq.clone();
     let cloned_osc_gain = gain.clone();
+    let cloned_osc_detune = detune_semitones.clone();
     let mouse_down = Callback::from(move |label: (char, usize)| {
         let key_label = key_map_down.get(&label.0).unwrap_or(&0);
         log!("Holding key", label.0.to_string(), ", MIDI Note:", key_label.to_string());
@@ -165,6 +167,7 @@ pub fn app() -> Html {
         let mut active_filter_index = cloned_active_filter.deref().clone();
         let lfo_freq = cloned_freq_lfo.deref().clone();
         let mut list_of_gains = cloned_osc_gain.deref().clone();
+        let mut list_of_detunes = cloned_osc_detune.deref().clone();
         match label.0 {
             'Z' => {
                 if cloned_key_map[&'A'] > 12 {
@@ -247,12 +250,14 @@ pub fn app() -> Html {
                 let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
                 active_indices.push(0);
                 list_of_gains.push(0.5);
+                list_of_detunes.push(0);
                 log!("Add an oscillator");
             }
             '-' => {
                 if oscillator_type.num_sources() > 1 {
                     let _ = oscillator_type.remove(label.1 - 1);
                     list_of_gains.remove(label.1 - 1);
+                    list_of_detunes.remove(label.1 - 1);
                     active_indices.remove(label.1 - 1);
                 }
             },
@@ -292,6 +297,7 @@ pub fn app() -> Html {
         cloned_active_lfo.set(active_lfo_index);
         cloned_active_filter.set(active_filter_index);
         cloned_osc_gain.set(list_of_gains);
+        cloned_osc_detune.set(list_of_detunes);
     });
 
     let key_map_up = keycode_maps.clone();
@@ -392,6 +398,7 @@ pub fn app() -> Html {
         key_down.clone(), 
         oscillator.clone(),
         gain.clone(),
+        detune_semitones.clone(),
         active_oscillators.deref().clone()
     );
     html! {
@@ -419,6 +426,7 @@ pub fn display_oscillators(
     key_up: Callback<char>,
     oscillator: UseStateHandle<Synth>, 
     gain: UseStateHandle<Vec<f32>>,
+    detune_semitones: UseStateHandle<Vec<i8>>,
     active_indices: Vec<usize>
 ) -> Vec<Html>{
     let mut display = Vec::new();
@@ -435,12 +443,26 @@ pub fn display_oscillators(
             let _ = oscillator_type.set_gain(idx, gain1 as f32);
             cloned_oscillator.set(oscillator_type);
         });
+        let cloned_oscillator: UseStateHandle<Synth> = oscillator.clone();
+        let cloned_detune = detune_semitones.clone();
+        let idx_detune = detune_semitones.deref()[idx];
+        let cloned_detune_set = detune_semitones.setter();
+        let detune_change = Callback::from(move |detune: i8| {
+            let mut detune_vec = cloned_detune.deref().clone();
+            detune_vec[idx] = detune;
+            cloned_detune_set.set(detune_vec);
+            let mut oscillator_type = cloned_oscillator.deref().clone();
+            let _ = oscillator_type.set_detune_semitones(idx, detune);
+            cloned_oscillator.set(oscillator_type);
+        });
         display.push(html! {
             <OscillatorSelector 
                 mouse_down={mouse_down.clone()} 
                 mouse_up={mouse_up.clone()} 
                 gain_change={gain_change}
+                detune_change={detune_change}
                 gain={idx_gain as f64}
+                detune={idx_detune}
                 number={idx as usize+1} 
                 active_index={active_indices[idx]}
             />

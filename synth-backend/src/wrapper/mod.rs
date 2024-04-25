@@ -57,6 +57,10 @@ impl Synth {
         self.osc.set_oscillator(index, oscillator);
     }
 
+    pub fn set_detune_semitones(&mut self, index: usize, detune_semitones: i8) -> Result<(), String> {
+        self.osc.set_detune_semitones(detune_semitones, index)
+    }
+
     pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
         self.osc.remove(index)
     }

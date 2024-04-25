@@ -12,7 +12,7 @@ fn next_slider_id() -> usize {
 }
 
 #[derive(Clone, Debug, PartialEq, Properties)]
-pub struct Props {
+pub struct FloatSliderProps {
     pub label: &'static str,
     pub value: f64,
     pub onchange: Callback<f64>,
@@ -32,7 +32,7 @@ pub struct Slider {
 }
 impl Component for Slider {
     type Message = ();
-    type Properties = Props;
+    type Properties = FloatSliderProps;
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
@@ -45,7 +45,7 @@ impl Component for Slider {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let Props {
+        let FloatSliderProps {
             label,
             value,
             ref onchange,
@@ -73,6 +73,85 @@ impl Component for Slider {
         let oninput = onchange.reform(|e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             input.value_as_number()
+        });
+
+        html! {
+            <div class="slider">
+                <label for={id.clone()} class="slider__label">{ label }</label>
+                <input type="range"
+                    value={value.to_string()}
+                    {id}
+                    class="slider__input"
+                    min={min.to_string()} max={max.to_string()} step={step.to_string()}
+                    {oninput}
+                />
+                <span class="slider__value">{ display_value }</span>
+            </div>
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Properties)]
+pub struct IntSliderProps {
+    pub label: &'static str,
+    pub value: i8,
+    pub onchange: Callback<i8>,
+    #[prop_or_default]
+    pub precision: Option<usize>,
+    #[prop_or_default]
+    pub percentage: bool,
+    #[prop_or_default]
+    pub min: i8,
+    pub max: i8,
+    #[prop_or_default]
+    pub step: Option<i8>,
+}
+
+pub struct IntSlider {
+    id: usize,
+}
+impl Component for IntSlider {
+    type Message = ();
+    type Properties = IntSliderProps;
+
+    fn create(_ctx: &Context<Self>) -> Self {
+        Self {
+            id: next_slider_id(),
+        }
+    }
+
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
+        unimplemented!()
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        let IntSliderProps {
+            label,
+            value,
+            ref onchange,
+            precision,
+            percentage,
+            min,
+            max,
+            step,
+        } = *ctx.props();
+
+        let precision = precision.unwrap_or_else(|| usize::from(percentage));
+
+        let display_value = if percentage {
+            format!("{:.p$}%", 100.0 * value as f32, p = precision)
+        } else {
+            format!("{value:.precision$}")
+        };
+
+        let id = format!("slider-{}", self.id);
+        let step = step.unwrap_or_else(|| {
+            1
+        });
+
+        let oninput = onchange.reform(|e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            input.value_as_number() as i8
         });
 
         html! {
