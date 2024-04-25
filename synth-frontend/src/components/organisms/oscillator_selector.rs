@@ -2,7 +2,7 @@ use yew::prelude::*;
 use std::collections::HashMap;
 use std::ops::Deref;
 use stylist::{yew::styled_component, Style};
-use crate::components::atoms::slider::Slider;
+use crate::components::atoms::slider::{Slider, IntSlider};
 use crate::components::molecules::multi_selector::MultiSelector;
 use crate::components::molecules::remove_button::RemoveButton;
 
@@ -13,7 +13,9 @@ pub struct OscillatorSelectorProperties {
     pub mouse_down: Callback<(char, usize)>,
     pub mouse_up: Callback<(char, usize)>,
     pub gain_change: Callback<f64>,
+    pub detune_change: Callback<i8>,
     pub gain: f64,
+    pub detune: i8,
     pub number: usize,
     pub active_index: usize,
 }
@@ -97,6 +99,16 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
                 min={0.0}
                 max={1.0}
                 step={Some(0.01)}
+            />
+            <IntSlider 
+                label={"Detune"}
+                value={props.detune}
+                onchange={props.detune_change.clone()}
+                precision={Some(0)}
+                percentage={false}
+                min={-12}
+                max={12}
+                step={Some(1)}
             />
             <RemoveButton 
                 on_mouse_down={&mouse_down} 

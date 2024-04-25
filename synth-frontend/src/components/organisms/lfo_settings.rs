@@ -11,6 +11,7 @@ pub struct LFOSelectorProperties {
     pub mouse_up: Callback<(char, usize)>,
     pub freq_change: Callback<f64>,
     pub active_index: usize,
+    pub active_index_type: usize,
     pub freq: f64
 }
 
@@ -34,6 +35,15 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
         "https://i.ibb.co/thqmPmZ/Triangle.png".to_owned()
     ];
 
+
+    let labels_type = vec![
+        ('<', 0),
+        ('>', 0),
+    ];
+    let images_type = vec![
+        "https://i.ibb.co/XZWhWv5/Sine.png".to_owned(),
+        "https://i.ibb.co/P1wjXPj/Square.png".to_owned(),
+    ];
     html! {
         <div class={overall_css}>
         <MultiSelector
@@ -51,9 +61,18 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
             onchange={freq_change}
             precision={Some(1)}
             percentage={false}
-            min={0.0}
+            min={0.01}
             max={50.0}
             step={Some(0.01)}
+        />
+        <MultiSelector
+            icon_class={"lfo-icon-type"} 
+            label={labels_type} 
+            img_path={images_type} 
+            is_active={false} 
+            active_index={props.active_index_type}
+            on_mouse_down={&mouse_down} 
+            on_mouse_up={Callback::from(|_|{})}
         />
         </div>
     }

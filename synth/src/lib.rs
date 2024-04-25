@@ -3,6 +3,7 @@ use std::ops::Deref;
 use synth_backend::{filters::FilterParam, ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
 use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use synth_backend::envelopes::{EnvelopeParam, Envelope};
+use synth_backend::lfo::{LFO, LFOType};
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -74,16 +75,25 @@ pub fn app() -> Html {
     let envelope = Envelope::new(sample_rate as f32, *attack_ms.deref(), *decay_ms.deref(), *sustain_percentage.deref(), release_ms);
 
     let lfo_freq = use_state(|| 0.01);
+    let lfo_type = use_state(|| LFOType::Amplitude);
     // let am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, *lfo_freq.deref());
+    let mut osillator = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0);
+    // let mut lfo = LFO::new(LFOType::Amplitude, sample_rate as f32,  osillator, 0.0015);
+    // lfo.set_frequency(5.0);
+    // lfo.set_width(0.0015);
+    // lfo.set_type(LFOType::Frequency);
+    // lfo.set_oscillator(Oscillator::Triangle);
 
     let gain = use_state(|| vec![0.5]);
+    let detune_semitones = use_state(|| vec![0]);
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, gain.deref().clone()[0], 0.0));
     let oscillator = use_state(|| Synth::new(
         osc1,
         sample_rate,
         Some(filter),
         Some(envelope),
-        None
+        None,
+        lfo_type.deref().clone()
     ));
 
     let cloned_oscillator = oscillator.clone();
@@ -136,6 +146,7 @@ pub fn app() -> Html {
 
     let active_oscillators = use_state(|| vec![0; oscillator.deref().num_sources()]);
     let active_lfo = use_state(|| 0);
+    let active_lfo_type = use_state(|| 0);
     let active_filter = use_state(|| 0);
 
     let key_map_setter = keycode_maps.setter();
@@ -148,9 +159,12 @@ pub fn app() -> Html {
     let cloned_freq = freq.clone();
     let cloned_active_osc = active_oscillators.clone();
     let cloned_active_lfo = active_lfo.clone();
+    let cloned_active_lfo_type = active_lfo_type.clone();
     let cloned_active_filter = active_filter.clone();
     let cloned_freq_lfo = lfo_freq.clone();
+    let cloned_type_lfo = lfo_type.clone();
     let cloned_osc_gain = gain.clone();
+    let cloned_osc_detune = detune_semitones.clone();
     let mouse_down = Callback::from(move |label: (char, usize)| {
         let key_label = key_map_down.get(&label.0).unwrap_or(&0);
         log!("Holding key", label.0.to_string(), ", MIDI Note:", key_label.to_string());
@@ -163,27 +177,34 @@ pub fn app() -> Html {
         let bandwidth_hz_filter = freq_filter*0.5;
         let mut active_indices = cloned_active_osc.deref().clone();
         let mut active_lfo_index = cloned_active_lfo.deref().clone();
+        let mut active_lfo_type_index = cloned_active_lfo_type.deref().clone();
         let mut active_filter_index = cloned_active_filter.deref().clone();
         let lfo_freq = cloned_freq_lfo.deref().clone();
+        let lfo_type = cloned_type_lfo.deref().clone();
         let mut list_of_gains = cloned_osc_gain.deref().clone();
+        let mut list_of_detunes = cloned_osc_detune.deref().clone();
         match label.0 {
             'Z' => {
-                decrease_octave(cloned_key_map);
-                buffer.clear();
-                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                new_stream.pause();
-                stream_setter.set(new_stream);
-                cloned_poly.set(buffer);
-                key_map_setter.set(cloned_key_map.deref().clone());
+                if cloned_key_map[&'A'] > 12 {
+                    decrease_octave(cloned_key_map);
+                    buffer.clear();
+                    let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                    new_stream.pause();
+                    stream_setter.set(new_stream);
+                    cloned_poly.set(buffer);
+                    key_map_setter.set(cloned_key_map.deref().clone());
+                }
             },
             'X' => {
-                increase_octave(cloned_key_map);
-                buffer.clear();
-                let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                new_stream.pause();
-                stream_setter.set(new_stream);
-                cloned_poly.set(buffer);
-                key_map_setter.set(cloned_key_map.deref().clone());
+                if cloned_key_map[&'A'] < 108 {
+                    increase_octave(cloned_key_map);
+                    buffer.clear();
+                    let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
+                    new_stream.pause();
+                    stream_setter.set(new_stream);
+                    cloned_poly.set(buffer);
+                    key_map_setter.set(cloned_key_map.deref().clone());
+                }
             },
             '1' => {
                 if label.1>0 {
@@ -244,33 +265,45 @@ pub fn app() -> Html {
                 let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
                 active_indices.push(0);
                 list_of_gains.push(0.5);
+                list_of_detunes.push(0);
                 log!("Add an oscillator");
             }
             '-' => {
                 if oscillator_type.num_sources() > 1 {
                     let _ = oscillator_type.remove(label.1 - 1);
                     list_of_gains.remove(label.1 - 1);
+                    list_of_detunes.remove(label.1 - 1);
                     active_indices.remove(label.1 - 1);
                 }
             },
+            '<' => {
+                let curr_oscillator = oscillator_type.get_lfo_osc();
+                oscillator_type.set_lfo_type(LFOType::Amplitude);
+                active_lfo_type_index = 0;
+            },
+            '>' => {
+                let curr_oscillator = oscillator_type.get_lfo_osc();
+                oscillator_type.set_lfo_type(LFOType::Frequency);
+                active_lfo_type_index = 1;
+            },
             '|' => {
-                oscillator_type.set_lfo_osc(None, lfo_freq);
+                oscillator_type.set_lfo_osc(None, lfo_freq, lfo_type);
                 active_lfo_index = 0;
             },
             '[' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Sine), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Sine), lfo_freq, lfo_type);
                 active_lfo_index = 1;
             },
             ']' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Square), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Square), lfo_freq, lfo_type);
                 active_lfo_index = 2;
             },
             '{' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Saw), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Saw), lfo_freq, lfo_type);
                 active_lfo_index = 3;
             },
             '}' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Triangle), lfo_freq);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Triangle), lfo_freq, lfo_type);
                 active_lfo_index = 4;
             },
             _ => {
@@ -287,8 +320,10 @@ pub fn app() -> Html {
         cloned_oscillator.set(oscillator_type);
         cloned_active_osc.set(active_indices);
         cloned_active_lfo.set(active_lfo_index);
+        cloned_active_lfo_type.set(active_lfo_type_index);
         cloned_active_filter.set(active_filter_index);
         cloned_osc_gain.set(list_of_gains);
+        cloned_osc_detune.set(list_of_detunes);
     });
 
     let key_map_up = keycode_maps.clone();
@@ -389,6 +424,7 @@ pub fn app() -> Html {
         key_down.clone(), 
         oscillator.clone(),
         gain.clone(),
+        detune_semitones.clone(),
         active_oscillators.deref().clone()
     );
     html! {
@@ -413,7 +449,7 @@ pub fn app() -> Html {
             <h1>{"Filter"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64} active_index={active_filter.deref()}/>
             <h1>{"LFO"}</h1>
-            <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} active_index={active_lfo.deref()} freq={*lfo_freq.deref() as f64}/>
+            <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} active_index={active_lfo.deref()} active_index_type={active_lfo_type.deref()} freq={*lfo_freq.deref() as f64}/>
             <h1>{"Envelope"}</h1>
             <EnvelopeSettings attack_change={attack_change} decay_change={decay_change} sustain_change={sustain_change} attack={*attack_ms.deref() as f64} decay={*decay_ms.deref() as f64} sustain={*sustain_percentage.deref() as f64}/>
                 
@@ -441,6 +477,7 @@ pub fn display_oscillators(
     key_up: Callback<char>,
     oscillator: UseStateHandle<Synth>, 
     gain: UseStateHandle<Vec<f32>>,
+    detune_semitones: UseStateHandle<Vec<i8>>,
     active_indices: Vec<usize>
 ) -> Vec<Html>{
     let mut display = Vec::new();
@@ -457,12 +494,26 @@ pub fn display_oscillators(
             let _ = oscillator_type.set_gain(idx, gain1 as f32);
             cloned_oscillator.set(oscillator_type);
         });
+        let cloned_oscillator: UseStateHandle<Synth> = oscillator.clone();
+        let cloned_detune = detune_semitones.clone();
+        let idx_detune = detune_semitones.deref()[idx];
+        let cloned_detune_set = detune_semitones.setter();
+        let detune_change = Callback::from(move |detune: i8| {
+            let mut detune_vec = cloned_detune.deref().clone();
+            detune_vec[idx] = detune;
+            cloned_detune_set.set(detune_vec);
+            let mut oscillator_type = cloned_oscillator.deref().clone();
+            let _ = oscillator_type.set_detune_semitones(idx, detune);
+            cloned_oscillator.set(oscillator_type);
+        });
         display.push(html! {
             <OscillatorSelector 
                 mouse_down={mouse_down.clone()} 
                 mouse_up={mouse_up.clone()} 
                 gain_change={gain_change}
+                detune_change={detune_change}
                 gain={idx_gain as f64}
+                detune={idx_detune}
                 number={idx as usize+1} 
                 active_index={active_indices[idx]}
             />
