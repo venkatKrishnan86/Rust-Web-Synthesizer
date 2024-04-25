@@ -24,7 +24,7 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
         <Selector
             icon_class={"lfo-icon"} 
             label={('[', 0)} 
-            img_path={"UI_components/assets/icons/Sine.png"} 
+            img_path={"https://i.ibb.co/XZWhWv5/Sine.png"} 
             is_active={false} 
             on_mouse_down={&mouse_down} 
             on_mouse_up={Callback::from(|_|{})}
@@ -32,7 +32,7 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
         <Selector
             icon_class={"lfo-icon"} 
             label={(']', 0)} 
-            img_path={"UI_components/assets/icons/Square.png"} 
+            img_path={"https://i.ibb.co/P1wjXPj/Square.png"} 
             is_active={false} 
             on_mouse_down={&mouse_down} 
             on_mouse_up={Callback::from(|_|{})}
@@ -40,7 +40,7 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
         <Selector
             icon_class={"lfo-icon"} 
             label={('{', 0)} 
-            img_path={"UI_components/assets/icons/Sawtooth.png"} 
+            img_path={"https://i.ibb.co/VSSfGGZ/Sawtooth.png"} 
             is_active={false} 
             on_mouse_down={&mouse_down} 
             on_mouse_up={Callback::from(|_|{})}
@@ -48,7 +48,7 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
         <Selector
             icon_class={"lfo-icon"} 
             label={('}', 0)} 
-            img_path={"UI_components/assets/icons/Triangle.png"} 
+            img_path={"https://i.ibb.co/thqmPmZ/Triangle.png"} 
             is_active={false} 
             on_mouse_down={&mouse_down} 
             on_mouse_up={Callback::from(|_|{})}

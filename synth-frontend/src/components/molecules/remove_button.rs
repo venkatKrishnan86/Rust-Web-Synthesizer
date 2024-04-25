@@ -28,7 +28,7 @@ pub fn remove_button(props: &RemoveButtonProps) -> Html{
         <div class = {"remove_button"}>
             <CustomButton 
                 class={"remove_button"} 
-                label={"-"}
+                label={"x"}
                 mouse_down={mouse_down}
                 mouse_up={mouse_up}
             />

@@ -11,8 +11,24 @@ gap: 10px;
   background-color: gray;
 }
 
+.lfo-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 1px;
+  margin: 2px;
+  background-color: gray;
+}
+
+.lfo-icon:hover {
+  background-color: lightslategrey;
+}
+
+.lfo-icon:active {
+  background-color: black;
+}
+
 .oscillator:hover {
-  background-color: lightgray;
+  background-color: lightslategrey;
 }
 
 .oscillator:focus {
