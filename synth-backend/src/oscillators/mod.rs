@@ -128,6 +128,7 @@ impl WaveTableOscillator {
             },
             Oscillator::WhiteNoise => ()
         }
+        self.oscillator = oscillator;
         self.wave_table = wave_table;
     }
 

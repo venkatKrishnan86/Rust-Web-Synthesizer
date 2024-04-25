@@ -72,7 +72,7 @@ impl LFO {
     fn process_amplitude(&mut self, input: f32) -> f32 {
         let a = self.lfo.get_sample();
         match self.lfo.get_oscillator() {
-            Oscillator::Square => input * a.abs(),
+            Oscillator::Square => input * a,
             _ => input * (a + 1.0) / 2.0,
         }
         

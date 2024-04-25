@@ -76,12 +76,12 @@ pub fn app() -> Html {
     envelope.set_param(EnvelopeParam::DecayMs, 500.0);
     envelope.set_param(EnvelopeParam::SustainPercentage, 0.5);
 
-    let mut osillator = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0);
+    let mut osillator = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 2.0);
     let mut lfo = LFO::new(LFOType::Amplitude, sample_rate as f32,  osillator, 0.0015);
-    lfo.set_frequency(5.0);
+    lfo.set_frequency(1.0);
     lfo.set_width(0.0015);
-    lfo.set_type(LFOType::Frequency);
-    lfo.set_oscillator(Oscillator::Triangle);
+    lfo.set_type(LFOType::Amplitude);
+    lfo.set_oscillator(Oscillator::Square);
 
     let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0));
     let oscillator = use_state(|| Synth::new(
