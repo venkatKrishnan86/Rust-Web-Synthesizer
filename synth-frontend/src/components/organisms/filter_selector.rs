@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use stylist::{yew::styled_component, Style};
-use crate::components::molecules::selector::Selector;
+use crate::components::molecules::multi_selector::MultiSelector;
 use crate::components::atoms::slider::Slider;
 use std::collections::HashMap;
 
@@ -11,7 +11,8 @@ pub struct FilterSelectorProperties {
     pub mouse_down: Callback<(char, usize)>,
     pub mouse_up: Callback<(char, usize)>,
     pub freq_change: Callback<f64>,
-    pub freq: f64
+    pub freq: f64,
+    pub active_index: usize
 }
 
 #[styled_component(FilterSelector)]
@@ -26,39 +27,29 @@ pub fn filter_selector(props: &FilterSelectorProperties) -> Html {
         ('.', "container")
     ]));
 
+    let labels = vec![
+        ('7', 0),
+        ('0', 0),
+        ('9', 0),
+        ('8', 0),
+    ];
+    let images = vec![
+        "https://i.ibb.co/d7W1DrQ/Power.png".to_owned(),
+        "https://i.ibb.co/HFCG4h1/HighPass.png".to_owned(),
+        "https://i.ibb.co/23gfy5Q/BandPass.png".to_owned(),
+        "https://i.ibb.co/SQXCXkf/LowPass.png".to_owned(),
+    ];
+
     let cloned_oscillator_class_hashmap = oscillator_class_hashmap.clone();
 
     html! {
         <div class={overall_css}>
-        <Selector
-        icon_class={"power-off"} 
-        label={('7', 0)} 
-        img_path={"UI_components/assets/icons/LowPass.png"} 
+        <MultiSelector
+        icon_class={"oscillator"} 
+        label={labels} 
+        img_path={images} 
         is_active={false} 
-        on_mouse_down={&mouse_down} 
-        on_mouse_up={Callback::from(|_|{})}
-        />
-        <Selector 
-        icon_class={oscillator_class_hashmap[&'0']} 
-        label={('0', 0)} 
-        img_path={"https://i.ibb.co/HFCG4h1/HighPass.png"} 
-        is_active={false} 
-        on_mouse_down={&mouse_down} 
-        on_mouse_up={Callback::from(|_|{})}
-        />
-        <Selector
-        icon_class={oscillator_class_hashmap[&'9']} 
-        label={('9', 0)} 
-        img_path={"https://i.ibb.co/23gfy5Q/BandPass.png"} 
-        is_active={false} 
-        on_mouse_down={&mouse_down} 
-        on_mouse_up={Callback::from(|_|{})}
-        />
-        <Selector
-        icon_class={oscillator_class_hashmap[&'8']} 
-        label={('8', 0)}
-        img_path={"https://i.ibb.co/SQXCXkf/LowPass.png"} 
-        is_active={false} 
+        active_index={props.active_index}
         on_mouse_down={&mouse_down} 
         on_mouse_up={Callback::from(|_|{})}
         />

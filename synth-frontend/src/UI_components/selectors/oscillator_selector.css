@@ -11,12 +11,28 @@ gap: 10px;
   background-color: gray;
 }
 
+.oscillator_active {
+  width: 100px;
+  height: 100px;
+  border-radius: 1px;
+  margin: 2px;
+  background-color: black;
+}
+
 .lfo-icon {
   width: 100px;
   height: 100px;
   border-radius: 1px;
   margin: 2px;
   background-color: gray;
+}
+
+.lfo-icon_active {
+  width: 100px;
+  height: 100px;
+  border-radius: 1px;
+  margin: 2px;
+  background-color: black;
 }
 
 .lfo-icon:hover {
@@ -36,9 +52,9 @@ gap: 10px;
 }
 
 .oscillator:active {
-  background-color: black;
   width: 5vh;
   height: 5vh;
+  background-color: rgb(79, 79, 79);
   border-radius: 1px;
   margin: 2px;
 }

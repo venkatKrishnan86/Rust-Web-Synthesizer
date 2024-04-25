@@ -2,10 +2,9 @@ use yew::prelude::*;
 use std::collections::HashMap;
 use std::ops::Deref;
 use stylist::{yew::styled_component, Style};
-use crate::components::molecules::selector::Selector;
+use crate::components::atoms::slider::Slider;
+use crate::components::molecules::multi_selector::MultiSelector;
 use crate::components::molecules::remove_button::RemoveButton;
-
-use crate::components::atoms::keyboard_listener::KeyboardListener;
 
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
 
@@ -13,7 +12,10 @@ const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/
 pub struct OscillatorSelectorProperties {
     pub mouse_down: Callback<(char, usize)>,
     pub mouse_up: Callback<(char, usize)>,
-    pub number: usize
+    pub gain_change: Callback<f64>,
+    pub gain: f64,
+    pub number: usize,
+    pub active_index: usize,
 }
 
 #[styled_component(OscillatorSelector)]
@@ -59,50 +61,42 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
     
     // let key_up = Callback::from(move |event: KeyboardEvent| {
     // });
-    
+    let labels = vec![
+        ('1', number),
+        ('2', number),
+        ('3', number),
+        ('4', number),
+        ('5', number)
+    ];
+    let images = vec![
+        "https://i.ibb.co/XZWhWv5/Sine.png".to_owned(),
+        "https://i.ibb.co/P1wjXPj/Square.png".to_owned(),
+        "https://i.ibb.co/VSSfGGZ/Sawtooth.png".to_owned(),
+        "https://i.ibb.co/thqmPmZ/Triangle.png".to_owned(),
+        "https://i.ibb.co/VxRNs6g/Noise.png".to_owned()
+    ];
     html! {
         <>
         <h2>{"Oscillator "}{number}</h2>
         <div class={oscillator_select_style}>
-            <Selector
-                icon_class={oscillator_class_hashmap.deref()[&'1']} 
-                label={('1', number)} 
-                img_path={"https://i.ibb.co/XZWhWv5/Sine.png"} 
+            <MultiSelector
+                icon_class={"oscillator"} 
+                label={labels} 
+                img_path={images} 
                 is_active={false} 
+                active_index={props.active_index}
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
             />
-            <Selector
-                icon_class={oscillator_class_hashmap.deref()[&'2']} 
-                label={('2', number)} 
-                img_path={"https://i.ibb.co/P1wjXPj/Square.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
-            />
-            <Selector
-                icon_class={oscillator_class_hashmap.deref()[&'3']} 
-                label={('3', number)} 
-                img_path={"https://i.ibb.co/VSSfGGZ/Sawtooth.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
-            />
-            <Selector
-                icon_class={oscillator_class_hashmap.deref()[&'4']} 
-                label={('4', number)} 
-                img_path={"https://i.ibb.co/thqmPmZ/Triangle.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
-            />
-            <Selector
-                icon_class={oscillator_class_hashmap.deref()[&'5']} 
-                label={('5', number)} 
-                img_path={"https://i.ibb.co/VxRNs6g/Noise.png"} 
-                is_active={false} 
-                on_mouse_down={&mouse_down} 
-                on_mouse_up={Callback::from(|_|{})}
+            <Slider 
+                label={"Gain"}
+                value={props.gain}
+                onchange={props.gain_change.clone()}
+                precision={Some(2)}
+                percentage={false}
+                min={0.0}
+                max={1.0}
+                step={Some(0.01)}
             />
             <RemoveButton 
                 on_mouse_down={&mouse_down} 
