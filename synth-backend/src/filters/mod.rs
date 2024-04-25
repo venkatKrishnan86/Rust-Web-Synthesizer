@@ -41,7 +41,6 @@ impl Filter {
                     filter_type: filter_type,
                     sample_rate_hz: sample_rate_hz,
                     freq_hz: freq_hz,
-                    // freq_hz: 0.0,
                     bandwidth_hz: bandwidth_hz,
                     c: c,
                     d: 0.0,
@@ -52,11 +51,10 @@ impl Filter {
             FilterType::BandPass => {
                 let c = ((PI * bandwidth_hz / sample_rate_hz).tan() - 1.0)
                     / ((PI * bandwidth_hz / sample_rate_hz).tan() + 1.0);
-                let d = -(2.0*PI * freq_hz / sample_rate_hz).cos();
+                let d = -(2.0 * PI * freq_hz / sample_rate_hz).cos();
                 Self {
                     filter_type: filter_type,
                     sample_rate_hz: sample_rate_hz,
-                    // freq_hz: 0.0,
                     freq_hz: freq_hz,
                     bandwidth_hz: bandwidth_hz,
                     c: c,

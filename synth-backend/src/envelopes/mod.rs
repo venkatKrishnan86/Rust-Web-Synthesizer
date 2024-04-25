@@ -1,52 +1,71 @@
 //! ADSR: Attack Decay Sustain Release
-//! 
-//! ## Parameters
-//! 1. `table`: For the envelope table
-//! 2. `sample_rate`: Sample Rate
-//! 3. `attack`: Value in milliseconds
-//! 4. `decay`: Value in milliseconds
-//! 5. `sustain`: Value in percentage (0-100)
-//! 6. `release`: Value in milliseconds
+
+#[derive(Clone, Debug)]
+pub enum EnvelopeParam {
+    AttackMs,
+    DecayMs,
+    SustainPercentage,
+    ReleaseMs,
+}
+
+#[derive(Clone, Debug)]
 pub struct Envelope {
-    table: Vec<f32>,
-    table_size: usize,
-    sample_rate: u32,
-    attack: u16,
-    decay: u16,
-    sustain: f32,
-    release: u16,
+    current_step: usize,
+    sample_rate_hz: f32,
+    attack_step: usize,
+    decay_step: usize,
+    sustain_percentage: f32,
+    release_step: usize
 }
 
 impl Envelope {
     pub fn new(
-        sample_rate: u32,
-        table_size: usize,
-        attack: u16, 
-        decay: u16,
-        sustain: f32,
-        release: u16
+        sample_rate_hz: f32,
+        attack_ms: f32,
+        decay_ms: f32,
+        sustain_percentage: f32,
+        release_ms: f32
     ) -> Self 
     {
-        assert!(sustain>=0.0 && sustain<=100.0, "Sustain must be a percentage, hence must be between 0 and 100");
-        let table = create_table(attack, decay, sustain, release);
         Self {
-            table,
-            table_size,
-            sample_rate,
-            attack,
-            decay,
-            sustain,
-            release
+            current_step: 0,
+            sample_rate_hz: sample_rate_hz,
+            attack_step: (attack_ms * sample_rate_hz / 1000.0) as usize,
+            decay_step: (decay_ms * sample_rate_hz / 1000.0) as usize,
+            sustain_percentage: sustain_percentage,
+            release_step: (release_ms * sample_rate_hz / 1000.0) as usize
         }
     }
 
-    fn create_table(
-        attack: u16, 
-        decay: u16,
-        sustain: f32,
-        release: u16
-    ) -> Vec<f32>
-    {
-        todo!("Implement")
+    pub fn get_amplitude(&mut self) -> f32 {
+        self.current_step += 1;
+        if self.current_step < self.attack_step {
+            self.current_step as f32 / self.attack_step as f32
+        } else if self.current_step < self.attack_step + self.decay_step {
+            1.0 - (1.0 - self.sustain_percentage) * ((self.current_step - self.attack_step) as f32 / self.decay_step as f32)
+        } else {
+            self.sustain_percentage
+        }
+    }
+
+    pub fn reset(&mut self) {
+        self.current_step = 0;
+    }
+
+    pub fn set_param(&mut self, param: EnvelopeParam, value: f32) {
+        match param {
+            EnvelopeParam::AttackMs => {
+                self.attack_step = (value * self.sample_rate_hz / 1000.0) as usize;
+            }
+            EnvelopeParam::DecayMs => {
+                self.decay_step = (value * self.sample_rate_hz / 1000.0) as usize;
+            }
+            EnvelopeParam::SustainPercentage => {
+                self.sustain_percentage = value;
+            }
+            EnvelopeParam::ReleaseMs => {
+                self.release_step = (value * self.sample_rate_hz / 1000.0) as usize;
+            }
+        }
     }
 }
