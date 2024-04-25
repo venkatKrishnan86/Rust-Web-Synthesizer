@@ -2,9 +2,10 @@ display: flex;
 flex-direction: column;
 height: 100vh;
 margin:0;
-padding-left: 50px;
-padding-right: 50px;
+padding-left: 25px;
+padding-right: 25px;
 background-color: #0457A0;
+font-family: Roboto, sans-serif;
 
 .header {
     display: flex;

@@ -432,6 +432,7 @@ pub fn app() -> Html {
         active_oscillators.deref().clone()
     );
     html! {
+
         <div class= {overall_css}>
         <div class = "header">
             <img src="https://i.ibb.co/VDXtLD5/mr-krabb.png" alt="Mr. Krabs" border="0"/>
@@ -469,6 +470,7 @@ pub fn app() -> Html {
 
 
         </div>
+        
 
     }
 
