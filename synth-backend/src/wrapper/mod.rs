@@ -3,6 +3,8 @@ use crate::filters::{Filter, FilterParam, FilterType};
 use crate::envelopes::{Envelope, EnvelopeParam};
 use std::ops::Add;
 
+const GAIN: f32 = 1.0;
+
 #[derive(Clone, Debug)]
 pub struct Synth {
     pub osc: MultiOscillator,
@@ -98,10 +100,14 @@ impl Synth {
         }
     }
 
-    pub fn set_lfo_osc(&mut self, osc: Oscillator){
-        match self.am_lfo {
-            None => (),
-            Some(_) => self.am_lfo.as_mut().unwrap().set_oscillator(osc)
+    pub fn set_lfo_osc(&mut self, oscillator: Option<Oscillator>, frequency: f32){
+        match oscillator {
+            None => self.am_lfo = None,
+            Some(osc) => match self.am_lfo {
+                None => self.am_lfo = Some(WaveTableOscillator::new(self.sample_rate, self.sample_rate as usize, osc, GAIN, frequency)),
+                Some(_) => self.am_lfo.as_mut().unwrap().set_oscillator(osc)
+            }
         }
+        
     }
 }

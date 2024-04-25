@@ -20,12 +20,14 @@ pub fn lfo_selector(props: &LFOSelectorProperties) -> Html {
     let mouse_down = props.mouse_down.clone();
     let freq_change = props.freq_change.clone();
     let labels = vec![
+        ('|', 0),
         ('[', 0),
         (']', 0),
         ('{', 0),
         ('}', 0),
     ];
     let images = vec![
+        "".to_owned(),
         "https://i.ibb.co/XZWhWv5/Sine.png".to_owned(),
         "https://i.ibb.co/P1wjXPj/Square.png".to_owned(),
         "https://i.ibb.co/VSSfGGZ/Sawtooth.png".to_owned(),
