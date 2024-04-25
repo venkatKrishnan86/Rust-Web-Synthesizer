@@ -16,17 +16,17 @@ pub struct MultiSelectorProps {
 #[styled_component(MultiSelector)]
 pub fn selector(props: &MultiSelectorProps) -> Html {
     html! {
-        <div>
-            {multi_selection(
-                props.icon_class.clone(), 
-                props.label.clone(),
-                props.is_active,
-                props.active_index,
-                props.img_path.clone(),
-                props.on_mouse_down.clone(),
-                props.on_mouse_up.clone()
-            )}
-        </div>
+        <>
+        {multi_selection(
+            props.icon_class.clone(), 
+            props.label.clone(),
+            props.is_active,
+            props.active_index,
+            props.img_path.clone(),
+            props.on_mouse_down.clone(),
+            props.on_mouse_up.clone()
+        )}
+        </>
     }
 }
 

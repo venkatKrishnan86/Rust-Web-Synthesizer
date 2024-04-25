@@ -57,7 +57,7 @@ pub fn app() -> Html {
     ]));
 
     let freq: UseStateHandle<f32> = use_state(|| 200.0);
-    let filter_type = use_state(|| FilterType::LowPass);
+    let filter_type = use_state(|| FilterType::HighPass);
     let bandwidth_hz = 500.0;
     let filter = Filter::new(
         filter_type.deref().clone(), 
@@ -73,9 +73,9 @@ pub fn app() -> Html {
     let envelope = Envelope::new(sample_rate as f32, *attack_ms.deref(), *decay_ms.deref(), *sustain_percentage.deref(), release_ms);
 
     let lfo_freq = use_state(|| 0.0);
-    let am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, *lfo_freq.deref());
+    let am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, *lfo_freq.deref());
 
-    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
+    let osc1 = MultiOscillator::from(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.5, 0.0));
     let oscillator = use_state(|| Synth::new(
         osc1,
         sample_rate,
@@ -133,7 +133,7 @@ pub fn app() -> Html {
     });
 
     let active_oscillators = use_state(|| vec![0; oscillator.deref().num_sources()]);
-    
+    let active_lfo = use_state(|| 0);
 
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
@@ -144,6 +144,7 @@ pub fn app() -> Html {
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
     let cloned_active_osc = active_oscillators.clone();
+    let cloned_active_lfo = active_lfo.clone();
     let mouse_down = Callback::from(move |label: (char, usize)| {
         let key_label = key_map_down.get(&label.0).unwrap_or(&0);
         log!("Holding key", label.0.to_string(), ", MIDI Note:", key_label.to_string());
@@ -155,6 +156,7 @@ pub fn app() -> Html {
         let freq_filter = cloned_freq.deref().clone();
         let bandwidth_hz_filter = freq_filter*0.5;
         let mut active_indices = cloned_active_osc.deref().clone();
+        let mut active_lfo_index = cloned_active_lfo.deref().clone();
         match label.0 {
             'Z' => {
                 decrease_octave(cloned_key_map);
@@ -237,16 +239,20 @@ pub fn app() -> Html {
                 }
             },
             '[' => {
-                oscillator_type.set_lfo_osc(Oscillator::Sine)
+                oscillator_type.set_lfo_osc(Oscillator::Sine);
+                active_lfo_index = 0;
             },
             ']' => {
-                oscillator_type.set_lfo_osc(Oscillator::Square)
+                oscillator_type.set_lfo_osc(Oscillator::Square);
+                active_lfo_index = 1;
             },
             '{' => {
-                oscillator_type.set_lfo_osc(Oscillator::Saw)
+                oscillator_type.set_lfo_osc(Oscillator::Saw);
+                active_lfo_index = 2;
             },
             '}' => {
-                oscillator_type.set_lfo_osc(Oscillator::Triangle)
+                oscillator_type.set_lfo_osc(Oscillator::Triangle);
+                active_lfo_index = 3;
             },
             _ => {
                 let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
@@ -261,6 +267,7 @@ pub fn app() -> Html {
         }
         cloned_oscillator.set(oscillator_type);
         cloned_active_osc.set(active_indices);
+        cloned_active_lfo.set(active_lfo_index);
     });
 
     let key_map_up = keycode_maps.clone();
@@ -371,7 +378,7 @@ pub fn app() -> Html {
             <h1>{"Filter"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64}/>
             <h1>{"LFO"}</h1>
-            <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} freq={*lfo_freq.deref() as f64}/>
+            <LFOSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_lfo_change} active_index={active_lfo.deref()} freq={*lfo_freq.deref() as f64}/>
             <h1>{"Envelope"}</h1>
             <EnvelopeSettings attack_change={attack_change} decay_change={decay_change} sustain_change={sustain_change} attack={*attack_ms.deref() as f64} decay={*decay_ms.deref() as f64} sustain={*sustain_percentage.deref() as f64}/>
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
