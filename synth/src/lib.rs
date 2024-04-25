@@ -70,12 +70,7 @@ pub fn app() -> Html {
     let decay_ms = use_state(|| 0.0);
     let sustain_percentage = use_state(|| 1.0);
     let release_ms = 0.0;
-    let mut envelope = Envelope::new(sample_rate as f32, *attack_ms.deref(), *decay_ms.deref(), *sustain_percentage.deref(), release_ms);
-    // envelope.set_param(EnvelopeParam::AttackMs, 100.0);
-    // envelope.set_param(EnvelopeParam::DecayMs, 500.0);
-    // envelope.set_param(EnvelopeParam::SustainPercentage, 0.5);
-
-
+    let envelope = Envelope::new(sample_rate as f32, *attack_ms.deref(), *decay_ms.deref(), *sustain_percentage.deref(), release_ms);
 
     let mut am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Square, 1.0, 10.0);
 
@@ -333,8 +328,9 @@ pub fn app() -> Html {
             {oscillator_selector_display}
             <br />
             <AddButton on_mouse_down={mouse_down.clone()} on_mouse_up={mouse_up.clone()} />
-            <h1>{"Choose Your Filter Type"}</h1>
+            <h1>{"Filter"}</h1>
             <FilterSelector mouse_down={mouse_down.clone()} mouse_up={mouse_up.clone()} freq_change={freq_change} freq={*freq.deref() as f64}/>
+            <h1>{"Envelope"}</h1>
             <EnvelopeSettings attack_change={attack_change} decay_change={decay_change} sustain_change={sustain_change} attack={*attack_ms.deref() as f64} decay={*decay_ms.deref() as f64} sustain={*sustain_percentage.deref() as f64}/>
             <MIDIKeyboard mouse_down={mouse_down.clone()} mouse_up={&mouse_up} key_down={&key_down} key_up={&key_up}/>
             <p>{"Current MIDI Range: "}{&key_map_clone.deref()[&'A']}{" - "}{&key_map_clone.deref()[&'K']}</p>
