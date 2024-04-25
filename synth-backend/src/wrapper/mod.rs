@@ -1,5 +1,6 @@
 use crate::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use crate::filters::{Filter, FilterParam, FilterType};
+use crate::envelopes::{Envelope, EnvelopeParam};
 use std::ops::Add;
 
 #[derive(Clone, Debug)]
@@ -7,34 +8,51 @@ pub struct Synth {
     pub osc: MultiOscillator,
     pub sample_rate: u32,
     pub filter: Option<Filter>, // Make filter an optional field
+    pub envelope: Option<Envelope>,
+    pub am_lfo: Option<WaveTableOscillator>,
 }
 
 impl Synth {
-    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>) -> Self {
+    pub fn new(osc: MultiOscillator, sample_rate: u32, filter: Option<Filter>, envelope: Option<Envelope>, am_lfo: Option<WaveTableOscillator>) -> Self {
         Self {
             osc,
             sample_rate,
             filter,
+            envelope,
+            am_lfo,
         }
     }
 
     pub fn get_sample(&mut self) -> f32 {
         // Call the get_sample method of MultiOscillator
         let sample = self.osc.get_sample();
+        let mut output_sample = sample;
 
         // Check if filter exists
         if let Some(ref mut filter) = self.filter {
             // Apply the filter if it exists
-            let filtered_sample = filter.process(sample);
-            return filtered_sample;
+            output_sample = filter.process(sample);
+        }
+
+        if let Some(ref mut envelope) = self.envelope {
+            output_sample = output_sample * envelope.get_amplitude();
+        }
+
+        if let Some(ref mut am_lfo) = self.am_lfo {
+            let a = am_lfo.get_sample();
+            output_sample = output_sample * a.abs();
         }
 
         // If filter is None, return the sample directly
-        sample
+        output_sample
     }
 
     pub fn set_oscillator(&mut self, index: usize, oscillator: Oscillator) {
         self.osc.set_oscillator(index, oscillator);
+    }
+
+    pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
+        self.osc.remove(index)
     }
 
     pub fn push(&mut self, oscillator: WaveTableOscillator) -> Result<(), String> {
@@ -49,10 +67,41 @@ impl Synth {
         self.osc.num_sources()
     }
 
-    pub fn set_filter(&mut self, filter: Option<FilterType>) {
+    pub fn set_filter(&mut self, filter: Option<FilterType>, freq_filter: f32, bandwidth_hz_filter: f32) {
         match filter {
             None => self.filter = None,
-            Some(filter_type) => self.filter.as_mut().unwrap().change_filter_type(filter_type)
+            Some(filter_type) => match self.filter {
+                None => self.filter = Some(Filter::new(filter_type, self.sample_rate as f32, freq_filter, bandwidth_hz_filter)),
+                Some(_) => self.filter.as_mut().unwrap().change_filter_type(filter_type)
+            }
+        }
+    }
+
+    pub fn set_filter_params(&mut self, filterparam: FilterParam, value: f32) {
+        match self.filter {
+            None => (),
+            Some(_) => self.filter.as_mut().unwrap().set_param(filterparam, value)
+        }
+    }
+
+    pub fn set_envelope_params(&mut self, envelope_param: EnvelopeParam, value: f32) {
+        match self.envelope {
+            None => (),
+            Some(_) => self.envelope.as_mut().unwrap().set_param(envelope_param, value)
+        }
+    }
+
+    pub fn set_lfo_frequency(&mut self, frequency: f32) -> Result<(), String> {
+        match self.am_lfo {
+            None => Err("LFO is not assigned".to_string()),
+            Some(_) => self.am_lfo.as_mut().unwrap().set_frequency(frequency)
+        }
+    }
+
+    pub fn set_lfo_osc(&mut self, osc: Oscillator){
+        match self.am_lfo {
+            None => (),
+            Some(_) => self.am_lfo.as_mut().unwrap().set_oscillator(osc)
         }
     }
 }

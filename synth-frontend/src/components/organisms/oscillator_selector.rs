@@ -3,15 +3,17 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use stylist::{yew::styled_component, Style};
 use crate::components::molecules::selector::Selector;
+use crate::components::molecules::remove_button::RemoveButton;
+
 use crate::components::atoms::keyboard_listener::KeyboardListener;
 
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
 
 #[derive(Properties, PartialEq)]
 pub struct OscillatorSelectorProperties {
-    pub mouse_down: Callback<char>,
-    pub mouse_up: Callback<char>,
-    pub number: u32
+    pub mouse_down: Callback<(char, usize)>,
+    pub mouse_up: Callback<(char, usize)>,
+    pub number: usize
 }
 
 #[styled_component(OscillatorSelector)]
@@ -23,6 +25,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
         ('2', "oscillator"),
         ('3', "oscillator"),
         ('4', "oscillator"),
+        ('5', "oscillator"),
         ('.', "container")
     ]));
 
@@ -63,7 +66,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
         <div class={oscillator_select_style}>
             <Selector
                 icon_class={oscillator_class_hashmap.deref()[&'1']} 
-                label={'1'} 
+                label={('1', number)} 
                 img_path={"https://i.ibb.co/XZWhWv5/Sine.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
@@ -71,7 +74,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
             />
             <Selector
                 icon_class={oscillator_class_hashmap.deref()[&'2']} 
-                label={'2'} 
+                label={('2', number)} 
                 img_path={"https://i.ibb.co/P1wjXPj/Square.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
@@ -79,7 +82,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
             />
             <Selector
                 icon_class={oscillator_class_hashmap.deref()[&'3']} 
-                label={'3'} 
+                label={('3', number)} 
                 img_path={"https://i.ibb.co/VSSfGGZ/Sawtooth.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
@@ -87,11 +90,24 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
             />
             <Selector
                 icon_class={oscillator_class_hashmap.deref()[&'4']} 
-                label={'4'} 
+                label={('4', number)} 
                 img_path={"https://i.ibb.co/thqmPmZ/Triangle.png"} 
                 is_active={false} 
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
+            />
+            <Selector
+                icon_class={oscillator_class_hashmap.deref()[&'5']} 
+                label={('5', number)} 
+                img_path={"https://i.ibb.co/VxRNs6g/Noise.png"} 
+                is_active={false} 
+                on_mouse_down={&mouse_down} 
+                on_mouse_up={Callback::from(|_|{})}
+            />
+            <RemoveButton 
+                on_mouse_down={&mouse_down} 
+                on_mouse_up={Callback::from(|_|{})}
+                number = {number}
             />
         </div>
         </>

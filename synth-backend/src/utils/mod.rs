@@ -1,8 +1,8 @@
 use std::{collections::HashMap, ops::{Deref, DerefMut}};
-use cpal::{traits::StreamTrait, Stream};
+use cpal::{traits::{DeviceTrait, StreamTrait}, Data, FromSample, OutputCallbackInfo, SampleFormat, SizedSample, Stream, StreamConfig};
 use crate::ring_buffer::IterablePolyphonyHashMap;
-use cpal::traits::DeviceTrait;
 use web_sys::console;
+use gloo::console::log;
 
 #[allow(dead_code)]
 pub fn midi_to_hz(midi: u8) -> Result<f32, String> {
@@ -40,6 +40,7 @@ pub fn decrease_octave(midi_map: &mut HashMap<char, u8>) {
     }
 }
 
+
 pub struct State {
     stream: Stream
 }
@@ -47,7 +48,7 @@ pub struct State {
 impl State {
     pub fn new(device: &cpal::Device, config: &cpal::StreamConfig, polyphony: IterablePolyphonyHashMap) -> Self {
         let stream = State::create_stream(device, config, polyphony);
-        return State { stream};
+        return State { stream };
     }
 
     fn create_stream(device: &cpal::Device, config: &cpal::StreamConfig, polyphony: IterablePolyphonyHashMap) -> Stream {
@@ -60,20 +61,30 @@ impl State {
                 poly.get_sample()
             }
         };
+
+        let buffer_size = 512;
+        // let sample_format = cpal::SampleFormat::F32;
+
+        let stream_config = cpal::StreamConfig {
+            channels: config.channels,
+            sample_rate: config.sample_rate,
+            buffer_size: cpal::BufferSize::Fixed(buffer_size),
+        };
+
+        // log!(channels);
+
         device
-            .build_output_stream(
-                config, 
-                move |data: &mut [f32], _| State::write_data(data, channels, &mut next_value),
+            .build_output_stream_raw (
+                &stream_config, 
+                cpal::SampleFormat::F32,
+                move |data: &mut Data, _info: &OutputCallbackInfo| {
+                    State::write_data(data, channels, &mut next_value);
+                }, 
                 err_fn,
                 None,
             )
             .unwrap()
     }
-
-    // pub fn update_polyphony(&mut self, polyphony: IterablePolyphonyHashMap) {
-    //     self.polyphony = polyphony;
-    //     self.stream = State::create_stream(self.device, self.config, self.polyphony.clone());
-    // }
 
     pub fn pause(&self) {
         self.stream.pause().unwrap()
@@ -83,12 +94,11 @@ impl State {
         self.stream.play().unwrap()
     }
 
-    fn write_data(output: &mut [f32], channels: usize, next_sample: &mut dyn FnMut() -> f32){
-        for frame in output.chunks_mut(channels) {
-            let value = next_sample();
-            println!("{value}");
+    fn write_data(output: &mut Data, channels: usize, next_sample: &mut dyn FnMut() -> f32){
+        for frame in output.as_slice_mut() {
+            // log!(frame.len());
             for sample in frame.iter_mut() {
-                *sample = value;
+                *sample = next_sample();
             }
         }
     }

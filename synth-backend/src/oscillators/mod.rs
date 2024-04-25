@@ -1,4 +1,5 @@
 use std::{f32::consts::PI, ops::Add};
+use rand::seq::index;
 use rand_distr::{Distribution, Uniform};
 use rodio::Source;
 
@@ -38,7 +39,7 @@ impl WaveTableOscillator {
             Oscillator::Square => {
                 for i in 0..wave_table_size {
                     if i < wave_table_size/2 {
-                        wave_table.push(0.99 * gain);
+                        wave_table.push(0.4 * gain);
                     } else {
                         wave_table.push(0.0);
                     }
@@ -47,9 +48,9 @@ impl WaveTableOscillator {
             Oscillator::BidirectionalSquare => {
                 for i in 0..wave_table_size {
                     if i < wave_table_size/2 {
-                        wave_table.push(0.99 * gain);
+                        wave_table.push(0.4 * gain);
                     } else {
-                        wave_table.push(-0.99 * gain);
+                        wave_table.push(-0.4 * gain);
                     }
                 }
             },
@@ -89,6 +90,7 @@ impl WaveTableOscillator {
 
     pub fn set_oscillator(&mut self, oscillator: Oscillator) {
         let mut wave_table: Vec<f32> = Vec::new();
+        self.oscillator = oscillator.clone();
         match oscillator {
             Oscillator::Sine => {
                 for i in 0..self.wave_table_size {
@@ -259,6 +261,10 @@ impl MultiOscillator{
 
     pub fn num_sources(&self) -> usize {
         self.multi_osc.len()
+    }
+
+    pub fn remove(&mut self, index: usize) -> WaveTableOscillator {
+        self.multi_osc.remove(index)
     }
 
     pub fn get_sample(&mut self) -> f32 {

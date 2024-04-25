@@ -19,8 +19,8 @@ const OCTAVE_CHANGE_CSS: &str = include_str!("UI_components/key_controllers/octa
 
 #[derive(Properties, PartialEq)]
 pub struct MIDIKeyboardProperties {
-    pub mouse_down: Callback<char>,
-    pub mouse_up: Callback<char>,
+    pub mouse_down: Callback<(char, usize)>,
+    pub mouse_up: Callback<(char, usize)>,
     pub key_down: Callback<char>,
     pub key_up: Callback<char>,
 }
@@ -92,37 +92,37 @@ pub fn midi_keyboard(props: &MIDIKeyboardProperties) -> Html {
 
     let octave_down_mouse_down = props.mouse_down.clone();
     let octave_down_mouse_down = Callback::from(move |_| {
-        octave_down_mouse_down.emit('Z')
+        octave_down_mouse_down.emit(('Z', 0))
     });
     let octave_up_mouse_down = props.mouse_down.clone();
     let octave_up_mouse_down = Callback::from(move |_| {
-        octave_up_mouse_down.emit('X')
+        octave_up_mouse_down.emit(('X', 0))
     });
     html! {
         <>
             <KeyboardListener key_down={&key_down} key_up={&key_up}/>
             <div class={black_keys_style}>
                 <div id="corner-left" class="filler" ></div>
-                <Key button_class={class_hashmap.deref()[&'W']} label='W' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key button_class={class_hashmap.deref()[&'E']} label='E' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'W']} label={('W', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'E']} label={('E', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
-                <Key button_class={class_hashmap.deref()[&'T']} label='T' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key button_class={class_hashmap.deref()[&'Y']} label='Y' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
-                <Key button_class={class_hashmap.deref()[&'U']} label='U' key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'T']} label={('T', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'Y']} label={('Y', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
+                <Key button_class={class_hashmap.deref()[&'U']} label={('U', 0)} key_color={KeyColor::Black} on_mouse_down={&mouse_down} on_mouse_up={&mouse_up}/>
                 <div class="filler"></div>
                 <div id="corner-left" class="filler"></div>
                 <div id="corner-right" class="filler"></div>
             </div>
             <div class={white_keys_style}>
-                <Key button_class={class_hashmap.deref()[&'A']} label={'A'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'S']} label={'S'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'D']} label={'D'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'F']} label={'F'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'G']} label={'G'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'H']} label={'H'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'J']} label={'J'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
-                <Key button_class={class_hashmap.deref()[&'K']} label={'K'} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'A']} label={('A', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'S']} label={('S', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'D']} label={('D', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'F']} label={('F', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'G']} label={('G', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'H']} label={('H', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'J']} label={('J', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
+                <Key button_class={class_hashmap.deref()[&'K']} label={('K', 0)} key_color={KeyColor::White} on_mouse_down={&mouse_down} on_mouse_up= {&mouse_up} />
             </div>
             <div class={octave_change_style}>
                 <CustomButton 
