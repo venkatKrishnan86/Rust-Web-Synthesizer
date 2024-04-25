@@ -1,0 +1,26 @@
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+gap: 10px;
+color: #fff56c;
+
+/* The slider thumb (the draggable circle) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Removes default thumb */
+  appearance: none;
+  width: 20px;              /* Width and height of the thumb */
+  height: 20px;
+  background: #FF6347;      /* Tomato red background */
+  cursor: pointer;          /* Cursor changes to pointer when over thumb */
+  border-radius: 50%;       /* Makes the thumb circular */
+  border: 2px solid #FFFFFF;   /* White border for the thumb */
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #FF6347;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+}

@@ -91,7 +91,7 @@ border-right: 2px solid #f0e33f;
 }
 
 .filler + #corner-left {
-    border-left: 1px solid #e63a3a;
+    border-left: 2px solid #e63a3a;
     background-color: #f0e33f;
     border-top: 0px;
     border-bottom: 0px;

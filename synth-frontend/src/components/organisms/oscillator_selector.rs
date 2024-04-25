@@ -73,7 +73,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
     let images = vec![
         "https://i.ibb.co/XZWhWv5/Sine.png".to_owned(),
         "https://i.ibb.co/P1wjXPj/Square.png".to_owned(),
-        "https://i.ibb.co/VSSfGGZ/Sawtooth.png".to_owned(),
+        "https://i.ibb.co/NLj5Szb/saw-tooth.png".to_owned(),
         "https://i.ibb.co/thqmPmZ/Triangle.png".to_owned(),
         "https://i.ibb.co/VxRNs6g/Noise.png".to_owned()
     ];

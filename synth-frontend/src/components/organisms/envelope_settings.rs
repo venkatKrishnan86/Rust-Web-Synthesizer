@@ -3,6 +3,7 @@ use stylist::{yew::styled_component, Style};
 use crate::components::atoms::slider::Slider;
 
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
+const ENVELOPE_SETTINGS: &str = include_str!("../../UI_components/selectors/slider_envelope.css");
 
 #[derive(Properties, PartialEq)]
 pub struct EnvelopeProperties {
@@ -16,7 +17,7 @@ pub struct EnvelopeProperties {
 
 #[styled_component(EnvelopeSettings)]
 pub fn filter_selector(props: &EnvelopeProperties) -> Html {
-    let overall_css = Style::new(OSCILLATOR_SELECT_CSS).unwrap();
+    let overall_css = Style::new(ENVELOPE_SETTINGS).unwrap();
     let attack_change = props.attack_change.clone();
     let decay_change = props.decay_change.clone();
     let sustain_change = props.sustain_change.clone();
@@ -33,6 +34,7 @@ pub fn filter_selector(props: &EnvelopeProperties) -> Html {
             max={1000.0}
             step={Some(0.1)}
         />
+
         <Slider 
             label={"Decay"}
             value={props.decay}
@@ -43,6 +45,7 @@ pub fn filter_selector(props: &EnvelopeProperties) -> Html {
             max={1000.0}
             step={Some(0.1)}
         />
+
         <Slider 
             label={"Sustain"}
             value={props.sustain}

@@ -5,7 +5,7 @@ margin:0;
 padding-left: 25px;
 padding-right: 25px;
 background-color: #0457A0;
-font-family: Roboto, sans-serif;
+font-family: "Jersey 10", sans-serif;
 
 .header {
     display: flex;
@@ -66,6 +66,7 @@ font-family: Roboto, sans-serif;
     color: #fff56c;
     padding-left: 20px;
     padding-right: 20px;
+    justify-content: flex-start;
 
 } 
 
