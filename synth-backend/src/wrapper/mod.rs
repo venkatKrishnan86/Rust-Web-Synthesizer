@@ -40,7 +40,7 @@ impl Synth {
 
         if let Some(ref mut am_lfo) = self.am_lfo {
             let a = am_lfo.get_sample();
-            output_sample = output_sample * a.abs();
+            output_sample = output_sample * (1.0 + a) / 2.0;
         }
 
         // If filter is None, return the sample directly
