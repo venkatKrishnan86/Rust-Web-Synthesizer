@@ -77,7 +77,7 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
     ];
     html! {
         <>
-        <h2>{"Oscillator "}{number}</h2>
+        // <h2>{"Oscillator "}{number}</h2>
         <div class={oscillator_select_style}>
             <MultiSelector
                 icon_class={"oscillator"} 

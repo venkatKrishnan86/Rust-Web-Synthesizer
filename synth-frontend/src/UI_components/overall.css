@@ -1,6 +1,10 @@
 display: flex;
 flex-direction: column;
 height: 100vh;
+margin:0;
+padding-left: 50px;
+padding-right: 50px;
+background-color: #0457A0;
 
 .header {
     display: flex;
@@ -24,16 +28,44 @@ height: 100vh;
 .column1 { 
     width: 50%; 
     height: 60vh; 
-    background-color: green; 
-    text-align: right; 
-    color: white; 
+    background-color: #0457A0; 
+    text-align: left; 
+    color: #fff56c; 
     overflow: scroll;
+    scrollbar-color: #aead0d #0457A0;
+    scrollbar-width: thin;
+    padding-left: 20px;
+    padding-right: 20px;
 } 
+
+
+.column1::-webkit-scrollbar {
+    width: 10px; /* width of the entire scrollbar */
+}
+
+/* Styles the track (part the thumb travels in) */
+.column1::-webkit-scrollbar-track {
+    background: #0457A0; /* color of the track */
+}
+
+/* Styles the thumb (the draggable part) */
+.column1::-webkit-scrollbar-thumb {
+    background: #aead0d; /* color of the thumb */
+}
+
+/* Adds a hover effect to the thumb for better interaction */
+.column1::-webkit-scrollbar-thumb:hover {
+    background: #fff56c;
+}
 
 .column2 { 
     width: 50%; 
-    color: green; 
+    background-color: #0457A0; 
     height: 60vh; 
+    color: #fff56c;
+    padding-left: 20px;
+    padding-right: 20px;
+
 } 
 
 .row {
@@ -41,4 +73,7 @@ height: 100vh;
     flex-direction: column;
     justify-content: center;
     height: 30vh;
+    background-color: #0457a0;
+    /* padding-left: 50px;
+    padding-right: 50px; */
 }

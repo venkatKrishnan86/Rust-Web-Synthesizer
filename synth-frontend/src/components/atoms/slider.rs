@@ -79,6 +79,7 @@ impl Component for Slider {
             <div class="slider">
                 <label for={id.clone()} class="slider__label">{ label }</label>
                 <input type="range"
+                    style="background: #fff56c; cursor: pointer;"
                     value={value.to_string()}
                     {id}
                     class="slider__input"

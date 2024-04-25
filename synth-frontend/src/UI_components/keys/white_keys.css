@@ -1,4 +1,4 @@
-width: 100%;
+/* width: 100%;
 height: 10em;
 display: flex;
 flex-direction: row;
@@ -8,14 +8,16 @@ border-top: 0px;
 
 .whitekey {
     display: flex;
+    border: 1px solid #e63a3a;
     flex-direction: row;
     width: 50em;
-    background-color: white;
+    background-color: #f0e33f;
 }
 
 .whitekey .keycodes {
     width: 100%;
-    background-color: white;
+    border: solid #e63a3a;
+    background-color: #f0e33f;
     border-top: 0px;
     border-left: 0px;
     border-radius: 0%;
@@ -24,7 +26,8 @@ border-top: 0px;
 
 .whitekey .keycodes_active {
     width: 100%;
-    background-color: rgb(231, 231, 231);
+    border: solid #e63a3a;
+    background-color: #b47a3d;
     border-top: 0px;
     border-left: 0px;
     border-radius: 0%;
@@ -32,5 +35,46 @@ border-top: 0px;
 }
 
 .whitekey button:active {
-    background-color: rgb(231, 231, 231);
+    background-color: #b47a3d;
+} */
+
+width: 100%;
+height: 10em;
+display: flex;
+flex-direction: row;
+/* border-left: 2px solid #e63a3a;
+border-right: 2px solid #e63a3a; */
+
+.whitekey {
+    display: flex;
+    border: 1px solid #e63a3a; /* Red border for white keys */
+    border-top: 0px;
+    flex-direction: row;
+    width: 50em;
+    background-color: #f0e33f;
+    /* margin-right: -1px; Overlap borders slightly to prevent double borders */
+}
+
+.whitekey .keycodes {
+    width: 100%;
+    background-color: #f0e33f;
+    border: 1px solid #e63a3a; 
+    border-top: 0px;
+    border-left: 0px;
+    border-radius: 0%;
+    font-size: 1.5rem;
+}
+
+.whitekey .keycodes_active {
+    width: 100%;
+    background-color: #b47a3d;
+    border: 1px solid #e63a3a; 
+    border-top: 0px;
+    border-left: 0px;
+    border-radius: 0%;
+    font-size: 1.5rem;
+}
+
+.whitekey button:active {
+    background-color: #b47a3d;
 }

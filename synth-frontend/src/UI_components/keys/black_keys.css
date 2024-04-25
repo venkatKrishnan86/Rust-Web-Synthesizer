@@ -1,4 +1,4 @@
-width: 100%;
+/* width: 100%;
 height: 10em;
 display: flex;
 flex-direction: row;
@@ -6,48 +6,102 @@ border: 2px solid black;
 border-bottom: 0px;
 
 .blackkey {
+    border-left: 1px solid #e63a3a;
     display: flex;
     flex-direction: row;
     width: 50em;
-    background-color: white;
 }
 
 .filler {
     display: flex;
     flex-direction: row;
     width: 25em;
+    background-color: #f0e33f;
+}
+
+
+
+.blackkey .keycodes {
+    border: 1px solid #e63a3a;
+    width: 100%;
+    background-color: #e63a3a;
+    color: #f0e33f;
+    border-radius: 6%;
+    font-size: 1.5rem;
+}
+
+.blackkey .keycodes_active {
+    border: 1px solid #e63a3a;
+    width: 100%;
+    background-color: #b47a3d;
+    color: #e63a3a;
+    border-radius: 6%;
+    font-size: 1.5rem;
+}
+
+.blackkey button:active {
+    border: 1px solid #e63a3a;
+    background-color: #b47a3d;
+} */
+
+width: 100%;
+height: 10em;
+display: flex;
+flex-direction: row;
+border-left: 2px solid #f0e33f;
+border-right: 2px solid #f0e33f;
+
+.blackkey {
+    border-left: 1px solid #f0e33f; /* Yellow border for black keys */
+    display: flex;
+    flex-direction: row;
+    width: 50em;
+    margin-right: -1px; /* Overlap borders slightly to prevent double borders */
+}
+
+.filler {
+    display: flex;
+    flex-direction: row;
+    width: 25em;
+    background-color: #f0e33f;
+    border-left:#e63a3a;
+}
+
+.blackkey .keycodes {
+    border: 1px solid #f0e33f;
+    width: 100%;
+    background-color: #e63a3a;
+    color: #f0e33f;
+    border-radius: 6%;
+    font-size: 1.5rem;
+}
+
+.blackkey .keycodes_active {
+    border: 1px solid #f0e33f;
+    width: 100%;
+    background-color: #b47a3d;
+    color: #e63a3a;
+    border-radius: 2%;
+    font-size: 1.5rem;
+}
+
+.blackkey button:active {
+    border: 1px solid #f0e33f;
+    background-color: #b47a3d;
 }
 
 .filler + #corner-left {
-    border: 2px solid black;
+    border-left: 1px solid #e63a3a;
+    background-color: #f0e33f;
     border-top: 0px;
     border-bottom: 0px;
     border-right: 0px;
 }
 
 .filler + #corner-right {
-    border: 2px solid black;
+    border-left: 1px solid #e63a3a;
+    background-color: #f0e33f;
     border-top: 0px;
     border-bottom: 0px;
     border-left: 0px;
-}
-
-.blackkey .keycodes {
-    width: 100%;
-    background-color: black;
-    color: white;
-    border-radius: 6%;
-    font-size: 1.5rem;
-}
-
-.blackkey .keycodes_active {
-    width: 100%;
-    background-color: rgb(42, 42, 42);
-    color: white;
-    border-radius: 6%;
-    font-size: 1.5rem;
-}
-
-.blackkey button:active {
-    background-color: rgb(42, 42, 42);
 }
