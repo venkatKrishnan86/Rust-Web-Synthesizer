@@ -6,7 +6,7 @@ use rodio::Source;
 use crate::utils::{hz_to_midi, midi_to_hz};
 
 #[allow(dead_code)]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub enum Oscillator {
     Sine,
     Square,
@@ -163,6 +163,10 @@ impl WaveTableOscillator {
             Oscillator::WhiteNoise => ()
         }
         self.wave_table = wave_table;
+    }
+
+    pub fn get_oscillator(&self) -> Oscillator {
+        self.oscillator
     }
 
     #[allow(dead_code)]

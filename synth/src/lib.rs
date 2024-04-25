@@ -3,6 +3,7 @@ use std::ops::Deref;
 use synth_backend::{filters::FilterParam, ring_buffer::IterablePolyphonyHashMap, utils::{decrease_octave, increase_octave}};
 use synth_backend::oscillators::{MultiOscillator, Oscillator, WaveTableOscillator};
 use synth_backend::envelopes::{EnvelopeParam, Envelope};
+use synth_backend::lfo::{LFO, LFOType};
 use yew::prelude::*;
 use stylist::yew::styled_component;
 use gloo::console::log;
@@ -74,6 +75,12 @@ pub fn app() -> Html {
 
     let lfo_freq = use_state(|| 0.01);
     // let am_lfo = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.8, *lfo_freq.deref());
+    let mut osillator = WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 1.0, 0.0);
+    let mut lfo = LFO::new(LFOType::Amplitude, sample_rate as f32,  osillator, 0.0015);
+    lfo.set_frequency(5.0);
+    lfo.set_width(0.0015);
+    lfo.set_type(LFOType::Frequency);
+    lfo.set_oscillator(Oscillator::Triangle);
 
     let gain = use_state(|| vec![0.5]);
     let detune_semitones = use_state(|| vec![0]);
