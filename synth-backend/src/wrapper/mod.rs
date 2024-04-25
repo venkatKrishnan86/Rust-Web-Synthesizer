@@ -49,6 +49,10 @@ impl Synth {
         output_sample
     }
 
+    pub fn set_gain(&mut self, index: usize, gain: f32) -> Result<(), String> {
+        self.osc.set_gain(gain, index)
+    }
+
     pub fn set_oscillator(&mut self, index: usize, oscillator: Oscillator) {
         self.osc.set_oscillator(index, oscillator);
     }

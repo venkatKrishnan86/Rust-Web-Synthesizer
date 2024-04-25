@@ -2,7 +2,8 @@ use yew::prelude::*;
 use std::collections::HashMap;
 use std::ops::Deref;
 use stylist::{yew::styled_component, Style};
-use crate::components::molecules::{selector::Selector, multi_selector::MultiSelector};
+use crate::components::atoms::slider::Slider;
+use crate::components::molecules::multi_selector::MultiSelector;
 use crate::components::molecules::remove_button::RemoveButton;
 
 const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/oscillator_selector.css");
@@ -11,8 +12,10 @@ const OSCILLATOR_SELECT_CSS: &str = include_str!("../../UI_components/selectors/
 pub struct OscillatorSelectorProperties {
     pub mouse_down: Callback<(char, usize)>,
     pub mouse_up: Callback<(char, usize)>,
+    pub gain_change: Callback<f64>,
+    pub gain: f64,
     pub number: usize,
-    pub active_index: usize
+    pub active_index: usize,
 }
 
 #[styled_component(OscillatorSelector)]
@@ -84,6 +87,16 @@ pub fn oscillator_selector(props: &OscillatorSelectorProperties) -> Html {
                 active_index={props.active_index}
                 on_mouse_down={&mouse_down} 
                 on_mouse_up={Callback::from(|_|{})}
+            />
+            <Slider 
+                label={"Gain"}
+                value={props.gain}
+                onchange={props.gain_change.clone()}
+                precision={Some(2)}
+                percentage={false}
+                min={0.0}
+                max={1.0}
+                step={Some(0.01)}
             />
             <RemoveButton 
                 on_mouse_down={&mouse_down} 

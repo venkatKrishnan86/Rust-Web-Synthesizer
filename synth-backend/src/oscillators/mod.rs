@@ -153,7 +153,7 @@ impl WaveTableOscillator {
                 let index_1 = self.index.trunc() as usize;
                 let frac = self.index - index_1 as f32;
                 self.index = (self.index + self.index_increment) % self.wave_table_size as f32;
-                WaveTableOscillator::lerp(self.wave_table[index_1], self.wave_table[(index_1 + 1)%self.wave_table_size], frac)
+                WaveTableOscillator::lerp(self.wave_table[index_1], self.wave_table[(index_1 + 1)%self.wave_table_size], frac) * self.gain
             }
         }
     }
