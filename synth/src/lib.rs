@@ -56,7 +56,7 @@ use cpal::{FromSample, SampleRate, SizedSample, Stream, StreamConfig};
 use synth_frontend::{components::organisms::lfo_settings::LFOSelector, MIDIKeyboard};
 use synth_frontend::components::molecules::add_button::AddButton;
 use synth_frontend::components::organisms::{oscillator_selector::OscillatorSelector, filter_selector::FilterSelector, envelope_settings::EnvelopeSettings};
-use synth_backend::utils::{midi_to_hz, State, create_stream};
+use synth_backend::utils::{midi_to_hz, create_stream};
 use synth_backend::filters::{Filter, FilterType};
 use synth_backend::wrapper::Synth;
 

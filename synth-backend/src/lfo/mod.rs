@@ -1,5 +1,5 @@
 use crate::oscillators::{WaveTableOscillator, Oscillator, self};
-use crate::utils::RingBuffer;
+use crate::ring_buffer::RingBuffer;
 
 #[derive(Clone, Debug)]
 pub enum LFOType {
