@@ -251,6 +251,9 @@ pub fn app() -> Html {
             '1' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::Sine);
+                    for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                        let _ = synths.set_oscillator(label.1 - 1, Oscillator::Sine);
+                    }
                     active_indices[label.1 - 1] = 0;
                     log!("Sine wave selected");
                 }
@@ -258,6 +261,9 @@ pub fn app() -> Html {
             '2' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::BidirectionalSquare);
+                    for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                        let _ = synths.set_oscillator(label.1 - 1, Oscillator::BidirectionalSquare);
+                    }
                     active_indices[label.1 - 1] = 1;
                     log!("Square wave selected");
                 }
@@ -265,6 +271,9 @@ pub fn app() -> Html {
             '3' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::Saw);
+                    for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                        let _ = synths.set_oscillator(label.1 - 1, Oscillator::Saw);
+                    }
                     active_indices[label.1 - 1] = 2;
                     log!("Sawtooth wave selected");
                 }
@@ -272,6 +281,9 @@ pub fn app() -> Html {
             '4' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::Triangle);
+                    for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                        let _ = synths.set_oscillator(label.1 - 1, Oscillator::Triangle);
+                    }
                     active_indices[label.1 - 1] = 3;
                     log!("Triangle wave selected");
                 }
@@ -279,32 +291,50 @@ pub fn app() -> Html {
             '5' => {
                 if label.1>0 {
                     oscillator_type.set_oscillator(label.1 - 1, Oscillator::WhiteNoise);
+                    for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                        let _ = synths.set_oscillator(label.1 - 1, Oscillator::WhiteNoise);
+                    }
                     active_indices[label.1 - 1] = 4;
                     log!("White Noise wave selected");
                 }
             },
             '0' => {
                 oscillator_type.set_filter(Some(FilterType::HighPass), freq_filter, bandwidth_hz_filter);
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_filter(Some(FilterType::HighPass), freq_filter, bandwidth_hz_filter);
+                }
                 active_filter_index = 1;
                 log!("High pass selected");
             },
             '9' => {
                 oscillator_type.set_filter(Some(FilterType::BandPass), freq_filter, bandwidth_hz_filter);
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_filter(Some(FilterType::BandPass), freq_filter, bandwidth_hz_filter);
+                }
                 active_filter_index = 2;
                 log!("Band pass selected");
             },
             '8' => {
                 oscillator_type.set_filter(Some(FilterType::LowPass), freq_filter, bandwidth_hz_filter);
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_filter(Some(FilterType::LowPass), freq_filter, bandwidth_hz_filter);
+                }
                 active_filter_index = 3;
                 log!("Low pass selected");
             },
             '7' => {
                 oscillator_type.set_filter(None, freq_filter, bandwidth_hz_filter);
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_filter(None, freq_filter, bandwidth_hz_filter);
+                }
                 active_filter_index = 0;
                 log!("Filter off");
             },
             '+' => {
                 let _ = oscillator_type.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.push(WaveTableOscillator::new(sample_rate, 44100, Oscillator::Sine, 0.7, 0.0));
+                }
                 active_indices.push(0);
                 list_of_gains.push(0.5);
                 list_of_detunes.push(0);
@@ -313,39 +343,61 @@ pub fn app() -> Html {
             '-' => {
                 if oscillator_type.num_sources() > 1 {
                     let _ = oscillator_type.remove(label.1 - 1);
+                    for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                        let _ = synths.remove(label.1 - 1);
+                    }
                     list_of_gains.remove(label.1 - 1);
                     list_of_detunes.remove(label.1 - 1);
                     active_indices.remove(label.1 - 1);
                 }
             },
             '<' => {
-                let _ = oscillator_type.get_lfo_osc();
                 oscillator_type.set_lfo_type(LFOType::Amplitude);
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_lfo_type(LFOType::Amplitude);
+                }
                 active_lfo_type_index = 0;
             },
             '>' => {
-                let _ = oscillator_type.get_lfo_osc();
                 oscillator_type.set_lfo_type(LFOType::Frequency);
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_lfo_type(LFOType::Frequency);
+                }
                 active_lfo_type_index = 1;
             },
             '|' => {
-                oscillator_type.set_lfo_osc(None, lfo_freq, lfo_type);
+                oscillator_type.set_lfo_osc(None, lfo_freq, lfo_type.clone());
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_lfo_osc(None, lfo_freq, lfo_type.clone());
+                }
                 active_lfo_index = 0;
             },
             '[' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Sine), lfo_freq, lfo_type);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Sine), lfo_freq, lfo_type.clone());
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_lfo_osc(Some(Oscillator::Sine), lfo_freq, lfo_type.clone());
+                }
                 active_lfo_index = 1;
             },
             ']' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Square), lfo_freq, lfo_type);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Square), lfo_freq, lfo_type.clone());
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_lfo_osc(Some(Oscillator::Square), lfo_freq, lfo_type.clone());
+                }
                 active_lfo_index = 2;
             },
             '{' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Saw), lfo_freq, lfo_type);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Saw), lfo_freq, lfo_type.clone());
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_lfo_osc(Some(Oscillator::Saw), lfo_freq, lfo_type.clone());
+                }
                 active_lfo_index = 3;
             },
             '}' => {
-                oscillator_type.set_lfo_osc(Some(Oscillator::Triangle), lfo_freq, lfo_type);
+                oscillator_type.set_lfo_osc(Some(Oscillator::Triangle), lfo_freq, lfo_type.clone());
+                for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                    let _ = synths.set_lfo_osc(Some(Oscillator::Triangle), lfo_freq, lfo_type.clone());
+                }
                 active_lfo_index = 4;
             },
             _ => {
