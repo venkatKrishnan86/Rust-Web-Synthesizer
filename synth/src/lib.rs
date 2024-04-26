@@ -194,9 +194,6 @@ pub fn app() -> Html {
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
-    // let cloned_device = device.clone();
-    // let cloned_config = config.clone();
-    let stream_setter = stream.clone();
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
     let cloned_active_osc = active_oscillators.clone();
@@ -212,8 +209,6 @@ pub fn app() -> Html {
         log!("Holding key", label.0.to_string(), ", MIDI Note:", key_label.to_string());
         let cloned_key_map = &mut key_map_down.deref().clone();
         let buffer = Arc::clone(cloned_poly.deref());
-        // let device_temp = cloned_device.deref().clone();
-        // let config_temp = cloned_config.deref().clone();
         let mut oscillator_type = cloned_oscillator.deref().clone();
         let freq_filter = cloned_freq.deref().clone();
         let bandwidth_hz_filter = freq_filter*0.5;
@@ -230,26 +225,14 @@ pub fn app() -> Html {
             'Z' => {
                 if cloned_key_map[&'A'] > 12 {
                     decrease_octave(cloned_key_map);
-                    // let handle = std::thread::spawn(move || {
                     let _ = new_buffer.lock().unwrap().clear();
-                    // });
-                    // handle.join().unwrap();
-                    // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                    // new_stream.pause();
-                    // stream_setter.set(new_stream);
                     key_map_setter.set(cloned_key_map.deref().clone());
                 }
             },
             'X' => {
                 if cloned_key_map[&'A'] < 108 {
                     increase_octave(cloned_key_map);
-                    // let handle = std::thread::spawn(move || {
                     let _ = new_buffer.lock().unwrap().clear();
-                    // });
-                    // handle.join().unwrap();
-                    // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                    // new_stream.pause();
-                    // stream_setter.set(new_stream);
                     key_map_setter.set(cloned_key_map.deref().clone());
                 }
             },
@@ -357,13 +340,7 @@ pub fn app() -> Html {
                 let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
                 let mut source = cloned_oscillator.deref().clone();
                 let _ = source.global_set_frequency(frequency);
-                // let handle = std::thread::spawn(move || {
                 new_buffer.lock().unwrap().insert(*key_label, source.clone());
-                // });
-                // handle.join().unwrap();
-                // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                // new_stream.play();
-                // stream_setter.set(new_stream);
             }
         }
         cloned_poly.set(buffer);
@@ -378,21 +355,11 @@ pub fn app() -> Html {
 
     let key_map_up = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
-    // let stream_setter = stream.setter();
-    // let cloned_device = device.clone();
-    // let cloned_config = config.clone();
     let mouse_up = Callback::from(move |label: (char, usize)| {
         let key_label = key_map_up.get(&label.0).unwrap_or(&0);
         let buffer = cloned_poly.deref().clone();
         let new_buffer = Arc::clone(&buffer);
         let _ = new_buffer.lock().unwrap().remove(key_label);
-        // });
-        // handle.join().unwrap();
-        // let device_temp = cloned_device.deref().clone();
-        // let config_temp = cloned_config.deref().clone();
-        // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-        // new_stream.play();
-        // stream_setter.set(new_stream);
         cloned_poly.set(buffer);
         log!("Lifted key", label.0.to_string(), ", MIDI Note:", key_map_up.get(&label.0).unwrap_or(&0).to_string());
     });
@@ -400,50 +367,30 @@ pub fn app() -> Html {
     let key_map_setter = keycode_maps.setter();
     let key_map_down = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
-    // let cloned_device = device.clone();
-    // let cloned_config = config.clone();
-    let stream_setter = stream.clone();
     let cloned_oscillator = oscillator.clone();
     let key_down = Callback::from(move |label: char| {
         let key_label = key_map_down.get(&label).unwrap_or(&0);
         let cloned_key_map = &mut key_map_down.deref().clone();
         let buffer = Arc::clone(cloned_poly.deref());
-        // let device_temp = cloned_device.deref().clone();
-        // let config_temp = cloned_config.deref().clone();
-        // let mut oscillator_type = cloned_oscillator.deref().clone();
         let new_buffer = Arc::clone(&buffer);
         match label {
             'Z' => {
                 if cloned_key_map[&'A'] > 12 {
                     decrease_octave(cloned_key_map);
-                    // let handle = std::thread::spawn(move || {
                     let _ = new_buffer.lock().unwrap().clear();
-                    // });
-                    // handle.join().unwrap();
-                    // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                    // new_stream.pause();
-                    // stream_setter.set(new_stream);
                     key_map_setter.set(cloned_key_map.deref().clone());
                 }
             },
             'X' => {
                 if cloned_key_map[&'A'] < 108 {
                     increase_octave(cloned_key_map);
-                    // let handle = std::thread::spawn(move || {
                     let _ = new_buffer.lock().unwrap().clear();
-                    // });
-                    // handle.join().unwrap();
-                    // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                    // new_stream.pause();
-                    // stream_setter.set(new_stream);
                     key_map_setter.set(cloned_key_map.deref().clone());
                 }
             },
             _ => {
                 if cloned_key_map.contains_key(&label) {
-                    // let exists_label = None;
                     let new_buffer = Arc::clone(&buffer);
-                    // let handle = std::thread::spawn(move || {
                     let exists_label = match new_buffer.lock().unwrap().get(key_label) {
                         None => None,
                         Some(_) => Some(true)
@@ -455,13 +402,7 @@ pub fn app() -> Html {
                             let frequency = midi_to_hz(*key_label).unwrap_or(1.0);
                             let mut source = cloned_oscillator.deref().clone();
                             let _ = source.global_set_frequency(frequency);
-                            // let handle = std::thread::spawn(move || {
                             let _ = new_buffer.lock().unwrap().insert(*key_label, source);
-                            // });
-                            // handle.join().unwrap();
-                            // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-                            // new_stream.play();
-                            // stream_setter.set(new_stream);
                         }
                     }
                 }
@@ -473,21 +414,10 @@ pub fn app() -> Html {
 
     let key_map_up = keycode_maps.clone();
     let cloned_poly = polyphony.clone();
-    // let stream_setter = stream.setter();
-    // let cloned_device = device.clone();
-    // let cloned_config = config.clone();
     let key_up = Callback::from(move |label: char| {
         let key_label = key_map_up.get(&label).unwrap_or(&0);
         let buffer = Arc::clone(cloned_poly.deref());
-        // let handle = std::thread::spawn(move || {
         let _ = buffer.lock().unwrap().remove(key_label);
-        // });
-        // handle.join().unwrap();
-        // let device_temp = cloned_device.deref().clone();
-        // let config_temp = cloned_config.deref().clone();
-        // let new_stream = State::new(&device_temp, &config_temp, buffer.clone());
-        // new_stream.play();
-        // stream_setter.set(new_stream);
         cloned_poly.set(buffer);
         log!("Lifted key", label.to_string(), ", MIDI Note:", key_map_up.get(&label).unwrap_or(&0).to_string());
     });
