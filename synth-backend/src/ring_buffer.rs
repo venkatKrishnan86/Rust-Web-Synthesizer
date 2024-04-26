@@ -169,6 +169,10 @@ impl IterablePolyphonyHashMap {
         self.hashmap.len()
     }
 
+    pub fn iterate_hashmap_mut(&mut self) -> std::collections::hash_map::IterMut<'_, u8, Synth>{
+        self.hashmap.iter_mut()
+    }
+
     /// Checks if the MIDI map is empty.
     pub fn is_empty(&self) -> bool {
         self.hashmap.is_empty()

@@ -145,6 +145,7 @@ pub fn app() -> Html {
         let mut oscillator_type = cloned_oscillator.deref().clone();
         oscillator_type.set_envelope_params(EnvelopeParam::AttackMs, attack as f32);
         cloned_oscillator.set(oscillator_type);
+        // No need to implement changes in the (already playing) notes
     });
 
     let cloned_oscillator = oscillator.clone();
@@ -169,21 +170,32 @@ pub fn app() -> Html {
     
     let cloned_oscillator = oscillator.clone();
     let cloned_freq = freq.clone();
+    let cloned_poly = polyphony.clone();
     let freq_change = Callback::from(move |freq: f64| {
         cloned_freq.set(freq as f32);
         let mut oscillator_type = cloned_oscillator.deref().clone();
         oscillator_type.set_filter_params(FilterParam::FreqHz, freq as f32);
         oscillator_type.set_filter_params(FilterParam::BandwidthHz, freq as f32*0.5);
         cloned_oscillator.set(oscillator_type);
+        let buffer = Arc::clone(cloned_poly.deref());
+        for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+            let _ = synths.set_filter_params(FilterParam::FreqHz, freq as f32);
+            let _ = synths.set_filter_params(FilterParam::BandwidthHz, freq as f32*0.5);
+        }
     });
 
     let cloned_oscillator = oscillator.clone();
     let cloned_freq_lfo = lfo_freq.clone();
+    let cloned_poly = polyphony.clone();
     let freq_lfo_change = Callback::from(move |freq: f64| {
         cloned_freq_lfo.set(freq as f32);
         let mut oscillator_type = cloned_oscillator.deref().clone();
         let _ = oscillator_type.set_lfo_frequency(freq as f32);
         cloned_oscillator.set(oscillator_type);
+        let buffer = Arc::clone(cloned_poly.deref());
+        for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+            let _ = synths.set_lfo_frequency(freq as f32);
+        }
     });
 
     let active_oscillators = use_state(|| vec![0; oscillator.deref().num_sources()]);
@@ -431,6 +443,7 @@ pub fn app() -> Html {
         oscillator.clone(),
         gain.clone(),
         detune_semitones.clone(),
+        polyphony.clone(),
         active_oscillators.deref().clone()
     );
     html! {
@@ -486,6 +499,7 @@ pub fn display_oscillators(
     oscillator: UseStateHandle<Synth>, 
     gain: UseStateHandle<Vec<f32>>,
     detune_semitones: UseStateHandle<Vec<i8>>,
+    polyphony: UseStateHandle<Arc<Mutex<IterablePolyphonyHashMap>>>,
     active_indices: Vec<usize>
 ) -> Vec<Html>{
     let mut display = Vec::new();
@@ -494,6 +508,7 @@ pub fn display_oscillators(
         let cloned_gain = gain.clone();
         let idx_gain = gain.deref()[idx];
         let cloned_gain_set = gain.setter();
+        let cloned_poly = polyphony.clone();
         let gain_change = Callback::from(move |gain1: f64| {
             let mut gain_vec = cloned_gain.deref().clone();
             gain_vec[idx] = gain1 as f32;
@@ -501,11 +516,16 @@ pub fn display_oscillators(
             let mut oscillator_type = cloned_oscillator.deref().clone();
             let _ = oscillator_type.set_gain(idx, gain1 as f32);
             cloned_oscillator.set(oscillator_type);
+            let buffer = Arc::clone(cloned_poly.deref());
+            for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+                let _ = synths.set_gain(idx, gain1 as f32);
+            }
         });
         let cloned_oscillator: UseStateHandle<Synth> = oscillator.clone();
         let cloned_detune = detune_semitones.clone();
         let idx_detune = detune_semitones.deref()[idx];
         let cloned_detune_set = detune_semitones.setter();
+        // let cloned_poly = polyphony.clone();
         let detune_change = Callback::from(move |detune: i8| {
             let mut detune_vec = cloned_detune.deref().clone();
             detune_vec[idx] = detune;
@@ -513,6 +533,13 @@ pub fn display_oscillators(
             let mut oscillator_type = cloned_oscillator.deref().clone();
             let _ = oscillator_type.set_detune_semitones(idx, detune);
             cloned_oscillator.set(oscillator_type);
+
+            // Since it is an IntSlider, no need to create dynamic changes
+
+            // let buffer = Arc::clone(cloned_poly.deref());
+            // for (_, synths) in buffer.lock().unwrap().iterate_hashmap_mut() {
+            //     let _ = synths.set_detune_semitones(idx, detune);
+            // }
         });
         display.push(html! {
             <OscillatorSelector 
