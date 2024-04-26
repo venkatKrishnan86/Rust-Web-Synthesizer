@@ -96,7 +96,7 @@ pub fn decrease_octave(midi_map: &mut HashMap<char, u8>) {
     }
 }
 
-pub fn create_stream(device: cpal::Device, config: cpal::StreamConfig, polyphony: Arc<Mutex<IterablePolyphonyHashMap>>) -> Stream {
+pub fn create_stream(device: &cpal::Device, config: &cpal::StreamConfig, polyphony: Arc<Mutex<IterablePolyphonyHashMap>>) -> Stream {
     // std::thread::spawn(move || {
     let channels: usize = config.channels as usize;
     let err_fn = |err| console::error_1(&format!("A stream error ocurred: {}", err).into());
@@ -104,25 +104,27 @@ pub fn create_stream(device: cpal::Device, config: cpal::StreamConfig, polyphony
     let mut next_value = {
         let poly = Arc::clone(&polyphony);
         move || {
-            poly.lock().unwrap().get_sample()
+            let sample = poly.lock().unwrap().get_sample();
+            sample
         }
     };
 
-    // let buffer_size = 512;
+    let buffer_size = 1024;
     // let sample_format = cpal::SampleFormat::F32;
 
-    // let stream_config = cpal::StreamConfig {
-    //     channels: config.channels,
-    //     sample_rate: config.sample_rate,
-    //     buffer_size: cpal::BufferSize::Fixed(buffer_size),
-    // };
+    let stream_config = cpal::StreamConfig {
+        channels: config.channels,
+        sample_rate: config.sample_rate,
+        buffer_size: cpal::BufferSize::Fixed(buffer_size),
+    };
 
     // log!(channels);
 
     let stream = device
-        .build_output_stream (
-            &config,
-            move |data: &mut [f32], _info: &OutputCallbackInfo| {
+        .build_output_stream_raw (
+            &stream_config,
+            cpal::SampleFormat::F32,
+            move |data: &mut Data, _info: &OutputCallbackInfo| {
                 write_data(data, channels, &mut next_value);
             }, 
             err_fn,
@@ -137,8 +139,8 @@ pub fn create_stream(device: cpal::Device, config: cpal::StreamConfig, polyphony
     // });
 }
 
-fn write_data(output: &mut [f32], channels: usize, next_sample: &mut dyn FnMut() -> f32){
-    for frame in output.chunks_mut(channels) {
+fn write_data(output: &mut Data, channels: usize, next_sample: &mut dyn FnMut() -> f32){
+    for frame in output.as_slice_mut() {
         // log!(frame.len());
         for sample in frame.iter_mut() {
             *sample = next_sample();
