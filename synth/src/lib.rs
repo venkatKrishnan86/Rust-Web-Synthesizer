@@ -325,12 +325,12 @@ pub fn app() -> Html {
                 }
             },
             '<' => {
-                let curr_oscillator = oscillator_type.get_lfo_osc();
+                let _ = oscillator_type.get_lfo_osc();
                 oscillator_type.set_lfo_type(LFOType::Amplitude);
                 active_lfo_type_index = 0;
             },
             '>' => {
-                let curr_oscillator = oscillator_type.get_lfo_osc();
+                let _ = oscillator_type.get_lfo_osc();
                 oscillator_type.set_lfo_type(LFOType::Frequency);
                 active_lfo_type_index = 1;
             },
